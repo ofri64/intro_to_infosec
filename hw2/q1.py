@@ -1,4 +1,5 @@
 import itertools
+import math
 
 
 class RepeatedKeyCipher(object):
@@ -30,38 +31,65 @@ class BreakerAssistant(object):
 
     def __init__(self):
         """Initializes BreakerAssistant object, Used to define object attribute for plaintext score"""
-        self.likely_plaintext_marks = self.create_likely_plaintext_marks()
+        self.english_letters = [chr(i) for i in range(ord('a'), ord('z')+1)] + [chr(i) for i in range(ord('A'), ord("Z")+1)]
+        self.english_punc = ["!", " ", "\"", "\'", "(", ")", ",", ".", "-", "?", ":"]
+        self.english_letter_frequency = {
+            'a': 0.11682, 'b': 0.04434, 'c': 0.05238, 'd': 0.03174, 'e': 0.02799, 'f': 0.04027, 'g': 0.01642,
+            'h': 0.042, 'i': 0.07294, 'j': 0.00511, 'k': 0.00456, 'l': 0.02415, 'm': 0.03826, 'n': 0.02284,
+            'o': 0.07631, 'p': 0.04319, 'q': 0.00222, 'r': 0.02826, 's': 0.06686, 't': 0.15978, 'u': 0.01183,
+            'v': 0.00824, 'w': 0.05497, 'x': 0.00045, 'y': 0.00763, 'z': 0.00045}
 
-    def create_likely_plaintext_marks(self):
-        # Add plausible/frequent marks
-        likely_plaintext_marks = ["!", " ", "\"", "\'", "(", ")", ",", ".", "-", "?", ":"]
-        # for i in range(48, 58):
-        #     # Add the numbers 0-9
-        #     likely_plaintext_marks.append(chr(i))
-        for i in range(65, 91):
-            # Add english letters
-            upper_case = chr(i)
-            lower_case = upper_case.lower()
-            likely_plaintext_marks.append(upper_case)
-            likely_plaintext_marks.append(lower_case)
-        return likely_plaintext_marks
+    def english_letter_proportion(self, plain_text):
+        text_len = len(plain_text)
+        letters_count = 0
+        for char in plain_text:
+            if char in self.english_letters:
+                letters_count += 1
+        letter_prop = float(letters_count) / text_len
+        return letter_prop
+
+    def text_letters_frequency(self, plain_text):
+        """Computes the frequency of english letters in a given text"""
+        text_len = len(plain_text)
+        text_frequency = {}
+        for i in range(ord("a"), ord("z")+1):
+            text_frequency[chr(i)] = 0
+        for char in plain_text:
+            if char in self.english_letters: #Increase counter
+                lower_char = char.lower()
+                text_frequency[lower_char] += 1
+        for item in text_frequency.items(): #Divide by len to get frequency/probability
+            letter = item[0]
+            text_frequency[letter] = float(text_frequency[letter]) / text_len
+        return text_frequency
+
+    def KL_Divergence(self, text_frequency_dict):
+        """Compute the KL Divergence between two probabilities - average english text and given text"""
+        score = 0
+        for item in self.english_letter_frequency.items():
+            letter = item[0]
+            english_freq = item[1]
+            text_freq = text_frequency_dict[letter]
+            score -= english_freq * math.log(text_freq / english_freq + 0.0000001)
+        return score
 
     def plaintext_score(self, plaintext):
         """Scores a candidate plaintext string, higher means more likely."""
         # Return a number (int / long / float).
         # Please don't return complex numbers, that would be just annoying.
-        text_len = len(plaintext)
-        num_likely_marks = 0
-        for char in plaintext:
-            if char in self.likely_plaintext_marks:
-                num_likely_marks += 1
-        score = float(num_likely_marks) / text_len
-        return score
+        score = -10000000
+        letters_prop = self.english_letter_proportion(plaintext)
+        if letters_prop < 0.90:
+            # Define a threshold - proportion lower than 70% probably not an authentic english text
+            return score
+        text_freq_dict = self.text_letters_frequency(plaintext)
+        kl_divergence_score = self.KL_Divergence(text_freq_dict)
+        return -kl_divergence_score
 
     def brute_force(self, cipher_text, key_length):
         """Breaks a Repeated Key Cipher by brute-forcing all keys."""
         # Return a string.
-        max_score = 0
+        max_score = -10000000
         plain_text = ""
         cipher = RepeatedKeyCipher()
         # enumerate over all possible keys using itertools
@@ -72,8 +100,6 @@ class BreakerAssistant(object):
             if dec_score > max_score:
                 max_score = dec_score
                 plain_text = dec_text
-            if dec_score == 1:
-                print "An option:" + dec_text
         return plain_text
 
     def smarter_break(self, cipher_text, key_length):
@@ -82,13 +108,9 @@ class BreakerAssistant(object):
 
         raise NotImplementedError()
 
+# text1 = '1A\xfe~\xf6'
+# text2 = "Hello"
+#
 # b = BreakerAssistant()
-# print b.plaintext_score("\xc6\xc9u\xd0v\x14\xe2\xcf\xc5\xf5\x1eZ\x10Yd\xd3")
-
-text_to_enc = "dagiel my dear boy"
-c = RepeatedKeyCipher(key=[44, 202])
-encrypted_text = c.encrypt(text_to_enc)
-print encrypted_text
-b = BreakerAssistant()
-print b.brute_force(encrypted_text, key_length=2)
-
+# print b.plaintext_score(text1)
+# print b.plaintext_score(text2)
