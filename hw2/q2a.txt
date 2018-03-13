@@ -1,0 +1,5 @@
+The exploit we take advantage of in this section is the short length of the message.
+In our case, the credit card PIN code is sent in a separated message by it self.
+Thus, we know that the message length is 4 charactes long, and there are 10^4 = 10,000 possible PIN codes.
+The method just exhaust over all possible PIN codes, encrypting each one of them, and comparing the results with our encrypted text.
+One of the PIN codes must match because the encryption algorithm is deterministic.
