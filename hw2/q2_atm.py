@@ -65,4 +65,3 @@ class ServerResponse(object):
         """Initializes a response with a value for the status and signature."""
         self.status = status
         self.signature = signature
-

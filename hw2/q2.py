@@ -45,4 +45,7 @@ def extract_credit_card(encrypted_credit_card):
 def forge_signature():
     """Forge a server response that passes verification."""
     # Return a ServerResponse instance.
-    raise NotImplementedError()
+    response = ServerResponse(ATM.CODE_APPROVAL, 1)
+    return response
+
+
