@@ -1,0 +1,3 @@
+- We implement brute force search and choosing between decryption keys according to their output score (using the scoring function from last section)
+- We assume that the decrypted text with the highest score value will have the highest probability of being the origianl plain text message.
+- Notice the use of python's itertools module to enumerate all possible keys (instead of using a recursive function for doing it)

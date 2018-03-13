@@ -1,0 +1,8 @@
+- The intuition for the scoring function is using the known distribution of letters in english text.
+- Then, measure the difference between the distribution of the so called decrypted text and the this known distribution.
+- We will assume the english letters frequency is a discrete distribution as detailed in Wikipedia (https://en.wikipedia.org/wiki/Letter_frequency)
+- We will compute the decrypted text distribution simply by counting how many times a letter appears in the decrypted text and normalize with dividing by the text lengh.
+- In order to measure the difference between the two distributions we will use chi-square distribution (without actually performing the chi-square test, just using the statistic's value. reference can be found here https://en.wikipedia.org/wiki/Chi-squared_test)
+- Identical distribution will get value 0 and the value will grow as the distributions differ.
+- So we will setup our score function as -1 * chi-square value, representing the difference between the theoretical distibution and the empirical one. This way the maximum value in bounded to 0 in case of identical distributions.
+
