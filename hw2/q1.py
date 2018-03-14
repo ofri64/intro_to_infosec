@@ -1,5 +1,6 @@
 import itertools
 import math
+import string
 
 
 class RepeatedKeyCipher(object):
@@ -28,6 +29,7 @@ class RepeatedKeyCipher(object):
 
 
 class BreakerAssistant(object):
+    NON_PRINTABLE_PENALTY = 0.3
 
     def __init__(self):
         """Initializes BreakerAssistant object, Used to define object attribute for plaintext score"""
@@ -38,6 +40,7 @@ class BreakerAssistant(object):
             'v': 0.00978, 'w': 0.0236, 'x': 0.0015, 'y': 0.01974, 'z': 0.00074}
 
     def _text_letters_proportion(self, plain_text):
+        """Computed the distribution of english letters in a given text"""
         english_letters = [chr(i) for i in range(97,123)]
         text_frequency = {letter: 0 for letter in english_letters}
         text_len = len(plain_text)
@@ -50,6 +53,7 @@ class BreakerAssistant(object):
 
 
     def _chi_square_statistical(self, plain_text):
+        """Compute the chi-square statistical value. for more details see q1c.txt"""
         english_freq = self.english_letters_frequency
         text_freq = self._text_letters_proportion(plain_text)
         # Compute chi square value - compare text distribution to expected one
@@ -65,7 +69,12 @@ class BreakerAssistant(object):
         """Scores a candidate plaintext string, higher means more likely."""
         # Return a number (int / long / float).
         # Please don't return complex numbers, that would be just annoying.
-        return -self._chi_square_statistical(plaintext)
+        penaly = 0 # Add penalty for non printable characters
+        penalty = 0
+        for char in plaintext:
+            if char not in string.printable:
+                penalty += BreakerAssistant.NON_PRINTABLE_PENALTY
+        return -self._chi_square_statistical(plaintext) - penalty
 
     def brute_force(self, cipher_text, key_length):
         """Breaks a Repeated Key Cipher by brute-forcing all keys."""
@@ -84,16 +93,36 @@ class BreakerAssistant(object):
                 plain_text = dec_text
         return plain_text.lower()
 
+    def _divide_cipher_by_key_byte(self, cipher_text, key_length):
+        """Divide the text to n=key_length texts encrypted with the same byte.
+        Enables us to perform statistical analysis for each byte separately"""
+        key_byte_texts = ["" for i in range(key_length)]
+        for i in range(len(cipher_text)):
+            key_byte_texts[i % key_length] += cipher_text[i]
+        return key_byte_texts
+
+    def _concatenate_key_byte_decrypted(self, decrypted_key_byte_text, cipher_length, key_length):
+        """Concatenate the encrypted texts by key byte together the create the decrypted text"""
+        decrypted_text = ""
+        num_round = 0
+        byte = 0
+        for i in range(cipher_length):
+            decrypted_text += decrypted_key_byte_text[byte][num_round]
+            byte = (byte + 1) % key_length
+            if byte == 0:
+                num_round += 1
+        return decrypted_text
+
     def smarter_break(self, cipher_text, key_length):
         """Breaks a Repeated Key Cipher any way you like."""
         # Return a string.
+        cipher_key_byte_texts = self._divide_cipher_by_key_byte(cipher_text, key_length)
+        decrypted_key_byte_text = []
 
-        raise NotImplementedError()
+        # Perform "brute force" with the corresponding text for each byte in the key
+        for text in cipher_key_byte_texts:
+            decrypted_key_byte_text.append(self.brute_force(text, key_length=1))
 
-# rp = RepeatedKeyCipher(key=[50, 179])
-# b = BreakerAssistant()
-# m = "Hello my name is Dagi. statistically this text must be long unless there is a chance the method won't work well"
-# enc = rp.encrypt(m)
-# print enc
-# dec = b.brute_force(enc, 2)
-# print dec
+        # Concatenate all the encrypted texts together
+        decrypted_text = self._concatenate_key_byte_decrypted(decrypted_key_byte_text, len(cipher_text), key_length)
+        return decrypted_text

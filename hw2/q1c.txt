@@ -5,4 +5,5 @@
 - In order to measure the difference between the two distributions we will use chi-square distribution (without actually performing the chi-square test, just using the statistic's value. reference can be found here https://en.wikipedia.org/wiki/Chi-squared_test)
 - Identical distribution will get value 0 and the value will grow as the distributions differ.
 - So we will setup our score function as -1 * chi-square value, representing the difference between the theoretical distibution and the empirical one. This way the maximum value in bounded to 0 in case of identical distributions.
-
+- Another optimization would be to add a penalty for every non-printable char in our candidate decrypted text.
+Using a penalty of -0.3 for each such char (probably want to value of penalty to be an hyperparameter that can be sadjusted)

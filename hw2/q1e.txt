@@ -1,0 +1,8 @@
+- Up until now we did not used the fact that the chiper is a repeated key cipher.
+- Instead of using frequency analysis with brute force as we did in the preivous sections, we will perform frequency analysis for each byte of the key and combine the results
+- Hopefully, for long enough texts we will have enough data for each "bucket" (text encrypted by the same byte of the key) so that frequency analysis will be useful.
+- This method reduces the number of key combinatios from 256 ^ key_length to 256 * key_length.
+- Please also notice the following:
+	- The helper methods in the class "_divide_cipher_by_key_byte" and "_concatenate_key_byte_decrypted" used to diving and conatenate the encypted text to characters encrypted with same byte of the key.
+	- We are using the same "brute force" method we used before, with the same scoring function, for every byte of the key seperatly.
+	- Important parts of the code are also documented within the code itself.
