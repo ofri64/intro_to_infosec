@@ -29,7 +29,8 @@ class RepeatedKeyCipher(object):
 
 
 class BreakerAssistant(object):
-    NON_PRINTABLE_PENALTY = 0.3
+    NON_PRINTABLE_PENALTY = 2
+    UNLIKELY_PRINTABLE_PENALTY = 0.5
 
     def __init__(self):
         """Initializes BreakerAssistant object, Used to define object attribute for plaintext score"""
@@ -38,6 +39,7 @@ class BreakerAssistant(object):
             'h': 0.06094, 'i': 0.06966, 'j': 0.00153, 'k': 0.00772, 'l': 0.04025, 'm': 0.02406, 'n': 0.06749,
             'o': 0.07507, 'p': 0.01929, 'q': 0.00095, 'r': 0.05987, 's': 0.06327, 't': 0.09056, 'u': 0.02758,
             'v': 0.00978, 'w': 0.0236, 'x': 0.0015, 'y': 0.01974, 'z': 0.00074}
+        self.unlikely_printable_chars = ['[', ']', '^', '~', '{', '}', '|', '_', '#', '<', '>']
 
     def _text_letters_proportion(self, plain_text):
         """Computed the distribution of english letters in a given text"""
@@ -74,6 +76,8 @@ class BreakerAssistant(object):
         for char in plaintext:
             if char not in string.printable:
                 penalty += BreakerAssistant.NON_PRINTABLE_PENALTY
+            if char in self.unlikely_printable_chars:
+                penalty += BreakerAssistant.UNLIKELY_PRINTABLE_PENALTY
         return -self._chi_square_statistical(plaintext) - penalty
 
     def brute_force(self, cipher_text, key_length):
@@ -126,3 +130,21 @@ class BreakerAssistant(object):
         # Concatenate all the encrypted texts together
         decrypted_text = self._concatenate_key_byte_decrypted(decrypted_key_byte_text, len(cipher_text), key_length)
         return decrypted_text
+
+
+# m = "hey there how are you man? so good to see you! I am so glad that you are here." \
+#     " Its been a long time, without you my friend, and I'll tell you all about it when I see you again." \
+#     "We've come a long way from where we began... This song is from the Fast and Furious 7, I think, soundtrack. "
+# rp = RepeatedKeyCipher(key=[20, 11, 55, 244, 65, 155, 23, 44, 0, 1])
+# enc = rp.encrypt(m)
+# print enc
+# b = BreakerAssistant()
+# dec = b.smarter_break(enc, key_length=10)
+# print dec
+# print len(m)
+
+# text = '1A\xfe~\xf6'
+# text_real = "Hello"
+# b = BreakerAssistant()
+# print b.plaintext_score(text)
+# print b.plaintext_score(text_real)
