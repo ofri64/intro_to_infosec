@@ -1,15 +1,16 @@
 MOV EBX, 0x08048631
 JMP EBX
-lea eax, [ebp-0x40c]
-mov eax, [eax]
+mov ax, [eax]
+movzx eax, al
 cmp eax, 0x23
 jne small_dead_zone_end
 lea eax, [ebp-0x40c]
-mov eax, [eax+1]
+mov ax, [eax+1]
+movzx eax, al
 cmp eax, 0x21
 jne small_dead_zone_end
 lea eax, [ebp-0x40c]
-mov eax, [eax+2]
+add eax, 2
 push eax
 call 0x08048460
 pop eax
