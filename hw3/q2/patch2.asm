@@ -11,8 +11,9 @@ cmp eax, 0x21
 jne small_dead_zone_end
 lea eax, [ebp-0x40c]
 add eax, 2
+mov ebx, 0x08048460
 push eax
-call 0x08048460
+call ebx
 pop eax
 MOV EBX, 0x08048631
 JMP EBX
