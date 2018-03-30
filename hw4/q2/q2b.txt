@@ -1,0 +1,28 @@
+Solution to this question is built upon these steps:
+
+1) Writing an assembly program to open shell code:
+	- As written in forum we could not use .ASCII with an ending char we want to replace
+	beacuse after compilation the string will be written to the text segment of the program,
+	which is read only and trying to change it will cause a segmentation fault.
+	- This is the reason why our c program with the shellcode pathced assembly uses the ".STRING" instead
+	of ".ASCII" - please see "bash_shell_test.c" and "bash_shell_test" executable which open a shell,
+	with user permissions.
+	- The real assembly shell code program can be found in "shellcode.asm" and does include the use
+	of ".ASCII" to create a string and a subtitution of the last char "in memory" in order to avoid
+	0x00 bytes in our shellcode. Preformed exactly as shown in recitation
+	- The shell code used in the python q2b script, after the assembler operation,
+	can be found in "shellcode_machine.txt"
+
+2) Using the shell code as an input to the program:
+	- First step was performing analysis of the core dump file using gdb.
+	- Segmentation fault occurred at address 0x0804007a, which is exactly the value of EIP register
+	- Analyzing further we see that the address (on stack) that contains this value is 0xbfffe0ac,
+	so this is where RET value is stored on stack.
+	- Next, we see that our shell code (AAAAAAA...) starts exactly on address 0xbfffe069.
+	so this is where we would like to jump at the end of the function.
+	- Calculating, (altough already done in section a) the difference between the addresses is 67 bytes.
+	so our shell code has to be 67 bytes long.
+	- After the shell code we need to add the address we would like to jump to, in little endian,
+	so we will add to the shell code the value 69e0ffbf
+	- In order to make our shellcode (before the return address) exactly 67 bytes we will add
+	the amount of "NOPs" padding, as needed.
