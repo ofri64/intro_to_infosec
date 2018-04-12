@@ -1,3 +1,5 @@
+add esp, 0x1000
+
 push ebp
 mov ebp, esp
 

