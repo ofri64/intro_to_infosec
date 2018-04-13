@@ -1,4 +1,4 @@
-add esp, 0x1000
+sub esp, 1000
 
 push ebp
 mov ebp, esp

