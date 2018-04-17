@@ -1,0 +1,4 @@
+- After understaing the structure of the code in the previous section we now want to override RET/EIP to open a shell
+- Using gdb we find the addresses of the the "system" libc call (in libc text segment) and find an occurence of the string "/bin/sh" both in the libc.rodata segment
+- The address are: 0xb7c5bda0 for system_libc and 0xb7d7ca0b for "/bin/sh" string
+- Thus now, we construct our password with 66 bytes until reaching RET, appending the address of system_libc, appending arbitrary 4 bytes as the return address from system_libc and finally appending the address of the string "/bin/sh"

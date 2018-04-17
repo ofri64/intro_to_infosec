@@ -1,0 +1,26 @@
+Phase 1 - encode the original shellcode:
+- nothing much to explain about this part, pretty straight forward.
+- we iterate over the bytes of our shell code, performing xor with 0xff for every non ascii byte
+(transformed byte will always be an ascii char)
+- save also the indices of the bytes we decoded
+
+Phase 2 - implementing decoder logic containing only ascii bytes:
+- for this section we assume the address of our shellcode is given in eax
+- we want to xor with 0xff again for every original byte that was xor'ed (matching index from indices array)
+- remembering that 0xff is -1 in two's complement representation, all we need is to decrement 1 from 0
+we perform that using push 0, pop ebx and dec ebx. no we can xor with ebx (or bl)
+- we will increment the address in eax to match the current index to decrypt than xor with bl.
+for example, for sequence of indices 1,5,12 we will increment eax 1 time, then another 4 times, then another 7 times.
+
+Phase 3 - initiate eax to point to our shellcode starting address
+- as written in the instruction, we understand that the byte difference between the address in esp register and
+our shellcode logic is constant, depending only on our shellcode length.
+- our shellcode will being at the address (esp - len(shellcode) - 4).
+This is true since all the nops slide is at the beginning of our payload so our shellcode logic is right before RET address.
+- to achive that we perform push esp, pop eax, then dec eax for ( len(shellcode) + 4) times.
+
+Phase 4 - add nops, address to return and build payload
+- after we got our entire shellcode logic - eax pointer initiation, decoder, encoded shellcode, all thats left is to add nops slide, add return address to the middle of nops slide and build the payload to send to the server
+- we cannot use "NOP" (\x90) since it is not ascii.
+- instead we can use \x4e which means dec esi. we don't care about the value in this specific register so we can add as much instructions of this kind
+- building the playoad is done identicaly to previous questions
