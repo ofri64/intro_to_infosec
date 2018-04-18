@@ -1,0 +1,12 @@
+- In this question our goal is to override the value of the "auth" variable and then continue the normal flow of the program (as long as we can)
+- We will need the write a "shellcode" contaning only jumps to code from libc and using the stack for variables (data) only, we cannot execute code on it
+- First we obtain, using gdb, the address of the global auth variable (0x0804a054) and the original address to return from check_password function (0x080488c6)
+- We would like to perform something like "mov [&auth], 1"
+- So, we need to find a piece of code with two registers of the form "mov [{0}], {1}".
+possible option is "mov [edx], eax".
+- Now we understand that we need to ensure that edx register will contain the address of "auth" variable and eax will contain 1
+- For the first part we can use "pop edx" and make sure that right after the address of this command on the stack we will put the address of the "auth" variable
+- For the second part, we can perform "xor eax, eax" then perfrom "inc eax" one after the other.
+- Finally our shellcode overflow part consists of the following: (left to right means low to high address on the stack)
+&pop edx, &auth, &xor eax eax, &inc eax, &mov[edx] eax, &original_RET.
+So we will override the value of "auth" variable and right after jump to continue the original flow
