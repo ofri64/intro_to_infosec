@@ -1,0 +1,36 @@
+General Explanations:
+
+- In this question our goal is to construct an infinite loop of calls to "puts" with a specific string
+- As before, we will have the write a "shellcode" contaning only jumps to code from libc and using the stack for variables (data) only. we cannot execute code on it.
+
+- First we use gdb to obtain few specific needed address:
+	- The start address of our shellcode logic: 0xbfffe14c
+	- The address of the "puts" library function: 0xb7c80ca0
+
+- Construct the shellcode logic:
+	- Initiate ebp to the address of puts using &pop ebp, &puts
+	- add the address of puts again: &puts
+	- now we need to jump 4 bytes (RET of puts so called...). we'll use &pop edx (or and other register)
+	- right after we will add the address of our string (the argument of the "puts" call). more details on how we obtain it - later.
+	- then we need perfrom to loop itself, i.e change the value of esp to the beginning of our shellcode.
+	- we will perform that using &pop esp and then add the address 0xbfffe154 (8 bytes, jumping over &pop ebp, &puts)
+	- at the end of our shellcode we will insert our actual string
+
+
+Answers to specific questions:
+a)
+Question: Explain why the loop works after we call "puts"?
+Answer: 
+
+
+b)
+Question: The next instruction in the ROP after puts , is skipping 4 bytes on the
+stack. Explain why this 4-byte skip is necessary
+Answer: The 4-byte skip is necessary beacuse after "puts" finishes, we don't want our shellcode to jump to our string (this is what esp is pointing on if no skipping is made). we only needed the address of the string as an argument to "puts". so we need to skip over it and continue our shellcode logic.
+
+c)
+Question: Explain where and how did you include your string in the ROP. 
+Answers: The string is included in the shellcode right after we finish our logic.
+We need to obtain this address location. Well, this depends on the length of our shellcode and it will be relative to the start address of our logic itself. In my shellcode case the jump to &puts is located at 0xbfffe14c, after that we have 5 ROPS, each one is an address so it's lenght is 4 bytes (&puts, &pop edx, &my_string, &pop_esp, &start_address).
+To sum it up - we calculate that the address of the string is 0xbfffe14c + 20-bytes.
+ 
