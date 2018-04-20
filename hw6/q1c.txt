@@ -1,5 +1,5 @@
-- We will only emphasis the difference in the this section compared to the previous one
+- We will only emphasis the differences in the this section compared to the previous one
 - Now we don't want the program to exit with segmentation fault after we exit the shell. We would like it to exit "cleanly" with a desired exit code
 - Thus now, instead of arbitrary 4 bytes right after the address of libc_system we will want to insert the address of the exit call.
-- This way we ensure that rigth after the shell end we will jump to the exit function (because it's address is inserted as the libc_system RET value)
-- Finally, understanding that "exit" is also a valid function call, it expects it's argument exactly 4 bytes above ebp value. To ensure that the exit code of the program will be as we wish, we will add the desired exit code right after the "/bin/sh", placing it as the argument for the exit call. 
+- This way we ensure that rigth after the shell ends, we will jump to the exit function (because it's address is inserted as the libc_system RET value, allegedly)
+- Finally, understanding that "exit" is also a valid function call, it expects to find it's arguments exactly 4 bytes above ebp value. To ensure that the exit code of the program will be exactly what we wish, we will add the desired exit code right after the "/bin/sh" address, placing it as the argument for the exit call. 

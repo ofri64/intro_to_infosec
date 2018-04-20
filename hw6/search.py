@@ -1,6 +1,7 @@
+import addresses
 import assemble
 import string
-import itertools, re, struct
+import itertools, re
 
 
 GENERAL_REGISTERS = [
@@ -14,15 +15,17 @@ ALL_REGISTERS = GENERAL_REGISTERS + [
 
 
 class GadgetSearch(object):
-    def __init__(self, dump_path, start_addr):
+    def __init__(self, dump_path, start_addr=None):
         """
         Construct the GadgetSearch object.
 
         Input:
             dump_path: The path to the memory dump file created with GDB.
-            start_addr: The starting memory address of this dump.
+            start_addr: The starting memory address of this dump. Use
+                        `addresses.LIBC_TEXT_START` by default.
         """
-        self.start_addr = start_addr
+        self.start_addr = (start_addr if start_addr is not None
+                           else addresses.LIBC_TEXT_START)
         with open(dump_path, 'rb') as f:
             self.dump = f.read()
 
@@ -44,12 +47,13 @@ class GadgetSearch(object):
         #   print string.Formatter().parse(gadget_format)
 
         tuples_iter = string.Formatter().parse(gadget_format) # returns iterator
+
         # filter parts without format using the filter method over the iterator
         tuples_iter_only_placeholders = itertools.ifilter(lambda x: x[1]!=None, tuples_iter)
+
         placeholders_list = [t[1] for t in tuples_iter_only_placeholders]
         placeholders_set = set(placeholders_list) # remove duplicats by converting to set instead of list
         return len(placeholders_set)
-
 
     def get_register_combos(self, nregs, registers):
         """
@@ -63,7 +67,8 @@ class GadgetSearch(object):
                 ['ebx', 'eax'],
                 ['ebx', 'ebx']]
         """
-        # itertools.products for counting with replacement and ordering
+
+        # using itertools.products for counting with replacement and ordering
         combs_iter = itertools.product(registers, repeat=nregs)
         combs = [list(c) for c in combs_iter]
         return combs
@@ -75,10 +80,10 @@ class GadgetSearch(object):
 
         Example:
             self.format_all_gadgets("POP {0}; ADD {0}, {1}", ('eax', 'ecx'))
-            => [['POP eax; ADD eax, eax'],
-                ['POP eax; ADD eax, ecx'],
-                ['POP ecx; ADD ecx, eax'],
-                ['POP ecx; ADD ecx, ecx']]
+            => ['POP eax; ADD eax, eax',
+                'POP eax; ADD eax, ecx',
+                'POP ecx; ADD ecx, eax',
+                'POP ecx; ADD ecx, ecx']
         """
         # Hints:
         #
@@ -113,11 +118,13 @@ class GadgetSearch(object):
         #    the beginning of the file (for example, 12).
         #
         # 2. Don't forget to add the 'RET'.
+
         gadget_with_ret = gadget + '; RET'
         assembled_gadget = assemble.assemble_data(gadget_with_ret) # tranform to bytes from the assembly code
-        # print [hex(struct.unpack("B",o)[0]) for o in assembled_gadget]
+
         # use re moudle to search in the dump file. add the offset to base address to get absolut addresses
         gadget_addresses = [hex(g.start() + self.start_addr)[:-1] for g in re.finditer(re.escape(assembled_gadget), self.dump)]
+
         return gadget_addresses
 
     def find(self, gadget, condition=None):
@@ -145,10 +152,13 @@ class GadgetSearch(object):
                 ('POP ecx; POP esi', address2),
                 ...]
         """
+
         format_gadgets = self.format_all_gadgets(gadget_format, registers) # first get all formats
         all_formats_for_gadgets = [zip(itertools.cycle([g]), self.find_all(g)) for g in format_gadgets]
+
         # we have a list of lists, we need to expand it to a single list using itertools.chain
         all_formats = list(itertools.chain.from_iterable(all_formats_for_gadgets))
+        
         return all_formats
 
     def find_format(self, gadget_format, registers=GENERAL_REGISTERS,
@@ -167,13 +177,3 @@ class GadgetSearch(object):
             raise ValueError(
                 "Couldn't find matching address for " + gadget_format)
 
-
-
-# if __name__ == '__main__':
-    # gs = GadgetSearch("./libc.bin", 0xb7c38750)
-    # print gs.get_register_combos(3, ('eax', 'ebx'))
-    # print gs.get_format_count('XOR {0}, {0}; ADD {0}, {1}')
-    # print gs.format_all_gadgets("POP {0}; ADD {0}, {1}", ('eax', 'ecx'))
-    # print gs.find_all('dec eax; inc')
-    # print gs.find_all_formats('POP {0}; POP {1}', registers=['esi', 'edi'])
-    # print gs.find_format('POP {0}; POP {1}', registers=['esi', 'edi'])
