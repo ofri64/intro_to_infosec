@@ -1,0 +1,5 @@
+- The logical vulnerability in run.py code is the use of the function "eval" with an input coming directly from the user
+- The function "eval" evaluates a python expression given as a string. 
+- Thus, we can pass to "eval" a function call that during it's evaluation will print to the screen exactly what we want.
+- An easy soultion is to pass the expression "os.system('echo hacked')" as an input to the "eval" function.
+- "Eval" wil evaluate the given expression, meaning it will call the function and save into variable it's return value. The side effect of the call will print 'hacked' as we wanted and then the function will crash as the variable returned is an integer not a dictionary.
