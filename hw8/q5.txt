@@ -1,0 +1,24 @@
+- Well, in this question the json parsing vulnerability was fixed so we have to find another vulnerability
+- The vulnerability in this question's implementation is the performanceo of the rehashing phase for 1 million times
+- This will allow us to leverage a TOCTTOU vulnerability.
+
+Here is a short description of q5.py script flow:
+1) Run the script with an argument indicating the path to save the json payloads.
+In case no path argument was passed, a file will be cretaed in a default path
+
+2) Write to a file a valid json object that passes the authentication check (content of example.json for example)
+
+3) Executre run.py script as a child process
+
+4) Insert a short delay right after (using tims.sleep). This will probably cause the following:
+	- OS will continue to run current process (father process) until encountring the sleep command
+	- Then a context switch will be performed, probably OS will allocate CPU time for the child process (run.py)
+	- Another context switch will be performed during the (very) long rehashing stage in run.py.
+
+5) Now, after we are probably back in the father process we can edit the file and switch the command argument.
+The arguments that are needed for the authentication check were already saved as local variable inside the run.py code so it ok to change the file at this stage
+
+6) As a the final stage we will wait for the child process to finish - it will execute our changed command 
+
+
+To sum things up - we leveraged an optional TOCTTOU vulnerability. authentication part happens with valid command and signature, but execution part happens with our custom command (not matching the signature)
