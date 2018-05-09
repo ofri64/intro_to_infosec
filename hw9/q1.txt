@@ -1,0 +1,4 @@
+- In this question we are just sniffing HTTP unencrpyted traffic to capture login credentials
+- First we want to filter only the http traffic to the server. We will use destination port 80 (for http) and destination ip of infosec.cs.tau.ac.il server (as seen using wireshark)
+- Now we have to parse only the http part out of the protocols stack, and specifically parse out the credentials
+- We will convert our packet to string, look for "POST" method inside the string and the infosec website url, then we will use use regular expressions to find the HTML form fields - i.e the username and password fields values.
