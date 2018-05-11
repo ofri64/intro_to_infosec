@@ -1,0 +1,7 @@
+- In this question we want to inject an ongoing tcp connection and impersonate to infosec.cs.tau.ac.il server
+- We will leverage the fact that unless VPN or other IPsec protocol is used - the tcp layer is not encrpyted
+- We would like to itercept an ongoing tcp connection between a client in our network to the course web site,
+craft an http response packet (contained in matching tcp and ip layer), that will redirect the client to facebook
+- The http redirect response is already given to us
+- So all we need to do is to use scapy to craft the ip and tcp layers for the http response packet.
+- We will use scapy to build the ip and tcp parts of the packet - the destination ip will be the source ip appearing on the packet we intercepted, the source ip will be the destination ip appearing on the packet (the ip address of the course web server), the same applies for the destination and source ports. we will also add FIN and ACK flags and matching ACK and sequence numbers
