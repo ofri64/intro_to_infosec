@@ -34,7 +34,8 @@ def packet_filter(packet):
     Filter to keep only HTTP traffic (port 80) from the client to the server.
     """
     if S.IP in packet and S.TCP in packet and S.Raw in packet:
-        return packet[S.IP].dst == "132.66.11.65" and packet[S.TCP].dport == 80
+        return packet[S.TCP].dport == 80
+    return False
 
 
 def main(args):
