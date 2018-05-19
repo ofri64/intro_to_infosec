@@ -1,0 +1,10 @@
+- In this question we need to post an image message, but control its behaviour with a script
+- We need to maintain state - if the user already seen the image/gif we want to make it invisible, otherwise present the message
+- We notice another important thing - looking at the html source code we see that a variable named "username" is already defined, matching the current logged on user. This is an exploit we will take advantage so we can differentiate between different users using the same maching
+- Thus, the conclusion is that for managing our state we can use the local storage get/set item.
+- Our desired functionallity is as follows:
+	- Creat an image tag
+	- Attach an "onload" event hendler to it
+	- The handler should check for local storage object (for the specific user), if found any, make the img invisible (change the style.visibility value to hidden), else store a local storge object so next time the image will be hidden
+- This functionallity is perfomred by sending the following message (on any channel):
+<img id="cat_gif" src="https://media.giphy.com/media/l46CaUs3XUKHaPmak/giphy.gif" onload="if (localStorage.getItem(username) != null) {document.getElementById('cat_gif').style.visibility='hidden'} else localStorage.setItem(username, true)" />

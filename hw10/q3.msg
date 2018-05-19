@@ -1,0 +1,1 @@
+<img id="cat_gif" src="https://media.giphy.com/media/l46CaUs3XUKHaPmak/giphy.gif" onload="if (localStorage.getItem(username) != null) {document.getElementById('cat_gif').style.visibility='hidden'} else localStorage.setItem(username, true)" />

@@ -1,0 +1,20 @@
+- In this question we need to implement CSRF attack
+- We will exploit the fact that the form / messaging mechanism doesn't include session unique token (like we seen in lecture) so we can forge a post request of a logged user using his current session cookies
+- This exploit is caused by the behaviour of the browser that appends a session cookie to every request (this is http/browsers mechanism to keep state between request. http protocol is stateless!)
+- While a user in logged on to the site we can send a post request to the server in order to post a message.
+- We will do it from antoher html page, in a different domain that is controlled by us, using the ajax module - all we need to care about is that some user will be logged on (so the browser will add his cookie)
+- Thus, we can embed in our html the following script:
+    $.ajax(
+    {
+        url: 'http://localhost:8000/post',
+        type: 'POST',
+        data: {channel: "#announcements", message : "Give Edward a Raise!"} ,
+        xhrFields: {withCredentials: true},
+        crossDomain: true
+      }
+    );
+- Explaining:
+	- send POST request to our server (/post page for message posting)
+	- data is the data we want to send in our POST request (form values)
+	- xhrFields - used to tell the browser to add session cookies if there are
+	- cross domain - we are sending request to another domain, to the chat application server
