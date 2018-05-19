@@ -1,0 +1,9 @@
+- In order to perform the desired functionallity we probably have to post something as a message.
+- This is because we cannot write our code locally - it won't effect other users logging in.
+- So, we will have to save somehow the script we want other clients to execute, on the server db.
+- The instructions say our attack should work regardless of the channel the user is viewing. So, we cannot post a message in a specific channel beacuse it will trigger our code only when the user is viewing the specific channel
+- But, we can notice that the channels list always appears on the page! no matter what channel we view.
+- Given the possbile add new channels mechanism exposed by the server (saves content to the server db), and the hint to inject a "<script>" tag we would try to create a new channel with a name that will include a script, hopefully there are no sanity checks on the channel name (which is indeed the case...)
+- The script we want to initiate is: "$.post("post", { channel: "#general-spam", message : "Good Morning!"})</script>". We know that after examining what happens when we post a message - a "POST" request is sent to the server with "channel" and "message" form fields
+- Summarizing it all - we want to send the following message (no matter on which channel): /join #got-u-online <script>$.post("post", { channel: "#general-spam", message : "Good Morning!"})</script>
+- This way, everytime the channels list appear (which is every time a user requests the page), when loading our new channel name, our script will evaluate either.
