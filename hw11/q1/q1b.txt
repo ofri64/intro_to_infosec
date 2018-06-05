@@ -1,0 +1,15 @@
+- In this section we implement a local firewall logic
+- In order to mangae the sliding window logic described in the instructions, I created a linked list data structure to link tcp SYN requests with their timestamps.
+- The classes for the linked list and request node are documented in the code
+- The flow of our program is as follows:
+	- When a new packet arrives we check if its a TCP SYN packet (ignore else)
+	- We extract from our data structre the linked list for the source ip of this packet (create a new list if it is the first packet from this ip)
+	- We iterate over the list to remove all the nodes accociated with old requests that we don't want to consider in our counting.
+	- Then we insert our current new request to the list and count how many requests are in the list
+	- The number of requests in the list are exactly the number of SYN requests we received from this ip during our sliding window so we will block this ip.
+- Blocking the specific ip is implemented using iptables utility with the following command:
+	- 'iptables -A INPUT -s <src_ip> -j DROP'
+	- A stands for append to the chain rules
+	- Input is the chain
+	- s stands for the soruce ip
+	- j stands for the target action, which is DROP

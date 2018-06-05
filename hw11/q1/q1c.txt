@@ -1,0 +1,5 @@
+- This firewall design is susceptible to a DoS attack
+- The vulnerabilty is the fact that the firewall allocates memory resources for every SYN packet received by it.
+- If all we wish to do is perform a Dos attack we can simply generate a sequence of SYN requests, until we get blocked, each time from a different ip.
+- It doesn't have to be our ip, or an ip address of a host we control beacause we are not interested in getting back any response from the attacked host.
+- All we want to do is to overflow the attacked host memory consumption (and thus deny it from responding to legitimate requests)

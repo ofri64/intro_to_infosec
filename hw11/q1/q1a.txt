@@ -1,0 +1,9 @@
+- In this section we perform a stealth port scanning - using SYN packets
+- The reason this type of port scanning is also called stealth port scanning is that it doesn't actually complete the 3 ways handshake and doesn't create an established tcp connection to the attacked host
+- In practice the attackar sends SYN and then FIN packet so no TCP connection/session is etablished and the attacked host doesn't keep/log information about this connection.
+- The solution is quite simple. First we craft matching TCP-SYN packets for each port
+- Then we inspect our responses:
+	- SYN request wasn't answered at all - means the port is filtered
+	- SYN request answered with SYN+ACK response - means the port is open and ready for connection establishment
+	- SYN request answered with RST response - means the host is up, mabye listening on other ports but this specific port is considered close
+- Now all that's left is to iterate over our answers (and packets we didn't get any response for) and classify depending on the flags in the TCP response.
