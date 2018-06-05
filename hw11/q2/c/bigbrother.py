@@ -15,17 +15,14 @@ def spy(packet):
     """
     # TODO: Implement me (question 2c)
     raw_data = packet.getlayer(Raw)
-    if raw_data:
+    if raw_data: # as in previous section
         str_data = str(raw_data)
         if LOVE in str_data:
             unpersons.add(packet)
-            print "packet added becasue of love"
-        else:
+        else: # compute entropy value of payload
             payload_entropy = entropy(str_data)
-            if payload_entropy > ENTROPY_THRESHOLD:
+            if payload_entropy > ENTROPY_THRESHOLD: # entropy value is high enough to suspect encypted data
                 unpersons.add(packet)
-                print payload_entropy
-                print "packet added because of entropy"
 
 
 def entropy(string):

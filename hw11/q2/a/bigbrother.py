@@ -12,11 +12,12 @@ def spy(packet):
     `unpersons` set.
     """
     # TODO: Implement me (question 2a)
-    raw_data = packet.getlayer(Raw)
+    raw_data = packet.getlayer(Raw) # check if packet contains data layer
     if raw_data:
     	str_data = str(raw_data)
-    	if LOVE in str_data:
-    		unpersons.add(packet)
+    	if LOVE in str_data: # look for the work love in the data layer
+    		unpersons.add(packet) # add the entire packet to the unpersons set
+
     		# ip = packet.getlayer(IP)
     		# src_ip = ip.src
     		# unpersons.add(src_ip)

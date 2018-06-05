@@ -1,0 +1,3 @@
+- In this section we will need to improve the big brother logic to identify encrypted data
+- The logic for computing the entropy is already implemented for us
+- All we have to do is to add a check about the entropy value of the raw data part of the tcp payload
