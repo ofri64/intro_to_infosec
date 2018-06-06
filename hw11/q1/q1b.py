@@ -104,6 +104,9 @@ def on_packet(packet):
     ip_lst.remove_old_requests(current_timestamp) # first we remove old requests
     ip_lst.add_request_log(current_timestamp) # then add current SYN request to list
 
+    if is_blocked(src_ip):
+        return # no need to add an iptable rule if this ip is already blocked
+
     if ip_lst.total_requests_window > MAX_ATTEMPTS: # if the list is too long block the ip 
             block(src_ip) # add a rule to block this ip
 
