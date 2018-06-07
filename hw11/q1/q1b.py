@@ -1,5 +1,4 @@
 import time
-import datetime
 from scapy.all import *
 
 
@@ -22,13 +21,11 @@ class SynNode():
         '''
         Check if a specific node is "too old" meaning it's timestamp is not inside
         the given window infered by the timestamp given
-
         parameters:
         other_timestamp - a datetime.datetime object
         window = window size in seconds unit
         '''
-        diff = other_timestamp - self.timestamp # subtructing two dateime object result in timedelta object
-        diff_seconds = diff.total_seconds()
+        diff_seconds = other_timestamp - self.timestamp # subtructing two dateime object result in timedelta object
         return diff_seconds > window # check whether delta total seconds is greater than window
 
 class LinkedList():
@@ -61,7 +58,7 @@ class LinkedList():
         Create a new SynNode and add it to the end of our list
         '''
         node = SynNode(timestamp)
-        if not head: # if it is the first node in our list
+        if not self.head: # if it is the first node in our list
             self.head = node
             self.tail = node
             self.total_requests_window += 1
@@ -77,7 +74,6 @@ blocked = set()  # We keep blocked IPs in this set
 
 def on_packet(packet):
     """This function will be called for each packet.
-
     Use this function to analyze how many packets were sent from the sender
     during the last window, and if needed, call the 'block(ip)' function to
     block the sender."""
@@ -86,12 +82,10 @@ def on_packet(packet):
     tcp = packet.getlayer(TCP) # ignore icmp and so on
     if not tcp:
         return
-
     tcp_flags = tcp.flags
     if not tcp_flags == 2: # It is not a tcp SYN packet - ignore
         return
-    
-    src_ip = packet.src
+    src_ip = packet[IP].src
 
     # now use our linked list data structure to check how many requests were sent by this ip
     # current_timestamp will be our 'point in time' for checking the logic
@@ -100,9 +94,10 @@ def on_packet(packet):
         ip_syn_lists[src_ip] = LinkedList() # creaete new list if the it is the first SYN request from this ip
 
     ip_lst = ip_syn_lists[src_ip]
-    current_timestamp = datetime.datetime.now()
+    current_timestamp = int(time.time())
     ip_lst.remove_old_requests(current_timestamp) # first we remove old requests
     ip_lst.add_request_log(current_timestamp) # then add current SYN request to list
+
 
     if is_blocked(src_ip):
         return # no need to add an iptable rule if this ip is already blocked
@@ -112,11 +107,10 @@ def on_packet(packet):
 
 def generate_block_command(ip):
     """Generate a command that when executed in the shell, blocks this IP.
-
     The blocking will be based on `iptables` and must drop all incoming traffic
     from the specified IP."""
     # TODO: Implement me
-    return 'iptables -A INPUT -s {0} -j DROP'.format(ip)
+    return 'iptables -A INPUT -p tcp -s {0} -j DROP'.format(ip)
 
 
 def block(ip):
@@ -129,7 +123,7 @@ def is_blocked(ip):
 
 
 def main():
-    sniff(on_packet)
+    sniff(prn=on_packet)
 
 
 if __name__ == '__main__':
