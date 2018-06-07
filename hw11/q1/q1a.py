@@ -5,6 +5,10 @@ OPEN = 'open'
 CLOSED = 'closed'
 FILTERED = 'filtered'
 
+RST_ACK = 0x14
+SYN_ACK = 0x12
+
+
 
 def generate_syn_packets(ip, ports):
     """Returns a list of TCP SYN packets, to perform a SYN scan on the given
@@ -33,15 +37,16 @@ def analyze_scan(ip, ports, answered, unanswered):
         port = tcp_layer.dport
         results[port] = FILTERED
 
-    for packet in answered:
+    for sent_packet, response_packet in answered:
         # if packet was answered it depends on the flags in the response
-        tcp_layer = packet.getlayer(TCP)
-        port = tcp_layer.dport
-        flags = tcp_layer.flags
-        if flags == 4: # FIN - host is not listening on this port
-            results[port] = CLOSED
-        if flags == 18: # SYN + ACK - host do listen on this port, port is open
-            results[port] = OPEN
+        tcp_layer = response_packet.getlayer(TCP)
+        if tcp_layer:
+            port = tcp_layer.sport # source port of response is dest port of packet sent
+            flags = tcp_layer.flags
+            if flags == RST_ACK: # RST - host is not listening on this port
+                results[port] = CLOSED
+            if flags == SYN_ACK: # SYN + ACK - host do listen on this port, port is open
+                results[port] = OPEN
 
     return results
     
