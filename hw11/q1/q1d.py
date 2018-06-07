@@ -6,12 +6,12 @@ def on_packet(packet):
     # TODO: Implement me
     # WARNING: Use only the `send` function from scapy to send the packet. Do
     #          not use any other function to send/receive packets.
-    tcp_layer = packets.getlayer(TCP)
+    tcp_layer = packet.getlayer(TCP)
     if not tcp_layer or tcp_layer.flags != 2:
-    	return # don't replay if it is not a TCP SYN packet
+        return # don't replay if it is not a TCP SYN packet
 
     # Extract from incoming packet fileds we need to send via our response
-    dts_ip = packet.src
+    dts_ip = packet[IP].src
     dst_port = packet.sport
     src_port = packet.dport
     ack_value = packet.seq + 1
