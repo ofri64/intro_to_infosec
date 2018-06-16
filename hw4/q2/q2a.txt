@@ -6,13 +6,13 @@
 	- Again, we disassemble and examine the "check_password" function
 	- We can understand that the password buffer resides on the stack on addresses EBP-0x49 until EBP-0x0d.
 	- We also notice that at the begining of the "check_password" function, we push 3 words (12 bytes) to the stack - "old" ebp, edi, and ebx. Which together resides at address range EBP-0x0c - EBP-0x01.
-	- At the address range EBP until EBP+0x04 we have the RET value (as always the CALL instruction pushes this address to the stack). EBP+0x08 value will be the value of password pointer - the argument to the function call
+	- At the address range EBP+0x04 until EBP+0x08 we have the RET value (as always the CALL instruction pushes this address to the stack)
 3) Crashing the program:
 	- Concluding from the written above, in order to crash the program we can override the value of RET to a non valid memory address.
 	- This will result in a segmentation fault and create a core dump file.
-	- Again, using a simple calculation we can conclude that we need a password of length at least 63 bytes.
+	- Again, using a simple calculation we can conclude that we need a password of length at least 67 bytes.
 	- The calculation is as follows:
 		- The buffer contains the string "thisissalt\0" (this is salt + NULL termination character) before the call to strcat. 
-		- Thus, to fill out the password buffer we need 50 more bytes (len(thisissalt) = 10, without NULL char)
+		- Thus, to fill out the password buffer we need 55 more bytes (len(thisissalt) = 10, without NULL char)
 		- We will need extra 12 bytes to override the value of ebx, edi and old ebp as detailed above
-		- So more than 62 bytes password will override the value of RET as we want to.
+		- So more than 67 bytes password will override the value of RET as we want to.
