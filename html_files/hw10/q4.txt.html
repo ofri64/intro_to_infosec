@@ -1,0 +1,47 @@
+<html>
+<head>
+<title>q4.txt</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #606366; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(169,183,198); }
+</style>
+</head>
+<BODY BGCOLOR="#2b2b2b">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+q4.txt</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<a name="l1"><span class="ln">1    </span></a><span class="s0">- This time the vulnerability is using sql-injection for the code performing the &quot;/rename&quot; message. 
+<a name="l2"><span class="ln">2    </span></a> 
+<a name="l3"><span class="ln">3    </span></a>- Looking at the server code, we see the following sql update query 
+<a name="l4"><span class="ln">4    </span></a>is initiated when we write a &quot;/rename&quot; message: 
+<a name="l5"><span class="ln">5    </span></a>UPDATE users SET full_name = '%s' WHERE username = '%s'&quot; % (name, user) 
+<a name="l6"><span class="ln">6    </span></a> 
+<a name="l7"><span class="ln">7    </span></a>- This is the only place in the code where the 
+<a name="l8"><span class="ln">8    </span></a>sql query involves direct user input without escaping it with a string. 
+<a name="l9"><span class="ln">9    </span></a> 
+<a name="l10"><span class="ln">10   </span></a>- Thus, we can actually change the query structure, 
+<a name="l11"><span class="ln">11   </span></a>not only control the value of the attribute &quot;full_name&quot; as intended 
+<a name="l12"><span class="ln">12   </span></a> 
+<a name="l13"><span class="ln">13   </span></a>- In sql-update queries we can concatenate few fields to update, separated in a comma. 
+<a name="l14"><span class="ln">14   </span></a>- So, we will write to following message to any one of the channels: 
+<a name="l15"><span class="ln">15   </span></a>    - /rename bob OhYehhhh',password='7110eda4d09e062aa5e4a390b0a572ac0d2c0220 
+<a name="l16"><span class="ln">16   </span></a> 
+<a name="l17"><span class="ln">17   </span></a>- This will evaluate as the following sql query: 
+<a name="l18"><span class="ln">18   </span></a>    - UPDATE users SET full_name = 'OhYehhhh', 
+<a name="l19"><span class="ln">19   </span></a>    password=7110eda4d09e062aa5e4a390b0a572ac0d2c0220' WHERE username = 'bob' 
+<a name="l20"><span class="ln">20   </span></a> 
+<a name="l21"><span class="ln">21   </span></a>- And we are done - Bob's password has changed 
+<a name="l22"><span class="ln">22   </span></a> 
+<a name="l23"><span class="ln">23   </span></a>- Few more things to notice: 
+<a name="l24"><span class="ln">24   </span></a>1) The password value is the sha1 of the string '1234'. 
+<a name="l25"><span class="ln">25   </span></a> This is because we want bob to actually use the password '1234' to login 
+<a name="l26"><span class="ln">26   </span></a> (the server saves the sha1 version of the passwords). 
+<a name="l27"><span class="ln">27   </span></a>2) We also used another vulnerability in the &quot;/rename&quot; messages mechanism - 
+<a name="l28"><span class="ln">28   </span></a>the server doesn't check that only the logged user is able to change his username 
+<a name="l29"><span class="ln">29   </span></a>(or with our exploit - can even change other users passwords)</span></pre>
+</body>
+</html>

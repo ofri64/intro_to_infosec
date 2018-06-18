@@ -1,6 +1,10 @@
 - The logical vulnerability in this implementation is the combination of sting slicing and comparison.
 - The code compares between the data given by the user and the actual username/password string 
-- It is a fun fact to know that comparing two empty strings will always evaluate to "True", because they are the same, both are exactly the same string, the empty string.
-- Knowing that, all we had to do is to write nothing between the ":" delimiter in our so called authentication deatils.
+- It is a fun fact to know that comparing two empty strings will always evaluate to "True",
+ because they are the same, both are exactly the same string, the empty string.
+- Knowing that, all we had to do is to write nothing between the
+ ":" delimiter in our so called authentication details.
 - Resulting in the code "::<the command we want>"
-- This way the code will always compare empty string in the username and password authentication parts, resulting in these checks evaluating to true, allowing us to run the command we want even without the right username and password combination.
+- This way the code will always compare empty string in the
+username and password authentication parts, resulting in these checks evaluating to true,
+ allowing us to run the command we want even without the right username and password combination.

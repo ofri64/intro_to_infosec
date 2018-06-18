@@ -1,0 +1,26 @@
+<html>
+<head>
+<title>q1.txt</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #606366; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(169,183,198); }
+</style>
+</head>
+<BODY BGCOLOR="#2b2b2b">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+q1.txt</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<a name="l1"><span class="ln">1    </span></a><span class="s0">- In this question, we want to implement an &quot;aggresive&quot; action - closing the antivirus process 
+<a name="l2"><span class="ln">2    </span></a>(and by that, making sure it doesn't recognize our malware activity) 
+<a name="l3"><span class="ln">3    </span></a>- As a first step, we will have to find the antivirus process ID. 
+<a name="l4"><span class="ln">4    </span></a>- We can use ps with -C flag (command name flag), searching for the specific name of the binary associated with  
+<a name="l5"><span class="ln">5    </span></a>a process. We will use ps -C &quot;antivirus&quot; to find process associated with the antivirus binary 
+<a name="l6"><span class="ln">6    </span></a>- Parsing the output of our command - we will use &quot;str.split&quot; to split using the single space (&quot; &quot;) as a delimiter. 
+<a name="l7"><span class="ln">7    </span></a>- The antivirus process ID can be found in the first object of the returned list 
+<a name="l8"><span class="ln">8    </span></a>- As a final step we will use &quot;kill&quot; to send SIG_KILL interupt to stop the antivirus process </span></pre>
+</body>
+</html>

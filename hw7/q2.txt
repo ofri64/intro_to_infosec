@@ -1,0 +1,13 @@
+- In this question we will use ptrace to override the function "check_if_virus"
+to return false indicators on all inputs
+(and our malware among them)
+- In this section we will just override the plt code.
+i.e, the dynamic linking won't happen at all, instead our logic will get executed.
+- The address we want to override with our code is the address of check_if_virus@plt
+ (written explicitly in the address.py file)
+- We will use PTRACE_POKE to change the content of this specific memory word
+ (the command works with an entire word, i.e writing 4 bytes at once)
+- We will change the data in the check_if_virus@plt address to "0xc390c031"
+which is the opcode for the assembly code: "xor eax, eax; nop; ret" in little endian
+(adding nop to complete to exactly 1 memory word)
+- This way the call will always return 0, thus detecting every file as clean, including our malware.

@@ -1,13 +1,29 @@
 - This time the vulnerability is using sql-injection for the code performing the "/rename" message.
-- Looking at the server code, we see the following sql update query is initiated when we write a "/rename" message: UPDATE users SET full_name = '%s' WHERE username = '%s'" % (name, user)
-- This is the only place in the code where the sql query involves direct user input without escaping it with a string.
-- Thus, we can actually change the query structute, not only control the value of the attribute "full_name" as intended
+
+- Looking at the server code, we see the following sql update query
+is initiated when we write a "/rename" message:
+UPDATE users SET full_name = '%s' WHERE username = '%s'" % (name, user)
+
+- This is the only place in the code where the
+sql query involves direct user input without escaping it with a string.
+
+- Thus, we can actually change the query structure,
+not only control the value of the attribute "full_name" as intended
+
 - In sql-update queries we can concatenate few fields to update, separated in a comma.
 - So, we will write to following message to any one of the channels:
 	- /rename bob OhYehhhh',password='7110eda4d09e062aa5e4a390b0a572ac0d2c0220
+
 - This will evaluate as the following sql query:
-	- UPDATE users SET full_name = 'OhYehhhh',password=7110eda4d09e062aa5e4a390b0a572ac0d2c0220' WHERE username = 'bob'
+	- UPDATE users SET full_name = 'OhYehhhh',
+	password=7110eda4d09e062aa5e4a390b0a572ac0d2c0220' WHERE username = 'bob'
+
 - And we are done - Bob's password has changed
-- Few more thnigs to notice:
-1) The password value is the sha1 of the string '1234'. This is because we want bob to actually use the password '1234' to login (the server saves the sha1 version of the passwords).
-2) We also used another vulnerability in the "/rename" messages mechanism - the server doesn't check that only the logged user is able to change his username (or with our exploit - can even change other users passwords)
+
+- Few more things to notice:
+1) The password value is the sha1 of the string '1234'.
+ This is because we want bob to actually use the password '1234' to login
+ (the server saves the sha1 version of the passwords).
+2) We also used another vulnerability in the "/rename" messages mechanism -
+the server doesn't check that only the logged user is able to change his username
+(or with our exploit - can even change other users passwords)

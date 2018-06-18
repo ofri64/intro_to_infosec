@@ -1,0 +1,29 @@
+<html>
+<head>
+<title>q1.txt</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #606366; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(169,183,198); }
+</style>
+</head>
+<BODY BGCOLOR="#2b2b2b">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+q1.txt</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<a name="l1"><span class="ln">1    </span></a><span class="s0">- The logical vulnerability in run.py code is the use of the function &quot;eval&quot; 
+<a name="l2"><span class="ln">2    </span></a> with an input coming directly from the user 
+<a name="l3"><span class="ln">3    </span></a>- The function &quot;eval&quot; evaluates a python expression given as a string.  
+<a name="l4"><span class="ln">4    </span></a>- Thus, we can pass to &quot;eval&quot; a function call that during it's evaluation 
+<a name="l5"><span class="ln">5    </span></a>will print to the screen exactly what we want. 
+<a name="l6"><span class="ln">6    </span></a>- An easy soultion is to pass the expression &quot;os.system('echo hacked')&quot; 
+<a name="l7"><span class="ln">7    </span></a> as an input to the &quot;eval&quot; function. 
+<a name="l8"><span class="ln">8    </span></a>- &quot;Eval&quot; wil evaluate the given expression, 
+<a name="l9"><span class="ln">9    </span></a> meaning it will call the function and save into variable it's return value. 
+<a name="l10"><span class="ln">10   </span></a>  The side effect of the call will print 'hacked' as we wanted and then the 
+<a name="l11"><span class="ln">11   </span></a>  function will crash as the variable returned is an integer not a dictionary.</span></pre>
+</body>
+</html>

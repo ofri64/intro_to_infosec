@@ -1,0 +1,29 @@
+<html>
+<head>
+<title>q2.txt</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #606366; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(169,183,198); }
+</style>
+</head>
+<BODY BGCOLOR="#2b2b2b">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+q2.txt</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<a name="l1"><span class="ln">1    </span></a><span class="s0">- Obviously the logical vulnerability in this section is unpacking a pickled object 
+<a name="l2"><span class="ln">2    </span></a> from an unknown source (user input) 
+<a name="l3"><span class="ln">3    </span></a>- Reading a little bit about pickle - 
+<a name="l4"><span class="ln">4    </span></a> we understand that it is just serialization/deserialization mechanism. 
+<a name="l5"><span class="ln">5    </span></a>- In python, we have a way to &quot;mark&quot; for a custom object, 
+<a name="l6"><span class="ln">6    </span></a> how it needs to be serialized. We do that by using the __reduce__ method. 
+<a name="l7"><span class="ln">7    </span></a>- In conclusion - all we had to do is define a new class, 
+<a name="l8"><span class="ln">8    </span></a>implement the __reduce__ method with the command we want to execute, 
+<a name="l9"><span class="ln">9    </span></a>and serialize the object using &quot;pickle&quot; module and save the result to the file 
+<a name="l10"><span class="ln">10   </span></a>- The &quot;serialized&quot; version of our custom object will be a command to execute. 
+<a name="l11"><span class="ln">11   </span></a>- So, when we unpack/deserialized the object the command is being executed.</span></pre>
+</body>
+</html>

@@ -1,0 +1,27 @@
+<html>
+<head>
+<title>q1a.txt</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #606366; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(169,183,198); }
+</style>
+</head>
+<BODY BGCOLOR="#2b2b2b">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+q1a.txt</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<a name="l1"><span class="ln">1    </span></a><span class="s0">- Similar to hw4, we want to crash the program and understand what should be the length 
+<a name="l2"><span class="ln">2    </span></a>of our password in order to do that 
+<a name="l3"><span class="ln">3    </span></a>- Examining the disassembled code in IDA, we see that the buffer 
+<a name="l4"><span class="ln">4    </span></a> (which will contain our password argument) is allocated 0x49 (73) bytes under ebp 
+<a name="l5"><span class="ln">5    </span></a>- We see that the code uses the function &quot;strcat&quot;, 
+<a name="l6"><span class="ln">6    </span></a> and that the buffer is initiated with the string &quot;thisisasalt&quot; (length is 11 without '\0' char) 
+<a name="l7"><span class="ln">7    </span></a>- Thus, we understand that we will need 62 bytes length password to reach the address save in ebp, 
+<a name="l8"><span class="ln">8    </span></a> 4 more bytes to override the &quot;old ebp&quot; address, and finally 4 more bytes to override the 
+<a name="l9"><span class="ln">9    </span></a> &quot;RET/EIP&quot; address and crash the program.</span></pre>
+</body>
+</html>

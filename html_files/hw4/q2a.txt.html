@@ -1,0 +1,46 @@
+<html>
+<head>
+<title>q2a.txt</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #606366; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(169,183,198); }
+</style>
+</head>
+<BODY BGCOLOR="#2b2b2b">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+q2a.txt</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<a name="l1"><span class="ln">1    </span></a><span class="s0">1) Vulnerbility within the sudo.c source code: 
+<a name="l2"><span class="ln">2    </span></a>    - Again, The source code uses the library function &quot;strcat&quot;, 
+<a name="l3"><span class="ln">3    </span></a>     that doesn't check that the source buffer is indeed large enough to contain the 
+<a name="l4"><span class="ln">4    </span></a>     concatenation of the two strings 
+<a name="l5"><span class="ln">5    </span></a>    - This time. inside the main function in the source code there isn't a 
+<a name="l6"><span class="ln">6    </span></a>     check for passwords (first argument to the program) length. 
+<a name="l7"><span class="ln">7    </span></a>    - Thus, potentially, we can overflow the value of RET for the &quot;check_password&quot; function in the stack. 
+<a name="l8"><span class="ln">8    </span></a>2) Examining the sudo executable using IDA and GDB: 
+<a name="l9"><span class="ln">9    </span></a>    - Again, we disassemble and examine the &quot;check_password&quot; function 
+<a name="l10"><span class="ln">10   </span></a>    - We can understand that the password buffer resides 
+<a name="l11"><span class="ln">11   </span></a>    on the stack on addresses EBP-0x49 until EBP-0x0d. 
+<a name="l12"><span class="ln">12   </span></a>    - We also notice that at the begining of the &quot;check_password&quot; function, 
+<a name="l13"><span class="ln">13   </span></a>    we push 3 words (12 bytes) to the stack - &quot;old&quot; ebp, edi, and ebx. 
+<a name="l14"><span class="ln">14   </span></a>    Which together resides at address range EBP-0x0c - EBP-0x01. 
+<a name="l15"><span class="ln">15   </span></a>    - At the address range EBP+0x04 until EBP+0x08 we have the RET value 
+<a name="l16"><span class="ln">16   </span></a>    (as always the CALL instruction pushes this address to the stack) 
+<a name="l17"><span class="ln">17   </span></a>3) Crashing the program: 
+<a name="l18"><span class="ln">18   </span></a>    - Concluding from the written above, 
+<a name="l19"><span class="ln">19   </span></a>    in order to crash the program we can override the value of RET to a non valid memory address. 
+<a name="l20"><span class="ln">20   </span></a>    - This will result in a segmentation fault and create a core dump file. 
+<a name="l21"><span class="ln">21   </span></a>    - Again, using a simple calculation we can conclude that we need a password of length at least 67 bytes. 
+<a name="l22"><span class="ln">22   </span></a>    - The calculation is as follows: 
+<a name="l23"><span class="ln">23   </span></a>        - The buffer contains the string &quot;thisissalt\0&quot; 
+<a name="l24"><span class="ln">24   </span></a>         (this is salt + NULL termination character) before the call to strcat. 
+<a name="l25"><span class="ln">25   </span></a>        - Thus, to fill out the password buffer we need 55 more bytes 
+<a name="l26"><span class="ln">26   </span></a>         (len(thisissalt) = 10, without NULL char) 
+<a name="l27"><span class="ln">27   </span></a>        - We will need extra 12 bytes to override the value of ebx, edi and old ebp as detailed above 
+<a name="l28"><span class="ln">28   </span></a>        - So more than 67 bytes password will override the value of RET as we want to.</span></pre>
+</body>
+</html>

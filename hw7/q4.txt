@@ -1,0 +1,21 @@
+- In this question, we will not alter a specific function.
+Instead we will intercept every read system call,
+ making sure the antivirus doesn't detect our malware
+ (or every other file as a malware actually) because the file seems to be empty.
+- We will use PTRACE_SYSCALL to make the process stop right before and right after a syscall
+- Then, we wiil check if the syscall is read
+ (we don't care about other syscalls in this scenario).
+We will use PTRACE_GETREGS to examin value of registers,
+especially the origin_eax register, contaning the syscall type
+- After making sure it is a read system call we will act slightly different than
+mentioned in the instruction but resulting the same.
+- Instead of changing the register that says "how many bytes to read"
+(before the read syscall),
+ we will wait until the syscall returns,
+  and right after change the return value (number of actual btyes read) to 0,
+  using PTRACE_SETREGS
+- This way the check_if_virus function will conclude every file is empty,
+thus not matching any malware signature.
+- Of course our code for this section will be wrapped with an infinite while loop -
+ we have to stay attached as long as the antivirus is still
+ running because we intercept syscalls "on the fly".

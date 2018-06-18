@@ -1,6 +1,12 @@
-- Similar to previous section all we want to do is patch the return value of the program, regardless of the program logic itself
-- Again, looking in IDA we see that if the message is valid we move into EAX the value 0 (EAX will contain the return value of the program).
+- Similar to previous section all we want to do is patch the return value of the program,
+regardless of the program logic itself
+- Again, looking in IDA we see that if the message is valid we move into EAX the value 0
+(EAX will contain the return value of the program).
 - If the message is not valie we move into EAX the value 1 - this is where we want to patch our code
-- We see the offset is 0x6DD, the first byte is the opcode (0xB8, telling us it is a mov EAX instruction), the last 4 bytes are the immediate operand in little endian (0x01 0x00 0x00 0x00 which means 1)
-- So the patch we need is to replace the byte 0x6DE to 0x00, resulting in the following commad: MOV EAX 0.
-- This doesn't change the output to the screen or the validation test, only changes the return value of the function in cases where the validation test failed.
+- We see the offset is 0x6DD, the first byte is the opcode
+(0xB8, telling us it is a mov EAX instruction), the last 4 bytes are the immediate operand in little endian
+ (0x01 0x00 0x00 0x00 which means 1)
+- So the patch we need is to replace the byte 0x6DE to 0x00,
+ resulting in the following commad: MOV EAX 0.
+- This doesn't change the output to the screen or the validation test,
+only changes the return value of the function in cases where the validation test failed.

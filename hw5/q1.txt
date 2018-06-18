@@ -1,8 +1,11 @@
 Examining the server source code and the binary file using IDA,
-we encounter that the server code allocates a fixed size buffer to hold the message received from client.
+we encounter that the server code allocates a fixed size buffer
+to hold the message received from client.
 But, the server does not check that the actual message is indeed limited to this size.
 
-In our case the server code allocates 1KB for a message as we can see in the program's source code.
+In our case the server code allocates 1KB for a message as we can see
+in the program's source code.
 Using IDA, we see that actually the buffer size on the stack is 1036 bytes.
 So, sending a message with a length greater than 1036 bytes will casue overflow.
-More detailed - the next 4 bytes will override "old ebp" and another 4 bytes will override RET/eip
+More detailed - the next 4 bytes will override "old ebp"
+and another 4 bytes will override RET/eip

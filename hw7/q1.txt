@@ -1,0 +1,8 @@
+- In this question, we want to implement an "aggresive" action - closing the antivirus process
+(and by that, making sure it doesn't recognize our malware activity)
+- As a first step, we will have to find the antivirus process ID.
+- We can use ps with -C flag (command name flag), searching for the specific name of the binary associated with 
+a process. We will use ps -C "antivirus" to find process associated with the antivirus binary
+- Parsing the output of our command - we will use "str.split" to split using the single space (" ") as a delimiter.
+- The antivirus process ID can be found in the first object of the returned list
+- As a final step we will use "kill" to send SIG_KILL interupt to stop the antivirus process 

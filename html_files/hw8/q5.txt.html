@@ -1,0 +1,57 @@
+<html>
+<head>
+<title>q5.txt</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #606366; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(169,183,198); }
+</style>
+</head>
+<BODY BGCOLOR="#2b2b2b">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+q5.txt</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<a name="l1"><span class="ln">1    </span></a><span class="s0">- Well, in this question the json parsing vulnerability was fixed 
+<a name="l2"><span class="ln">2    </span></a> so we have to find another vulnerability 
+<a name="l3"><span class="ln">3    </span></a>- The vulnerability in this question's implementation is the performance 
+<a name="l4"><span class="ln">4    </span></a> of the rehashing phase for 1 million times 
+<a name="l5"><span class="ln">5    </span></a>- This will allow us to leverage a TOCTTOU vulnerability. 
+<a name="l6"><span class="ln">6    </span></a> 
+<a name="l7"><span class="ln">7    </span></a>Here is a short description of q5.py script flow: 
+<a name="l8"><span class="ln">8    </span></a>1) Run the script with an argument indicating the path to save the json payloads. 
+<a name="l9"><span class="ln">9    </span></a>In case no path argument was passed, a file will be created in a default path 
+<a name="l10"><span class="ln">10   </span></a> 
+<a name="l11"><span class="ln">11   </span></a>2) Write to a file a valid json object that passes the authentication check 
+<a name="l12"><span class="ln">12   </span></a>(content of example.json for example) 
+<a name="l13"><span class="ln">13   </span></a> 
+<a name="l14"><span class="ln">14   </span></a>3) Execute run.py script as a child process 
+<a name="l15"><span class="ln">15   </span></a> 
+<a name="l16"><span class="ln">16   </span></a>4) Insert a short delay right after (using time.sleep). 
+<a name="l17"><span class="ln">17   </span></a>This will probably cause the following: 
+<a name="l18"><span class="ln">18   </span></a>    - OS will continue to run current process (father process) 
+<a name="l19"><span class="ln">19   </span></a>     until encountering the sleep command 
+<a name="l20"><span class="ln">20   </span></a>    - Then a context switch will be performed, 
+<a name="l21"><span class="ln">21   </span></a>    probably OS will allocate CPU time for the child process (run.py) 
+<a name="l22"><span class="ln">22   </span></a>    - Another context switch will be performed during the 
+<a name="l23"><span class="ln">23   </span></a>    (very) long rehashing stage in run.py. 
+<a name="l24"><span class="ln">24   </span></a> 
+<a name="l25"><span class="ln">25   </span></a>5) Now, after we are probably back in the father process 
+<a name="l26"><span class="ln">26   </span></a>we can edit the file and switch the command argument. 
+<a name="l27"><span class="ln">27   </span></a>The arguments that are needed for the authentication 
+<a name="l28"><span class="ln">28   </span></a> check were already saved as local variable inside the run.py code 
+<a name="l29"><span class="ln">29   </span></a> so it ok to change the file at this stage 
+<a name="l30"><span class="ln">30   </span></a> 
+<a name="l31"><span class="ln">31   </span></a>6) As a the final stage we will wait for the child process to finish - 
+<a name="l32"><span class="ln">32   </span></a>it will execute our changed command 
+<a name="l33"><span class="ln">33   </span></a> 
+<a name="l34"><span class="ln">34   </span></a> 
+<a name="l35"><span class="ln">35   </span></a>To sum things up - 
+<a name="l36"><span class="ln">36   </span></a>we leveraged an optional TOCTTOU vulnerability. 
+<a name="l37"><span class="ln">37   </span></a>authentication part happens with valid command and signature, 
+<a name="l38"><span class="ln">38   </span></a>but execution part happens with our custom command (not matching the signature) 
+<a name="l39"><span class="ln">39   </span></a></span></pre>
+</body>
+</html>

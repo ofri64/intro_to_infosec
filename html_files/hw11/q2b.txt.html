@@ -1,0 +1,34 @@
+<html>
+<head>
+<title>q2b.txt</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #606366; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(169,183,198); }
+</style>
+</head>
+<BODY BGCOLOR="#2b2b2b">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+q2b.txt</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<a name="l1"><span class="ln">1    </span></a><span class="s0">- We will use the same exchange mechanism as before but now with encryption 
+<a name="l2"><span class="ln">2    </span></a> 
+<a name="l3"><span class="ln">3    </span></a>- for aes encryption we will need our message size to be 
+<a name="l4"><span class="ln">4    </span></a>a multiple of 16 so we will add padding 
+<a name="l5"><span class="ln">5    </span></a> 
+<a name="l6"><span class="ln">6    </span></a>- using the pkcs7 padding scheme we will always add padding - 
+<a name="l7"><span class="ln">7    </span></a>between 1 and 16 bytes (16 if our message length is already a multiple of 16) 
+<a name="l8"><span class="ln">8    </span></a> 
+<a name="l9"><span class="ln">9    </span></a>- the pkcs7 adds as padding the value of the number of padding bytes add 
+<a name="l10"><span class="ln">10   </span></a> (i.e the options are 0x01 to 0x0f) 
+<a name="l11"><span class="ln">11   </span></a> 
+<a name="l12"><span class="ln">12   </span></a>- After adding padding winston will encrypt it's message 
+<a name="l13"><span class="ln">13   </span></a>using aes with the secret key he and julia knows 
+<a name="l14"><span class="ln">14   </span></a> 
+<a name="l15"><span class="ln">15   </span></a>- Julia will receive the message as before, 
+<a name="l16"><span class="ln">16   </span></a>decrypt it, and remove the padding (explained in the code documentation).</span></pre>
+</body>
+</html>

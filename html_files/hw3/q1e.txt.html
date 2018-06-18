@@ -1,0 +1,30 @@
+<html>
+<head>
+<title>q1e.txt</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #606366; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(169,183,198); }
+</style>
+</head>
+<BODY BGCOLOR="#2b2b2b">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+q1e.txt</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<a name="l1"><span class="ln">1    </span></a><span class="s0">- Similar to previous section all we want to do is patch the return value of the program, 
+<a name="l2"><span class="ln">2    </span></a>regardless of the program logic itself 
+<a name="l3"><span class="ln">3    </span></a>- Again, looking in IDA we see that if the message is valid we move into EAX the value 0 
+<a name="l4"><span class="ln">4    </span></a>(EAX will contain the return value of the program). 
+<a name="l5"><span class="ln">5    </span></a>- If the message is not valie we move into EAX the value 1 - this is where we want to patch our code 
+<a name="l6"><span class="ln">6    </span></a>- We see the offset is 0x6DD, the first byte is the opcode 
+<a name="l7"><span class="ln">7    </span></a>(0xB8, telling us it is a mov EAX instruction), the last 4 bytes are the immediate operand in little endian 
+<a name="l8"><span class="ln">8    </span></a> (0x01 0x00 0x00 0x00 which means 1) 
+<a name="l9"><span class="ln">9    </span></a>- So the patch we need is to replace the byte 0x6DE to 0x00, 
+<a name="l10"><span class="ln">10   </span></a> resulting in the following commad: MOV EAX 0. 
+<a name="l11"><span class="ln">11   </span></a>- This doesn't change the output to the screen or the validation test, 
+<a name="l12"><span class="ln">12   </span></a>only changes the return value of the function in cases where the validation test failed.</span></pre>
+</body>
+</html>

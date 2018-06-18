@@ -1,5 +1,12 @@
 - In this section we want to report every port is open and make the port scanning attack pointless.
-- As seen before, when a host is listening on a port it will replay a TCP SYN packet with a SYN + ACK packet to continue the 3-way handshake 
-- So we want to replay to every SYN packet we receive at any port - with a SYN+ACK packet to make the port look open
-- First we check it is indeed a SYN packet, we extract from it the source ip, source port and sequence number.
+
+- As seen before, when a host is listening on a port it will replay
+ a TCP SYN packet with a SYN + ACK packet to continue the 3-way handshake
+
+- So we want to replay to every SYN packet we receive at any port -
+with a SYN+ACK packet to make the port look open
+
+- First we check it is indeed a SYN packet,
+we extract from it the source ip, source port and sequence number.
+
 - Then we craft a tcp SYN+ACK response and sent it the ip and port we received the request from.

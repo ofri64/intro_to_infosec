@@ -1,4 +1,0 @@
-- Similar to hw4, we want to crash the program and understand what should be the length of our password in order to do that
-- Examining the disassembled code in IDA, we see that the buffer (which will contain our password argument) is allocated 0x49 (73) bytes under ebp
-- We see that the code uses the function "strcat", and that the buffer is initiated with the string "thisisasalt" (length is 11 without '\0' char)
-- Thus, we understand that we will need 62 bytes length password to reach the address save in ebp, 4 more bytes to override the "old ebp" address, and finally 4 more bytes to override the "RET/EIP" address and crash the program.

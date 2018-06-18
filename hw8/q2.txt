@@ -1,6 +1,11 @@
-- Obviously the logical vulnerabilty in this section is unpacking a pickled object from an unknown sourch (user input)
-- Reading a little bit about pickle - we understand that it is just serialization/deserialization mechanism.
-- In python, we have a way to "mark" for a custom object, how it needs to be serialized. We do that by using the __reduce__ method.
-- In conclusion - all we had to do is define a new class, implement the __reduce__ method with the command we want to execute, and serialize the object using "pickle" module and save the result to the file
+- Obviously the logical vulnerability in this section is unpacking a pickled object
+ from an unknown source (user input)
+- Reading a little bit about pickle -
+ we understand that it is just serialization/deserialization mechanism.
+- In python, we have a way to "mark" for a custom object,
+ how it needs to be serialized. We do that by using the __reduce__ method.
+- In conclusion - all we had to do is define a new class,
+implement the __reduce__ method with the command we want to execute,
+and serialize the object using "pickle" module and save the result to the file
 - The "serialized" version of our custom object will be a command to execute.
-- So, when we unpack/deserialized the object the commaned is being executed.
+- So, when we unpack/deserialized the object the command is being executed.

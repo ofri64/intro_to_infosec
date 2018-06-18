@@ -1,4 +1,5 @@
-The program counts the number of characters in a given string, assuming that the base address of the string is saved in the register ESI.
+The program counts the number of characters in a given string, assuming that the base address
+ of the string is saved in the register ESI.
 
 Clarifications:
 - XOR of a binary string with itself is always 0.

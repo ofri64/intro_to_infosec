@@ -1,0 +1,78 @@
+<html>
+<head>
+<title>q2d.txt</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #606366; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(169,183,198); }
+</style>
+</head>
+<BODY BGCOLOR="#2b2b2b">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+q2d.txt</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<a name="l1"><span class="ln">1    </span></a><span class="s0">- This section includes few separated phases 
+<a name="l2"><span class="ln">2    </span></a> 
+<a name="l3"><span class="ln">3    </span></a>- Encoding the message data as a multiple of bits triplets: 
+<a name="l4"><span class="ln">4    </span></a> 
+<a name="l5"><span class="ln">5    </span></a>    - This is necessary because we have only 3 reserved bits in the tcp header 
+<a name="l6"><span class="ln">6    </span></a> 
+<a name="l7"><span class="ln">7    </span></a>    - In order to ensure the length of the encoding of the message to bits 
+<a name="l8"><span class="ln">8    </span></a>    string will be a multiple of 3 I leveraged base64 encoding 
+<a name="l9"><span class="ln">9    </span></a> 
+<a name="l10"><span class="ln">10   </span></a>    - First encode the message to base64 encoding. 
+<a name="l11"><span class="ln">11   </span></a>    each char in base64 encoding is represented in 6 bits. 
+<a name="l12"><span class="ln">12   </span></a>    So we can encode base64 chars to bits string and the number of bits will 
+<a name="l13"><span class="ln">13   </span></a>     always be a multiple of 6, so it will also be a multiple of 3 as we need. 
+<a name="l14"><span class="ln">14   </span></a> 
+<a name="l15"><span class="ln">15   </span></a>    - When we encode base64 chars to bit strings we will ignore padding chars (the '=' char) - 
+<a name="l16"><span class="ln">16   </span></a>     this will be handled later during decoding 
+<a name="l17"><span class="ln">17   </span></a> 
+<a name="l18"><span class="ln">18   </span></a>- Decoding a stream of bits triplets to the original message: 
+<a name="l19"><span class="ln">19   </span></a>    - Here we will have to perform the reverse logic 
+<a name="l20"><span class="ln">20   </span></a> 
+<a name="l21"><span class="ln">21   </span></a>    - We will translate every 6 bits to a base64 char 
+<a name="l22"><span class="ln">22   </span></a> 
+<a name="l23"><span class="ln">23   </span></a>    - Then we will check the total length of our base64 string (number of chars) 
+<a name="l24"><span class="ln">24   </span></a> 
+<a name="l25"><span class="ln">25   </span></a>    - If the length is not a multiple of 4 - 
+<a name="l26"><span class="ln">26   </span></a>     it means the original base64 string included padding. 
+<a name="l27"><span class="ln">27   </span></a>     This is because in base64 every 3 bytes are translated to 4 base64 letters. 
+<a name="l28"><span class="ln">28   </span></a> 
+<a name="l29"><span class="ln">29   </span></a>    - So if the length is not a multiple of 4 - 
+<a name="l30"><span class="ln">30   </span></a>    we will need to add matching number of padding signs ('=') 
+<a name="l31"><span class="ln">31   </span></a> 
+<a name="l32"><span class="ln">32   </span></a>    - After we have a valid base64 encoded string (including padding) 
+<a name="l33"><span class="ln">33   </span></a>     we can just decode it back 
+<a name="l34"><span class="ln">34   </span></a> 
+<a name="l35"><span class="ln">35   </span></a>    - See full explanation in code documentation 
+<a name="l36"><span class="ln">36   </span></a> 
+<a name="l37"><span class="ln">37   </span></a>- Sending tcp packets with encoded message in the reserved bits: 
+<a name="l38"><span class="ln">38   </span></a> 
+<a name="l39"><span class="ln">39   </span></a>    - After we encoded our message into triplets of bits, 
+<a name="l40"><span class="ln">40   </span></a>     winston will craft a tcp packet for each triplet 
+<a name="l41"><span class="ln">41   </span></a> 
+<a name="l42"><span class="ln">42   </span></a>    - As instructed - the ack number will always be the total number of triplets, 
+<a name="l43"><span class="ln">43   </span></a>     and the seq value will indicate the index of the current packet 
+<a name="l44"><span class="ln">44   </span></a> 
+<a name="l45"><span class="ln">45   </span></a>    - Of course the reserved bits will include the value of the current triplet 
+<a name="l46"><span class="ln">46   </span></a> 
+<a name="l47"><span class="ln">47   </span></a>- Receiving tcp packets: 
+<a name="l48"><span class="ln">48   </span></a> 
+<a name="l49"><span class="ln">49   </span></a>    - Julia will have to sniff the network 
+<a name="l50"><span class="ln">50   </span></a>    (our ack and seq numbers doesn't implement tcp natural mechanism, 
+<a name="l51"><span class="ln">51   </span></a>     we won't be able to maintain a connection) 
+<a name="l52"><span class="ln">52   </span></a> 
+<a name="l53"><span class="ln">53   </span></a>    - Filter only packets from source port 65,000, that contains tcp headers 
+<a name="l54"><span class="ln">54   </span></a> 
+<a name="l55"><span class="ln">55   </span></a>    - After the first packet was received we know how many packets to look for 
+<a name="l56"><span class="ln">56   </span></a>    (the ack value) so we can update our stopping criterion for the packet sniffing - 
+<a name="l57"><span class="ln">57   </span></a>     when we received a packet with seq number indicating it is the last packet 
+<a name="l58"><span class="ln">58   </span></a> 
+<a name="l59"><span class="ln">59   </span></a>    - Then, Julia will decode all the bits triplets 
+<a name="l60"><span class="ln">60   </span></a>    she extracted from the reserved bits and reveal Winston's message</span></pre>
+</body>
+</html>

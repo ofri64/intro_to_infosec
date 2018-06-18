@@ -1,0 +1,40 @@
+<html>
+<head>
+<title>q4.txt</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #606366; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(169,183,198); }
+</style>
+</head>
+<BODY BGCOLOR="#2b2b2b">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+q4.txt</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<a name="l1"><span class="ln">1    </span></a><span class="s0">- Again, we are looking for a logical vulnerability in the implementation 
+<a name="l2"><span class="ln">2    </span></a>- Clearly we are not going to break RSA, 
+<a name="l3"><span class="ln">3    </span></a> So the authentication part using RSA digital signatures is not something we want to tamper. 
+<a name="l4"><span class="ln">4    </span></a>- We have a valid version of a command and signed hash matching it 
+<a name="l5"><span class="ln">5    </span></a>- Looking at the code we understand that in order to pass the 
+<a name="l6"><span class="ln">6    </span></a>RSA authentication test we need that the decoded json 
+<a name="l7"><span class="ln">7    </span></a> will have the right value in the &quot;command&quot; and &quot;signature&quot; fields 
+<a name="l8"><span class="ln">8    </span></a>  so our json payload must contains these fields. 
+<a name="l9"><span class="ln">9    </span></a>- But we are not limited with other fields in the json object, 
+<a name="l10"><span class="ln">10   </span></a>we can add other fields and as long as their names do not collide with &quot;command&quot; and &quot;signature&quot; 
+<a name="l11"><span class="ln">11   </span></a>we will pass the RSA verification test. 
+<a name="l12"><span class="ln">12   </span></a>- The vulnerability here is with Bob's check using regular expressions and not using the decoded json object. 
+<a name="l13"><span class="ln">13   </span></a>- All we have to do is to make sure that a string looking like 
+<a name="l14"><span class="ln">14   </span></a>&quot;command&quot;: &quot;echo hacked&quot; will be a part of the file content and 
+<a name="l15"><span class="ln">15   </span></a>it also has to appear before the real &quot;command&quot; field as regex search finds the first occurrence. 
+<a name="l16"><span class="ln">16   </span></a>- Another constraint we have is that our file still needs to be a valid json object so 
+<a name="l17"><span class="ln">17   </span></a>decoding before the RSA part won't fail. 
+<a name="l18"><span class="ln">18   </span></a>- This leads us to construct a payload that looks something like this: 
+<a name="l19"><span class="ln">19   </span></a>{&lt;some string as key&gt;: {&quot;command&quot;: &quot;echo hacked&quot;} + &lt;original payload&gt; 
+<a name="l20"><span class="ln">20   </span></a>which is a valid json object (nested one), 
+<a name="l21"><span class="ln">21   </span></a>it passes the RSA verification test and the re.search 
+<a name="l22"><span class="ln">22   </span></a>finds the first occurrence of the type &quot;command&quot;:</span></pre>
+</body>
+</html>

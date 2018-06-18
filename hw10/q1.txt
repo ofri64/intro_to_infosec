@@ -1,10 +1,31 @@
 - The vulnerability found is related to the cookies mechanism the site uses.
-- Instead of creating a random session cookie value each time the user logs in, the website is setting the same cookie.
-- Theoretically, if we could intercept one successful login and it's session cookie, we would'nt need to enter our username and password ever again
-- But, we didn't manage to login at all, so we have to look at the server source code and understand how it generates this hardcoded session cookie.
-- The function we need to focus on is the "login_required" function, which initiates for every request to recieve a login-required page and checkes whether a matching session cookie was presented in the request.
-- Looking at the function we see that the cookie name is "login" and its value is the a base64 encoding of the username
-- To sum is up until now - all we need to do is to add to our "GET" requests a cookie of the form "login=base64(username)" and bypass the authentication process
+
+- Instead of creating a random session cookie value each time the user logs in,
+the website is setting the same cookie.
+
+- Theoretically, if we could intercept one successful login and it's session cookie,
+ we would'nt need to enter our username and password ever again
+
+- But, we didn't manage to login at all,
+so we have to look at the server source code and understand how
+it generates this hardcoded session cookie.
+
+- The function we need to focus on is the "login_required" function,
+which initiates for every request to receives a login-required page
+and checks whether a matching session cookie was presented in the request.
+
+- Looking at the function we see that
+the cookie name is "login" and its value is the a base64 encoding of the username
+
+- To sum is up until now -
+all we need to do is to add to our "GET"
+requests a cookie of the form "login=base64(username)"
+and bypass the authentication process
+
 - The javascript command for adding cookie is document.cookie={cookie_string}
-- The base 64 encoding of the string "edward" is "ZWR3YXJk" so we will run inside the console the command 'document.cookie='login="ZWR3YXJk"';'
-- Now we can refresh - meaning, sending a new "GET" request that will include a matching session cookie, and we are inseide the chat application :)
+- The base 64 encoding of the string "edward" is "ZWR3YXJk"
+so we will run inside the console the command 'document.cookie='login="ZWR3YXJk"';'
+
+- Now we can refresh -
+meaning, sending a new "GET" request that will
+include a matching session cookie, and we are inside the chat application :)

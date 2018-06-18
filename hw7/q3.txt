@@ -1,0 +1,18 @@
+- Again, We will use ptrace to override the function "check_if_virus" to return false indicators on all inputs
+(and our malware among them)
+- This time we will not use our own custom function,
+we will replace the address written in the GOT table to an address of a the function
+ we want to replace for "check_if_virus"
+- We will look again at the code section for check_if_virus@plt
+(in the disassembled code)
+- This code section starts with a jump to an address on the GOT -
+exactly at the right offset for the check_if_virus function.
+- In our case the address of the right offset on the GOT is 0x804a01c.
+- So we would like to subtitue the address written there
+with the address of our replacement function
+ (In the regular scenario, after the dynamic linking is performed it will contain the real address
+ of the "check_if_virus function", making sure the linking will occur only once)
+- A good function to choose as a replacement function is:
+ "is_directory" since it will return 0 for every regular file.
+- The "is_directory" function is linked to the binary statically so
+can just find its address in the disassembled code (written explicitly in the addresses.py file)

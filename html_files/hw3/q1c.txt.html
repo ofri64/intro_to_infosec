@@ -1,0 +1,29 @@
+<html>
+<head>
+<title>q1c.txt</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #606366; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(169,183,198); }
+</style>
+</head>
+<BODY BGCOLOR="#2b2b2b">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+q1c.txt</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<a name="l1"><span class="ln">1    </span></a><span class="s0">Similar to our previous section, we will perfrom the following manipulation: 
+<a name="l2"><span class="ln">2    </span></a> 
+<a name="l3"><span class="ln">3    </span></a>- Change byte[0] to 1 
+<a name="l4"><span class="ln">4    </span></a>- Change byte[1] to 0 
+<a name="l5"><span class="ln">5    </span></a>- Change byte[2] to key value (In our case 0xe8) 
+<a name="l6"><span class="ln">6    </span></a>- Leave the rest of the msg unchanged. 
+<a name="l7"><span class="ln">7    </span></a> 
+<a name="l8"><span class="ln">8    </span></a>Meaning we will make 1 XOR operations - XOR key with the identical byte[2], getting 0 as a result 
+<a name="l9"><span class="ln">9    </span></a>Then, the program will compare our 0 result with byte[1] which also equals 0, again 
+<a name="l10"><span class="ln">10   </span></a>follows directly from out manipulation. 
+<a name="l11"><span class="ln">11   </span></a>The values match so again we do pass the validation test :)</span></pre>
+</body>
+</html>

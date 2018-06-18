@@ -1,0 +1,44 @@
+<html>
+<head>
+<title>q2.txt</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #606366; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(169,183,198); }
+</style>
+</head>
+<BODY BGCOLOR="#2b2b2b">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+q2.txt</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<a name="l1"><span class="ln">1    </span></a><span class="s0">The process of solving this question was quite long. I will try to explain 
+<a name="l2"><span class="ln">2    </span></a>he main milestones along the way: 
+<a name="l3"><span class="ln">3    </span></a>- First step was the understand the entire flow of the program and specificaly 
+<a name="l4"><span class="ln">4    </span></a>the readfile method which interests us most. 
+<a name="l5"><span class="ln">5    </span></a>- Second we have to identify the offsets of the dead zones in the code using IDA: 
+<a name="l6"><span class="ln">6    </span></a>    small_dead_zone_begin_offset = 0x633 
+<a name="l7"><span class="ln">7    </span></a>    small_dead_zone_end_offset = 0x63A 
+<a name="l8"><span class="ln">8    </span></a>    large_dead_zone_begin_offset = 0x5CD 
+<a name="l9"><span class="ln">9    </span></a>    large_dead_zone_end_offset = 0x631 
+<a name="l10"><span class="ln">10   </span></a>- The small deadzone is only 7 bytes long. so we have to redirect from it to the large dead zone 
+<a name="l11"><span class="ln">11   </span></a>which consists of 100 bytes. So we want to jump from the small dead zone to the large one. 
+<a name="l12"><span class="ln">12   </span></a>- Noticing that we must pass through the large dead zone as part of the regular flow of the program 
+<a name="l13"><span class="ln">13   </span></a>, we must &quot;jump over&quot; our patched logic and not execute it before the line is read from the file 
+<a name="l14"><span class="ln">14   </span></a>(before the function fgets). 
+<a name="l15"><span class="ln">15   </span></a>- In order to implement the above, the lagre dead zone will begin with a jump to the 
+<a name="l16"><span class="ln">16   </span></a> end of the large dead zone, and from the small dead zone we won't jump to the 
+<a name="l17"><span class="ln">17   </span></a> beginnig of the large dead zone. 
+<a name="l18"><span class="ln">18   </span></a>- Instead we will jump 7 btyes after to the address 0x080485D4 
+<a name="l19"><span class="ln">19   </span></a>- All that is left now is to write the assembly code for the patched logic: 
+<a name="l20"><span class="ln">20   </span></a>    - Extract the line content from the stack at address ebp-0x40c 
+<a name="l21"><span class="ln">21   </span></a>    - Compare the two first bytes - if they don't match a command jump back 
+<a name="l22"><span class="ln">22   </span></a>     to the end of the small dead zone, before printf is performed 
+<a name="l23"><span class="ln">23   </span></a>    - If it is a command - save the argumnt on the stack and call 
+<a name="l24"><span class="ln">24   </span></a>     the system library function which can be found at address 0x08048460. 
+<a name="l25"><span class="ln">25   </span></a>     after the function return jump straight to the end of the large dead zone 
+<a name="l26"><span class="ln">26   </span></a>     (no need to perform the printf operation)</span></pre>
+</body>
+</html>

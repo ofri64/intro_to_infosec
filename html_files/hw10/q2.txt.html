@@ -1,0 +1,47 @@
+<html>
+<head>
+<title>q2.txt</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #606366; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(169,183,198); }
+</style>
+</head>
+<BODY BGCOLOR="#2b2b2b">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+q2.txt</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<a name="l1"><span class="ln">1    </span></a><span class="s0">- In order to perform the desired functionality we probably have to post something as a message. 
+<a name="l2"><span class="ln">2    </span></a> 
+<a name="l3"><span class="ln">3    </span></a>- This is because we cannot write our code locally - it won't effect other users logging in. 
+<a name="l4"><span class="ln">4    </span></a> 
+<a name="l5"><span class="ln">5    </span></a>- So, we will have to save somehow the script we want other clients to execute, on the server db. 
+<a name="l6"><span class="ln">6    </span></a> 
+<a name="l7"><span class="ln">7    </span></a>- The instructions say our attack should work regardless of the channel the user is viewing. 
+<a name="l8"><span class="ln">8    </span></a> So, we cannot post a message in a specific channel because it will trigger our code 
+<a name="l9"><span class="ln">9    </span></a>  only when the user is viewing the specific channel 
+<a name="l10"><span class="ln">10   </span></a> 
+<a name="l11"><span class="ln">11   </span></a>- But, we can notice that the channels list always appears on the page! no matter what channel we view. 
+<a name="l12"><span class="ln">12   </span></a> 
+<a name="l13"><span class="ln">13   </span></a>- Given the possbile add new channels mechanism exposed by the server 
+<a name="l14"><span class="ln">14   </span></a>(saves content to the server db), 
+<a name="l15"><span class="ln">15   </span></a>and the hint to inject a &quot;&lt;script&gt;&quot; tag 
+<a name="l16"><span class="ln">16   </span></a>we would try to create a new channel with a name that will include a script, 
+<a name="l17"><span class="ln">17   </span></a> hopefully there are no sanity checks on the channel name (which is indeed the case...) 
+<a name="l18"><span class="ln">18   </span></a> 
+<a name="l19"><span class="ln">19   </span></a>- The script we want to initiate is: &quot;$.post(&quot;post&quot;, { channel: &quot;#general-spam&quot;, message : &quot;Good Morning!&quot;})&lt;/script&gt;&quot;. 
+<a name="l20"><span class="ln">20   </span></a> We know that after examining what happens when we post a message - 
+<a name="l21"><span class="ln">21   </span></a> a &quot;POST&quot; request is sent to the server with &quot;channel&quot; and &quot;message&quot; form fields 
+<a name="l22"><span class="ln">22   </span></a> 
+<a name="l23"><span class="ln">23   </span></a>- Summarizing it all - we want to send the following message (no matter on which channel): 
+<a name="l24"><span class="ln">24   </span></a> /join #got-u-online &lt;script&gt;$.post(&quot;post&quot;, { channel: &quot;#general-spam&quot;, message : &quot;Good Morning!&quot;})&lt;/script&gt; 
+<a name="l25"><span class="ln">25   </span></a> 
+<a name="l26"><span class="ln">26   </span></a>- This way, every time the channels list appear 
+<a name="l27"><span class="ln">27   </span></a>(which is every time a user requests the page), 
+<a name="l28"><span class="ln">28   </span></a>when loading our new channel name, our script will evaluate either. 
+<a name="l29"><span class="ln">29   </span></a></span></pre>
+</body>
+</html>

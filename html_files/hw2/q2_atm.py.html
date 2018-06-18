@@ -1,0 +1,91 @@
+<html>
+<head>
+<title>q2_atm.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #606366; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(204,120,50); font-weight: bold; }
+.s1 { color: rgb(169,183,198); }
+.s2 { color: rgb(128,128,128); }
+.s3 { color: rgb(104,151,187); }
+.s4 { color: rgb(204,120,50); }
+.s5 { color: rgb(98,151,85); font-style: italic; }
+</style>
+</head>
+<BODY BGCOLOR="#2b2b2b">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+q2_atm.py</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<a name="l1"><span class="ln">1    </span></a><span class="s0">from </span><span class="s1">Crypto.PublicKey </span><span class="s0">import </span><span class="s1">RSA 
+<a name="l2"><span class="ln">2    </span></a> 
+<a name="l3"><span class="ln">3    </span></a> 
+<a name="l4"><span class="ln">4    </span></a>RSA_PUB_KEY_PIN = RSA.construct(( 
+<a name="l5"><span class="ln">5    </span></a>    </span><span class="s2"># The `n` (modulo) parameter of RSA</span><span class="s1"> 
+<a name="l6"><span class="ln">6    </span></a>    </span><span class="s3">27868931716406380266023588788595709220783271412985725540589503336924335542212836988982790514803413526015395328609052090335839908222282076994940999271040944363058671718331250495389404607367689795561010211924952853432663395032855163818744014456635712279205955773051961167411084853243797540503847024626281064705492826921060618543819621856845100073026477384943096726108770125307933031546925847050585277725348485093744031760263105174434327539528418963473167597399668722233005080296686398421177238362217974996710481201702847205681870170911688958925154041074456550350784804415246077155398147059279589925057100907388222444889L</span><span class="s4">,</span><span class="s1"> 
+<a name="l7"><span class="ln">7    </span></a>    </span><span class="s2"># The `e` (encryption exponent) parameter of RSA</span><span class="s1"> 
+<a name="l8"><span class="ln">8    </span></a>    </span><span class="s3">65537L</span><span class="s1"> 
+<a name="l9"><span class="ln">9    </span></a>)) 
+<a name="l10"><span class="ln">10   </span></a> 
+<a name="l11"><span class="ln">11   </span></a>RSA_PUB_KEY_CARD = RSA.construct(( 
+<a name="l12"><span class="ln">12   </span></a>    </span><span class="s2"># The `n` (modulo) parameter of RSA</span><span class="s1"> 
+<a name="l13"><span class="ln">13   </span></a>    </span><span class="s3">20376884753862275049094180325999569637889182591503729556310621938891776624033788403381733002838516760705828996630570428864849157008695430399492390606333948958611189945019180627086784331308471047803847934316836294301743776169677009776783907483881472479526163954480862341056957817833281709466757243680421537507690984023803519504205700529295684578363546945266113418989997700473707725059357314480282167327113310196038934448754327599496136847796080537641682081674616137036333668342963544030776695183529528224815426819452929269011526039861488573032580092506809347235154888750743007800649440263005956973175500718846666937653L</span><span class="s4">,</span><span class="s1"> 
+<a name="l14"><span class="ln">14   </span></a>    </span><span class="s2"># The `e` (encryption exponent) parameter of RSA</span><span class="s1"> 
+<a name="l15"><span class="ln">15   </span></a>    </span><span class="s3">3L</span><span class="s1"> 
+<a name="l16"><span class="ln">16   </span></a>)) 
+<a name="l17"><span class="ln">17   </span></a> 
+<a name="l18"><span class="ln">18   </span></a> 
+<a name="l19"><span class="ln">19   </span></a></span><span class="s0">class </span><span class="s1">ATM(object): 
+<a name="l20"><span class="ln">20   </span></a> 
+<a name="l21"><span class="ln">21   </span></a>    </span><span class="s0">def </span><span class="s1">__init__(self): 
+<a name="l22"><span class="ln">22   </span></a>        </span><span class="s5">&quot;&quot;&quot;Initializes the ATM parameters.&quot;&quot;&quot;</span><span class="s1"> 
+<a name="l23"><span class="ln">23   </span></a>        self.rsa_card = RSA_PUB_KEY_CARD 
+<a name="l24"><span class="ln">24   </span></a>        self.rsa_pin = RSA_PUB_KEY_PIN 
+<a name="l25"><span class="ln">25   </span></a> 
+<a name="l26"><span class="ln">26   </span></a>    </span><span class="s0">def </span><span class="s1">is_number_of_max_digits(self</span><span class="s4">, </span><span class="s1">number</span><span class="s4">, </span><span class="s1">max_digits): 
+<a name="l27"><span class="ln">27   </span></a>        </span><span class="s5">&quot;&quot;&quot;Check if a number is whole, positive, and has at most the specified number of digits.&quot;&quot;&quot;</span><span class="s1"> 
+<a name="l28"><span class="ln">28   </span></a>        </span><span class="s0">return </span><span class="s1">isinstance(number</span><span class="s4">, </span><span class="s1">(int</span><span class="s4">, </span><span class="s1">long)) </span><span class="s0">and </span><span class="s3">0 </span><span class="s1">&lt;= number &lt; (</span><span class="s3">10 </span><span class="s1">** max_digits) 
+<a name="l29"><span class="ln">29   </span></a> 
+<a name="l30"><span class="ln">30   </span></a>    </span><span class="s0">def </span><span class="s1">encrypt_number(self</span><span class="s4">, </span><span class="s1">rsa_key</span><span class="s4">, </span><span class="s1">number): 
+<a name="l31"><span class="ln">31   </span></a>        </span><span class="s5">&quot;&quot;&quot;Encrypt a numeric value using the specified RSA key.&quot;&quot;&quot;</span><span class="s1"> 
+<a name="l32"><span class="ln">32   </span></a>        </span><span class="s0">return </span><span class="s1">rsa_key.encrypt(number</span><span class="s4">, </span><span class="s1">None)[</span><span class="s3">0</span><span class="s1">] 
+<a name="l33"><span class="ln">33   </span></a> 
+<a name="l34"><span class="ln">34   </span></a>    </span><span class="s0">def </span><span class="s1">encrypt_credit_card(self</span><span class="s4">, </span><span class="s1">card_number): 
+<a name="l35"><span class="ln">35   </span></a>        </span><span class="s5">&quot;&quot;&quot;Encrypt a credit card number for sending to the server.&quot;&quot;&quot;</span><span class="s1"> 
+<a name="l36"><span class="ln">36   </span></a>        </span><span class="s0">assert </span><span class="s1">self.is_number_of_max_digits(card_number</span><span class="s4">, </span><span class="s3">9</span><span class="s1">) 
+<a name="l37"><span class="ln">37   </span></a>        </span><span class="s0">return </span><span class="s1">self.encrypt_number(self.rsa_card</span><span class="s4">, </span><span class="s1">card_number) 
+<a name="l38"><span class="ln">38   </span></a> 
+<a name="l39"><span class="ln">39   </span></a>    </span><span class="s0">def </span><span class="s1">encrypt_PIN(self</span><span class="s4">, </span><span class="s1">PIN): 
+<a name="l40"><span class="ln">40   </span></a>        </span><span class="s5">&quot;&quot;&quot;Encrypt a PIN for sending to the server.&quot;&quot;&quot;</span><span class="s1"> 
+<a name="l41"><span class="ln">41   </span></a>        </span><span class="s0">assert </span><span class="s1">self.is_number_of_max_digits(PIN</span><span class="s4">, </span><span class="s3">4</span><span class="s1">) 
+<a name="l42"><span class="ln">42   </span></a>        </span><span class="s0">return </span><span class="s1">self.encrypt_number(self.rsa_pin</span><span class="s4">, </span><span class="s1">PIN) 
+<a name="l43"><span class="ln">43   </span></a> 
+<a name="l44"><span class="ln">44   </span></a>    CODE_NO_RESPONSE = </span><span class="s3">0L</span><span class="s1"> 
+<a name="l45"><span class="ln">45   </span></a>    CODE_APPROVAL = </span><span class="s3">1L</span><span class="s1"> 
+<a name="l46"><span class="ln">46   </span></a>    CODE_CARD_NOT_FOUND = </span><span class="s3">2L</span><span class="s1"> 
+<a name="l47"><span class="ln">47   </span></a>    CODE_PIN_CARD_MISMATCH = </span><span class="s3">3L</span><span class="s1"> 
+<a name="l48"><span class="ln">48   </span></a>    CODE_ILLEGAL_LENGTH = </span><span class="s3">4L</span><span class="s1"> 
+<a name="l49"><span class="ln">49   </span></a>    CODE_ILLEGAL_CHARACTER = </span><span class="s3">5L</span><span class="s1"> 
+<a name="l50"><span class="ln">50   </span></a>    CODE_DO_NOT_ACCEPT_BITCOIN = </span><span class="s3">6L</span><span class="s1"> 
+<a name="l51"><span class="ln">51   </span></a>    CODE_CARD_REJECTED = </span><span class="s3">7L</span><span class="s1"> 
+<a name="l52"><span class="ln">52   </span></a>    CODE_CARD_BLOCKED = </span><span class="s3">8L</span><span class="s1"> 
+<a name="l53"><span class="ln">53   </span></a>    CODE_SERVER_ERROR = </span><span class="s3">9L</span><span class="s1"> 
+<a name="l54"><span class="ln">54   </span></a>    CODE_SERVER_OVERLOAD = </span><span class="s3">10L</span><span class="s1"> 
+<a name="l55"><span class="ln">55   </span></a> 
+<a name="l56"><span class="ln">56   </span></a>    </span><span class="s0">def </span><span class="s1">verify_server_approval(self</span><span class="s4">, </span><span class="s1">server_response): 
+<a name="l57"><span class="ln">57   </span></a>        </span><span class="s5">&quot;&quot;&quot;Returns True if the server returned a correctly signed approval.&quot;&quot;&quot;</span><span class="s1"> 
+<a name="l58"><span class="ln">58   </span></a>        </span><span class="s0">return </span><span class="s1">(server_response.status == ATM.CODE_APPROVAL </span><span class="s0">and</span><span class="s1"> 
+<a name="l59"><span class="ln">59   </span></a>                self.rsa_card.verify(server_response.status</span><span class="s4">,</span><span class="s1">(server_response.signature</span><span class="s4">,</span><span class="s1">))) 
+<a name="l60"><span class="ln">60   </span></a> 
+<a name="l61"><span class="ln">61   </span></a> 
+<a name="l62"><span class="ln">62   </span></a></span><span class="s0">class </span><span class="s1">ServerResponse(object): 
+<a name="l63"><span class="ln">63   </span></a> 
+<a name="l64"><span class="ln">64   </span></a>    </span><span class="s0">def </span><span class="s1">__init__(self</span><span class="s4">, </span><span class="s1">status</span><span class="s4">, </span><span class="s1">signature): 
+<a name="l65"><span class="ln">65   </span></a>        </span><span class="s5">&quot;&quot;&quot;Initializes a response with a value for the status and signature.&quot;&quot;&quot;</span><span class="s1"> 
+<a name="l66"><span class="ln">66   </span></a>        self.status = status 
+<a name="l67"><span class="ln">67   </span></a>        self.signature = signature 
+<a name="l68"><span class="ln">68   </span></a></span></pre>
+</body>
+</html>

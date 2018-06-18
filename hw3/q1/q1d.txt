@@ -1,6 +1,10 @@
 - For this secion we don't need to actually understand what the function "validate" does.
 - All we care about is that after the call to "validate" we check it's return value (saved on EAX)
-- Then we see conditional jump, JNZ instruction, depending on the value returned from "validate" function.
-- The jump is to the "valid" section so we understand that we do want to jump always, regardless of the validation test result.
-- Looking at IDA we can see the opcode of the JNZ command (0x75) and the offset of this instruction from the beginning of the binary file (0x6cb) 
-- All we have to do is to switch that byte from 0x75 to x0eb, which is the JMP opcode. Of course leaving the address to jump operand unchanged.
+- Then we see conditional jump, JNZ instruction, depending on the value returned from "validate"
+function.
+- The jump is to the "valid" section so we understand that we do want to jump always, regardless
+of the validation test result.
+- Looking at IDA we can see the opcode of the JNZ command (0x75) and the offset of this instruction
+ from the beginning of the binary file (0x6cb)
+- All we have to do is to switch that byte from 0x75 to x0eb, which is the JMP opcode.
+Of course leaving the address to jump operand unchanged.

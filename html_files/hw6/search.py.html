@@ -1,0 +1,204 @@
+<html>
+<head>
+<title>search.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #606366; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(204,120,50); font-weight: bold; }
+.s1 { color: rgb(169,183,198); }
+.s2 { color: rgb(204,120,50); }
+.s3 { color: rgb(165,194,97); }
+.s4 { color: rgb(98,151,85); font-style: italic; }
+.s5 { color: rgb(128,128,128); }
+.s6 { color: rgb(104,151,187); }
+</style>
+</head>
+<BODY BGCOLOR="#2b2b2b">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+search.py</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<a name="l1"><span class="ln">1    </span></a><span class="s0">import </span><span class="s1">addresses 
+<a name="l2"><span class="ln">2    </span></a></span><span class="s0">import </span><span class="s1">assemble 
+<a name="l3"><span class="ln">3    </span></a></span><span class="s0">import </span><span class="s1">string 
+<a name="l4"><span class="ln">4    </span></a></span><span class="s0">import </span><span class="s1">itertools</span><span class="s2">, </span><span class="s1">re 
+<a name="l5"><span class="ln">5    </span></a> 
+<a name="l6"><span class="ln">6    </span></a> 
+<a name="l7"><span class="ln">7    </span></a>GENERAL_REGISTERS = [ 
+<a name="l8"><span class="ln">8    </span></a>    </span><span class="s3">'eax'</span><span class="s2">, </span><span class="s3">'ebx'</span><span class="s2">, </span><span class="s3">'ecx'</span><span class="s2">, </span><span class="s3">'edx'</span><span class="s2">, </span><span class="s3">'esi'</span><span class="s2">, </span><span class="s3">'edi'</span><span class="s1"> 
+<a name="l9"><span class="ln">9    </span></a>] 
+<a name="l10"><span class="ln">10   </span></a> 
+<a name="l11"><span class="ln">11   </span></a> 
+<a name="l12"><span class="ln">12   </span></a>ALL_REGISTERS = GENERAL_REGISTERS + [ 
+<a name="l13"><span class="ln">13   </span></a>    </span><span class="s3">'esp'</span><span class="s2">, </span><span class="s3">'eip'</span><span class="s2">, </span><span class="s3">'ebp'</span><span class="s1"> 
+<a name="l14"><span class="ln">14   </span></a>] 
+<a name="l15"><span class="ln">15   </span></a> 
+<a name="l16"><span class="ln">16   </span></a> 
+<a name="l17"><span class="ln">17   </span></a></span><span class="s0">class </span><span class="s1">GadgetSearch(object): 
+<a name="l18"><span class="ln">18   </span></a>    </span><span class="s0">def </span><span class="s1">__init__(self</span><span class="s2">, </span><span class="s1">dump_path</span><span class="s2">, </span><span class="s1">start_addr=None): 
+<a name="l19"><span class="ln">19   </span></a>        </span><span class="s4">&quot;&quot;&quot; 
+<a name="l20"><span class="ln">20   </span></a>        Construct the GadgetSearch object. 
+<a name="l21"><span class="ln">21   </span></a> 
+<a name="l22"><span class="ln">22   </span></a>        Input: 
+<a name="l23"><span class="ln">23   </span></a>            dump_path: The path to the memory dump file created with GDB. 
+<a name="l24"><span class="ln">24   </span></a>            start_addr: The starting memory address of this dump. Use 
+<a name="l25"><span class="ln">25   </span></a>                        `addresses.LIBC_TEXT_START` by default. 
+<a name="l26"><span class="ln">26   </span></a>        &quot;&quot;&quot;</span><span class="s1"> 
+<a name="l27"><span class="ln">27   </span></a>        self.start_addr = (start_addr </span><span class="s0">if </span><span class="s1">start_addr </span><span class="s0">is not </span><span class="s1">None 
+<a name="l28"><span class="ln">28   </span></a>                           </span><span class="s0">else </span><span class="s1">addresses.LIBC_TEXT_START) 
+<a name="l29"><span class="ln">29   </span></a>        </span><span class="s0">with </span><span class="s1">open(dump_path</span><span class="s2">, </span><span class="s3">'rb'</span><span class="s1">) </span><span class="s0">as </span><span class="s1">f: 
+<a name="l30"><span class="ln">30   </span></a>            self.dump = f.read() 
+<a name="l31"><span class="ln">31   </span></a> 
+<a name="l32"><span class="ln">32   </span></a>    </span><span class="s0">def </span><span class="s1">get_format_count(self</span><span class="s2">, </span><span class="s1">gadget_format): 
+<a name="l33"><span class="ln">33   </span></a>        </span><span class="s4">&quot;&quot;&quot; 
+<a name="l34"><span class="ln">34   </span></a>        Get how many different register placeholders are in the pattern. 
+<a name="l35"><span class="ln">35   </span></a>         
+<a name="l36"><span class="ln">36   </span></a>        Examples: 
+<a name="l37"><span class="ln">37   </span></a>            self.get_format_count('POP ebx') 
+<a name="l38"><span class="ln">38   </span></a>            =&gt; 0 
+<a name="l39"><span class="ln">39   </span></a>            self.get_format_count('POP {0}') 
+<a name="l40"><span class="ln">40   </span></a>            =&gt; 1 
+<a name="l41"><span class="ln">41   </span></a>            self.get_format_count('XOR {0}, {0}; ADD {0}, {1}') 
+<a name="l42"><span class="ln">42   </span></a>            =&gt; 2 
+<a name="l43"><span class="ln">43   </span></a>        &quot;&quot;&quot;</span><span class="s1"> 
+<a name="l44"><span class="ln">44   </span></a>        </span><span class="s5"># Hint: Use the string.Formatter().parse method:</span><span class="s1"> 
+<a name="l45"><span class="ln">45   </span></a>        </span><span class="s5">#</span><span class="s1"> 
+<a name="l46"><span class="ln">46   </span></a>        </span><span class="s5">#   import string</span><span class="s1"> 
+<a name="l47"><span class="ln">47   </span></a>        </span><span class="s5">#   print string.Formatter().parse(gadget_format)</span><span class="s1"> 
+<a name="l48"><span class="ln">48   </span></a> 
+<a name="l49"><span class="ln">49   </span></a>        tuples_iter = string.Formatter().parse(gadget_format) </span><span class="s5"># returns iterator</span><span class="s1"> 
+<a name="l50"><span class="ln">50   </span></a> 
+<a name="l51"><span class="ln">51   </span></a>        </span><span class="s5"># filter parts without format using the filter method over the iterator</span><span class="s1"> 
+<a name="l52"><span class="ln">52   </span></a>        tuples_iter_only_placeholders = itertools.ifilter(</span><span class="s0">lambda </span><span class="s1">x: x[</span><span class="s6">1</span><span class="s1">]!=None</span><span class="s2">, </span><span class="s1">tuples_iter) 
+<a name="l53"><span class="ln">53   </span></a> 
+<a name="l54"><span class="ln">54   </span></a>        placeholders_list = [t[</span><span class="s6">1</span><span class="s1">] </span><span class="s0">for </span><span class="s1">t </span><span class="s0">in </span><span class="s1">tuples_iter_only_placeholders] 
+<a name="l55"><span class="ln">55   </span></a>        placeholders_set = set(placeholders_list) </span><span class="s5"># remove duplicats by converting to set instead of list</span><span class="s1"> 
+<a name="l56"><span class="ln">56   </span></a>        </span><span class="s0">return </span><span class="s1">len(placeholders_set) 
+<a name="l57"><span class="ln">57   </span></a> 
+<a name="l58"><span class="ln">58   </span></a>    </span><span class="s0">def </span><span class="s1">get_register_combos(self</span><span class="s2">, </span><span class="s1">nregs</span><span class="s2">, </span><span class="s1">registers): 
+<a name="l59"><span class="ln">59   </span></a>        </span><span class="s4">&quot;&quot;&quot; 
+<a name="l60"><span class="ln">60   </span></a>        Return all the combinations of `registers` with `nregs` registers in 
+<a name="l61"><span class="ln">61   </span></a>        each combination. Duplicates ARE allowed! 
+<a name="l62"><span class="ln">62   </span></a> 
+<a name="l63"><span class="ln">63   </span></a>        Example: 
+<a name="l64"><span class="ln">64   </span></a>            self.get_register_combos(2, ('eax', 'ebx')) 
+<a name="l65"><span class="ln">65   </span></a>            =&gt; [['eax', 'eax'], 
+<a name="l66"><span class="ln">66   </span></a>                ['eax', 'ebx'], 
+<a name="l67"><span class="ln">67   </span></a>                ['ebx', 'eax'], 
+<a name="l68"><span class="ln">68   </span></a>                ['ebx', 'ebx']] 
+<a name="l69"><span class="ln">69   </span></a>        &quot;&quot;&quot;</span><span class="s1"> 
+<a name="l70"><span class="ln">70   </span></a> 
+<a name="l71"><span class="ln">71   </span></a>        </span><span class="s5"># using itertools.products for counting with replacement and ordering</span><span class="s1"> 
+<a name="l72"><span class="ln">72   </span></a>        combs_iter = itertools.product(registers</span><span class="s2">, </span><span class="s1">repeat=nregs) 
+<a name="l73"><span class="ln">73   </span></a>        combs = [list(c) </span><span class="s0">for </span><span class="s1">c </span><span class="s0">in </span><span class="s1">combs_iter] 
+<a name="l74"><span class="ln">74   </span></a>        </span><span class="s0">return </span><span class="s1">combs 
+<a name="l75"><span class="ln">75   </span></a> 
+<a name="l76"><span class="ln">76   </span></a>    </span><span class="s0">def </span><span class="s1">format_all_gadgets(self</span><span class="s2">, </span><span class="s1">gadget_format</span><span class="s2">, </span><span class="s1">registers): 
+<a name="l77"><span class="ln">77   </span></a>        </span><span class="s4">&quot;&quot;&quot; 
+<a name="l78"><span class="ln">78   </span></a>        Format all the possible gadgets for this format with the given 
+<a name="l79"><span class="ln">79   </span></a>        registers. 
+<a name="l80"><span class="ln">80   </span></a> 
+<a name="l81"><span class="ln">81   </span></a>        Example: 
+<a name="l82"><span class="ln">82   </span></a>            self.format_all_gadgets(&quot;POP {0}; ADD {0}, {1}&quot;, ('eax', 'ecx')) 
+<a name="l83"><span class="ln">83   </span></a>            =&gt; ['POP eax; ADD eax, eax', 
+<a name="l84"><span class="ln">84   </span></a>                'POP eax; ADD eax, ecx', 
+<a name="l85"><span class="ln">85   </span></a>                'POP ecx; ADD ecx, eax', 
+<a name="l86"><span class="ln">86   </span></a>                'POP ecx; ADD ecx, ecx'] 
+<a name="l87"><span class="ln">87   </span></a>        &quot;&quot;&quot;</span><span class="s1"> 
+<a name="l88"><span class="ln">88   </span></a>        </span><span class="s5"># Hints:</span><span class="s1"> 
+<a name="l89"><span class="ln">89   </span></a>        </span><span class="s5">#</span><span class="s1"> 
+<a name="l90"><span class="ln">90   </span></a>        </span><span class="s5"># 0. Use the previous functions to count the number of placeholders,</span><span class="s1"> 
+<a name="l91"><span class="ln">91   </span></a>        </span><span class="s5">#    and get all combinations of registers.</span><span class="s1"> 
+<a name="l92"><span class="ln">92   </span></a>        </span><span class="s5">#</span><span class="s1"> 
+<a name="l93"><span class="ln">93   </span></a>        </span><span class="s5"># 1. Use the `format` function to build the string:</span><span class="s1"> 
+<a name="l94"><span class="ln">94   </span></a>        </span><span class="s5">#</span><span class="s1"> 
+<a name="l95"><span class="ln">95   </span></a>        </span><span class="s5">#    'Hi {0}! I am {1}, you are {0}'.format('Luke', 'Vader')</span><span class="s1"> 
+<a name="l96"><span class="ln">96   </span></a>        </span><span class="s5">#    =&gt; 'Hi Luke! I am Vader, you are Luke'</span><span class="s1"> 
+<a name="l97"><span class="ln">97   </span></a>        </span><span class="s5">#</span><span class="s1"> 
+<a name="l98"><span class="ln">98   </span></a>        </span><span class="s5"># 2. You can use pass a list of arguments instead of specifying each</span><span class="s1"> 
+<a name="l99"><span class="ln">99   </span></a>        </span><span class="s5">#    argument individually. Use the internet, the force is strong with</span><span class="s1"> 
+<a name="l100"><span class="ln">100  </span></a>        </span><span class="s5">#    StackOverflow.</span><span class="s1"> 
+<a name="l101"><span class="ln">101  </span></a> 
+<a name="l102"><span class="ln">102  </span></a>        num_placeholders = self.get_format_count(gadget_format) 
+<a name="l103"><span class="ln">103  </span></a>        registers_comb = self.get_register_combos(num_placeholders</span><span class="s2">, </span><span class="s1">registers) </span><span class="s5"># get combinations use num_placeholders</span><span class="s1"> 
+<a name="l104"><span class="ln">104  </span></a>        format_gadgets = [gadget_format.format(*comb) </span><span class="s0">for </span><span class="s1">comb </span><span class="s0">in </span><span class="s1">registers_comb] </span><span class="s5"># transform to gadgets using string.format</span><span class="s1"> 
+<a name="l105"><span class="ln">105  </span></a>        </span><span class="s0">return </span><span class="s1">format_gadgets 
+<a name="l106"><span class="ln">106  </span></a> 
+<a name="l107"><span class="ln">107  </span></a>    </span><span class="s0">def </span><span class="s1">find_all(self</span><span class="s2">, </span><span class="s1">gadget): 
+<a name="l108"><span class="ln">108  </span></a>        </span><span class="s4">&quot;&quot;&quot; 
+<a name="l109"><span class="ln">109  </span></a>        Return all the addresses of the gadget inside the memory dump. 
+<a name="l110"><span class="ln">110  </span></a> 
+<a name="l111"><span class="ln">111  </span></a>        Example: 
+<a name="l112"><span class="ln">112  </span></a>            self.find_all('POP eax') 
+<a name="l113"><span class="ln">113  </span></a>            =&gt; &lt; all ABSOLUTE addresses in memory of 'POP eax; RET' &gt; 
+<a name="l114"><span class="ln">114  </span></a>        &quot;&quot;&quot;</span><span class="s1"> 
+<a name="l115"><span class="ln">115  </span></a>        </span><span class="s5"># Notes:</span><span class="s1"> 
+<a name="l116"><span class="ln">116  </span></a>        </span><span class="s5">#</span><span class="s1"> 
+<a name="l117"><span class="ln">117  </span></a>        </span><span class="s5"># 1. Addresses are ABSOLUTE (for example, 0x08403214), NOT RELATIVE to</span><span class="s1"> 
+<a name="l118"><span class="ln">118  </span></a>        </span><span class="s5">#    the beginning of the file (for example, 12).</span><span class="s1"> 
+<a name="l119"><span class="ln">119  </span></a>        </span><span class="s5">#</span><span class="s1"> 
+<a name="l120"><span class="ln">120  </span></a>        </span><span class="s5"># 2. Don't forget to add the 'RET'.</span><span class="s1"> 
+<a name="l121"><span class="ln">121  </span></a> 
+<a name="l122"><span class="ln">122  </span></a>        gadget_with_ret = gadget + </span><span class="s3">'; RET'</span><span class="s1"> 
+<a name="l123"><span class="ln">123  </span></a>        assembled_gadget = assemble.assemble_data(gadget_with_ret) </span><span class="s5"># tranform to bytes from the assembly code</span><span class="s1"> 
+<a name="l124"><span class="ln">124  </span></a> 
+<a name="l125"><span class="ln">125  </span></a>        </span><span class="s5"># use re moudle to search in the dump file. add the offset to base address to get absolut addresses</span><span class="s1"> 
+<a name="l126"><span class="ln">126  </span></a>        gadget_addresses = [hex(g.start() + self.start_addr)[:-</span><span class="s6">1</span><span class="s1">] </span><span class="s0">for </span><span class="s1">g </span><span class="s0">in </span><span class="s1">re.finditer(re.escape(assembled_gadget)</span><span class="s2">, </span><span class="s1">self.dump)] 
+<a name="l127"><span class="ln">127  </span></a> 
+<a name="l128"><span class="ln">128  </span></a>        </span><span class="s0">return </span><span class="s1">gadget_addresses 
+<a name="l129"><span class="ln">129  </span></a> 
+<a name="l130"><span class="ln">130  </span></a>    </span><span class="s0">def </span><span class="s1">find(self</span><span class="s2">, </span><span class="s1">gadget</span><span class="s2">, </span><span class="s1">condition=None): 
+<a name="l131"><span class="ln">131  </span></a>        </span><span class="s4">&quot;&quot;&quot; 
+<a name="l132"><span class="ln">132  </span></a>        Return the first result of find_all. If condition is specified, only 
+<a name="l133"><span class="ln">133  </span></a>        consider addresses that meet the condition. 
+<a name="l134"><span class="ln">134  </span></a>        &quot;&quot;&quot;</span><span class="s1"> 
+<a name="l135"><span class="ln">135  </span></a>        condition = condition </span><span class="s0">or </span><span class="s1">(</span><span class="s0">lambda </span><span class="s1">x: True) 
+<a name="l136"><span class="ln">136  </span></a>        </span><span class="s0">try</span><span class="s1">: 
+<a name="l137"><span class="ln">137  </span></a>            </span><span class="s0">return </span><span class="s1">next(addr </span><span class="s0">for </span><span class="s1">addr </span><span class="s0">in </span><span class="s1">self.find_all(gadget) 
+<a name="l138"><span class="ln">138  </span></a>                        </span><span class="s0">if </span><span class="s1">condition(addr)) 
+<a name="l139"><span class="ln">139  </span></a>        </span><span class="s0">except </span><span class="s1">StopIteration: 
+<a name="l140"><span class="ln">140  </span></a>            </span><span class="s0">raise </span><span class="s1">ValueError(</span><span class="s3">&quot;Couldn't find matching address for &quot; </span><span class="s1">+ gadget) 
+<a name="l141"><span class="ln">141  </span></a> 
+<a name="l142"><span class="ln">142  </span></a>    </span><span class="s0">def </span><span class="s1">find_all_formats(self</span><span class="s2">, </span><span class="s1">gadget_format</span><span class="s2">, </span><span class="s1">registers=GENERAL_REGISTERS): 
+<a name="l143"><span class="ln">143  </span></a>        </span><span class="s4">&quot;&quot;&quot; 
+<a name="l144"><span class="ln">144  </span></a>        Similar to find_all - but return all the addresses of all 
+<a name="l145"><span class="ln">145  </span></a>        possible gadgets that can be created with this format and registers. 
+<a name="l146"><span class="ln">146  </span></a>        Every elemnt in the result will be a tuple of the gadget string and 
+<a name="l147"><span class="ln">147  </span></a>        the address in which it appears. 
+<a name="l148"><span class="ln">148  </span></a> 
+<a name="l149"><span class="ln">149  </span></a>        Example: 
+<a name="l150"><span class="ln">150  </span></a>            self.find_all_formats('POP {0}; POP {1}') 
+<a name="l151"><span class="ln">151  </span></a>            =&gt; [('POP eax; POP ebx', address1), 
+<a name="l152"><span class="ln">152  </span></a>                ('POP ecx; POP esi', address2), 
+<a name="l153"><span class="ln">153  </span></a>                ...] 
+<a name="l154"><span class="ln">154  </span></a>        &quot;&quot;&quot;</span><span class="s1"> 
+<a name="l155"><span class="ln">155  </span></a> 
+<a name="l156"><span class="ln">156  </span></a>        format_gadgets = self.format_all_gadgets(gadget_format</span><span class="s2">, </span><span class="s1">registers) </span><span class="s5"># first get all formats</span><span class="s1"> 
+<a name="l157"><span class="ln">157  </span></a>        all_formats_for_gadgets = [zip(itertools.cycle([g])</span><span class="s2">, </span><span class="s1">self.find_all(g)) </span><span class="s0">for </span><span class="s1">g </span><span class="s0">in </span><span class="s1">format_gadgets] 
+<a name="l158"><span class="ln">158  </span></a> 
+<a name="l159"><span class="ln">159  </span></a>        </span><span class="s5"># we have a list of lists, we need to expand it to a single list using itertools.chain</span><span class="s1"> 
+<a name="l160"><span class="ln">160  </span></a>        all_formats = list(itertools.chain.from_iterable(all_formats_for_gadgets)) 
+<a name="l161"><span class="ln">161  </span></a>         
+<a name="l162"><span class="ln">162  </span></a>        </span><span class="s0">return </span><span class="s1">all_formats 
+<a name="l163"><span class="ln">163  </span></a> 
+<a name="l164"><span class="ln">164  </span></a>    </span><span class="s0">def </span><span class="s1">find_format(self</span><span class="s2">, </span><span class="s1">gadget_format</span><span class="s2">, </span><span class="s1">registers=GENERAL_REGISTERS</span><span class="s2">,</span><span class="s1"> 
+<a name="l165"><span class="ln">165  </span></a>                    condition=None): 
+<a name="l166"><span class="ln">166  </span></a>        </span><span class="s4">&quot;&quot;&quot; 
+<a name="l167"><span class="ln">167  </span></a>        Return the first result of find_all_formats. If condition is specified, 
+<a name="l168"><span class="ln">168  </span></a>        only consider addresses that meet the condition. 
+<a name="l169"><span class="ln">169  </span></a>        &quot;&quot;&quot;</span><span class="s1"> 
+<a name="l170"><span class="ln">170  </span></a>        condition = condition </span><span class="s0">or </span><span class="s1">(</span><span class="s0">lambda </span><span class="s1">x: True) 
+<a name="l171"><span class="ln">171  </span></a>        </span><span class="s0">try</span><span class="s1">: 
+<a name="l172"><span class="ln">172  </span></a>            </span><span class="s0">return </span><span class="s1">next( 
+<a name="l173"><span class="ln">173  </span></a>                addr </span><span class="s0">for </span><span class="s1">addr </span><span class="s0">in </span><span class="s1">self.find_all_formats(gadget_format</span><span class="s2">, </span><span class="s1">registers) 
+<a name="l174"><span class="ln">174  </span></a>                </span><span class="s0">if </span><span class="s1">condition(addr) 
+<a name="l175"><span class="ln">175  </span></a>            ) 
+<a name="l176"><span class="ln">176  </span></a>        </span><span class="s0">except </span><span class="s1">StopIteration: 
+<a name="l177"><span class="ln">177  </span></a>            </span><span class="s0">raise </span><span class="s1">ValueError( 
+<a name="l178"><span class="ln">178  </span></a>                </span><span class="s3">&quot;Couldn't find matching address for &quot; </span><span class="s1">+ gadget_format) 
+<a name="l179"><span class="ln">179  </span></a> 
+<a name="l180"><span class="ln">180  </span></a></span></pre>
+</body>
+</html>

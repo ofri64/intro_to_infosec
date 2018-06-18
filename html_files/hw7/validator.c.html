@@ -1,0 +1,72 @@
+<html>
+<head>
+<title>validator.c</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #606366; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(204,120,50); }
+.s1 { color: rgb(169,183,198); }
+.s2 { color: rgb(106,135,89); }
+.s3 { color: rgb(70,70,241); }
+.s4 { color: rgb(104,151,187); }
+</style>
+</head>
+<BODY BGCOLOR="#2b2b2b">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+validator.c</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<a name="l1"><span class="ln">1    </span></a><span class="s0">#include </span><span class="s1">&lt;stdio.h&gt; 
+<a name="l2"><span class="ln">2    </span></a></span><span class="s0">#include </span><span class="s1">&lt;string.h&gt; 
+<a name="l3"><span class="ln">3    </span></a> 
+<a name="l4"><span class="ln">4    </span></a></span><span class="s0">#include </span><span class="s1">&lt;openssl/sha.h&gt; 
+<a name="l5"><span class="ln">5    </span></a> 
+<a name="l6"><span class="ln">6    </span></a></span><span class="s0">#define </span><span class="s1">LOG(fmt, ...) printf(fmt </span><span class="s2">&quot;</span><span class="s3">\n</span><span class="s2">&quot;</span><span class="s1">, ##__VA_ARGS__) 
+<a name="l7"><span class="ln">7    </span></a> 
+<a name="l8"><span class="ln">8    </span></a></span><span class="s0">char</span><span class="s1">* invalid_hashes[] = { 
+<a name="l9"><span class="ln">9    </span></a>    </span><span class="s2">&quot;</span><span class="s3">\x</span><span class="s2">29</span><span class="s3">\x</span><span class="s2">41</span><span class="s3">\x</span><span class="s2">71</span><span class="s3">\x</span><span class="s2">db</span><span class="s3">\x</span><span class="s2">6b</span><span class="s3">\x</span><span class="s2">ce</span><span class="s3">\x</span><span class="s2">62</span><span class="s3">\x</span><span class="s2">7e</span><span class="s3">\x</span><span class="s2">2a</span><span class="s3">\x</span><span class="s2">08</span><span class="s3">\x</span><span class="s2">e8</span><span class="s3">\x</span><span class="s2">2f</span><span class="s3">\x</span><span class="s2">1e</span><span class="s3">\x</span><span class="s2">9e</span><span class="s3">\x</span><span class="s2">86</span><span class="s3">\x</span><span class="s2">a0</span><span class="s3">\x</span><span class="s2">57</span><span class="s3">\x</span><span class="s2">30</span><span class="s3">\x</span><span class="s2">6a</span><span class="s3">\x</span><span class="s2">63&quot;</span><span class="s1">, 
+<a name="l10"><span class="ln">10   </span></a>    </span><span class="s2">&quot;</span><span class="s3">\x</span><span class="s2">a1</span><span class="s3">\x</span><span class="s2">6c</span><span class="s3">\x</span><span class="s2">b2</span><span class="s3">\x</span><span class="s2">de</span><span class="s3">\x</span><span class="s2">cc</span><span class="s3">\x</span><span class="s2">5b</span><span class="s3">\x</span><span class="s2">d4</span><span class="s3">\x</span><span class="s2">10</span><span class="s3">\x</span><span class="s2">50</span><span class="s3">\x</span><span class="s2">70</span><span class="s3">\x</span><span class="s2">bd</span><span class="s3">\x</span><span class="s2">f8</span><span class="s3">\x</span><span class="s2">d4</span><span class="s3">\x</span><span class="s2">f7</span><span class="s3">\x</span><span class="s2">cd</span><span class="s3">\x</span><span class="s2">3a</span><span class="s3">\x</span><span class="s2">3e</span><span class="s3">\x</span><span class="s2">5c</span><span class="s3">\x</span><span class="s2">59</span><span class="s3">\x</span><span class="s2">f2&quot;</span><span class="s1">, 
+<a name="l11"><span class="ln">11   </span></a>    </span><span class="s2">&quot;</span><span class="s3">\x</span><span class="s2">94</span><span class="s3">\x</span><span class="s2">2a</span><span class="s3">\x</span><span class="s2">1a</span><span class="s3">\x</span><span class="s2">c3</span><span class="s3">\x</span><span class="s2">47</span><span class="s3">\x</span><span class="s2">e8</span><span class="s3">\x</span><span class="s2">bb</span><span class="s3">\x</span><span class="s2">5f</span><span class="s3">\x</span><span class="s2">f8</span><span class="s3">\x</span><span class="s2">81</span><span class="s3">\x</span><span class="s2">13</span><span class="s3">\x</span><span class="s2">3d</span><span class="s3">\x</span><span class="s2">d7</span><span class="s3">\x</span><span class="s2">74</span><span class="s3">\x</span><span class="s2">52</span><span class="s3">\x</span><span class="s2">1c</span><span class="s3">\x</span><span class="s2">be</span><span class="s3">\x</span><span class="s2">00</span><span class="s3">\x</span><span class="s2">91</span><span class="s3">\x</span><span class="s2">02&quot;</span><span class="s1">, 
+<a name="l12"><span class="ln">12   </span></a>    </span><span class="s2">&quot;</span><span class="s3">\x</span><span class="s2">eb</span><span class="s3">\x</span><span class="s2">f8</span><span class="s3">\x</span><span class="s2">28</span><span class="s3">\x</span><span class="s2">f7</span><span class="s3">\x</span><span class="s2">ae</span><span class="s3">\x</span><span class="s2">7b</span><span class="s3">\x</span><span class="s2">11</span><span class="s3">\x</span><span class="s2">e2</span><span class="s3">\x</span><span class="s2">2f</span><span class="s3">\x</span><span class="s2">d8</span><span class="s3">\x</span><span class="s2">a6</span><span class="s3">\x</span><span class="s2">fb</span><span class="s3">\x</span><span class="s2">64</span><span class="s3">\x</span><span class="s2">6f</span><span class="s3">\x</span><span class="s2">40</span><span class="s3">\x</span><span class="s2">57</span><span class="s3">\x</span><span class="s2">d7</span><span class="s3">\x</span><span class="s2">35</span><span class="s3">\x</span><span class="s2">45</span><span class="s3">\x</span><span class="s2">e5&quot;</span><span class="s1">, 
+<a name="l13"><span class="ln">13   </span></a>}; 
+<a name="l14"><span class="ln">14   </span></a> 
+<a name="l15"><span class="ln">15   </span></a></span><span class="s0">int </span><span class="s1">check_if_virus(</span><span class="s0">char</span><span class="s1">* path) 
+<a name="l16"><span class="ln">16   </span></a>{ 
+<a name="l17"><span class="ln">17   </span></a>    FILE* fp; 
+<a name="l18"><span class="ln">18   </span></a>    </span><span class="s0">int   </span><span class="s1">i; 
+<a name="l19"><span class="ln">19   </span></a>    </span><span class="s0">int   </span><span class="s1">size; 
+<a name="l20"><span class="ln">20   </span></a>    </span><span class="s0">char  </span><span class="s1">buff[</span><span class="s4">1024</span><span class="s1">]; 
+<a name="l21"><span class="ln">21   </span></a>    </span><span class="s0">char  </span><span class="s1">hash[SHA_DIGEST_LENGTH] = {</span><span class="s4">0</span><span class="s1">}; 
+<a name="l22"><span class="ln">22   </span></a> 
+<a name="l23"><span class="ln">23   </span></a>    SHA_CTX ctx; 
+<a name="l24"><span class="ln">24   </span></a>    SHA1_Init(&amp;ctx); 
+<a name="l25"><span class="ln">25   </span></a> 
+<a name="l26"><span class="ln">26   </span></a>    LOG(</span><span class="s2">&quot;validating %s&quot;</span><span class="s1">, path); 
+<a name="l27"><span class="ln">27   </span></a> 
+<a name="l28"><span class="ln">28   </span></a>    </span><span class="s0">if </span><span class="s1">((fp = fopen(path, </span><span class="s2">&quot;r&quot;</span><span class="s1">)) == NULL) { 
+<a name="l29"><span class="ln">29   </span></a>        perror(</span><span class="s2">&quot;fopen&quot;</span><span class="s1">); 
+<a name="l30"><span class="ln">30   </span></a>        </span><span class="s0">return </span><span class="s4">0</span><span class="s1">; 
+<a name="l31"><span class="ln">31   </span></a>    } 
+<a name="l32"><span class="ln">32   </span></a> 
+<a name="l33"><span class="ln">33   </span></a>    </span><span class="s0">while </span><span class="s1">((size = fread(buff, </span><span class="s4">1</span><span class="s1">, </span><span class="s0">sizeof</span><span class="s1">(buff), fp)) != </span><span class="s4">0</span><span class="s1">) { 
+<a name="l34"><span class="ln">34   </span></a>        SHA1_Update(&amp;ctx, buff, size); 
+<a name="l35"><span class="ln">35   </span></a>    } 
+<a name="l36"><span class="ln">36   </span></a> 
+<a name="l37"><span class="ln">37   </span></a>    fclose(fp); 
+<a name="l38"><span class="ln">38   </span></a> 
+<a name="l39"><span class="ln">39   </span></a>    LOG(</span><span class="s2">&quot;finalizing hash&quot;</span><span class="s1">); 
+<a name="l40"><span class="ln">40   </span></a>    SHA1_Final(hash, &amp;ctx); 
+<a name="l41"><span class="ln">41   </span></a> 
+<a name="l42"><span class="ln">42   </span></a>    </span><span class="s0">for </span><span class="s1">(i = </span><span class="s4">0</span><span class="s1">; i &lt; </span><span class="s0">sizeof</span><span class="s1">(invalid_hashes) / </span><span class="s0">sizeof</span><span class="s1">(invalid_hashes[</span><span class="s4">0</span><span class="s1">]); i++) { 
+<a name="l43"><span class="ln">43   </span></a>        </span><span class="s0">if </span><span class="s1">(memcmp(hash, invalid_hashes[i], </span><span class="s0">sizeof</span><span class="s1">(hash)) == </span><span class="s4">0</span><span class="s1">) { 
+<a name="l44"><span class="ln">44   </span></a>            </span><span class="s0">return </span><span class="s4">1</span><span class="s1">; 
+<a name="l45"><span class="ln">45   </span></a>        } 
+<a name="l46"><span class="ln">46   </span></a>    } 
+<a name="l47"><span class="ln">47   </span></a> 
+<a name="l48"><span class="ln">48   </span></a>    </span><span class="s0">return </span><span class="s4">0</span><span class="s1">; 
+<a name="l49"><span class="ln">49   </span></a>} 
+<a name="l50"><span class="ln">50   </span></a></span></pre>
+</body>
+</html>

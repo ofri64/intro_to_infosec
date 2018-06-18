@@ -1,0 +1,36 @@
+<html>
+<head>
+<title>q1a.txt</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #606366; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(169,183,198); }
+</style>
+</head>
+<BODY BGCOLOR="#2b2b2b">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+q1a.txt</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<a name="l1"><span class="ln">1    </span></a><span class="s0">Part 1: Understanding the flow of the entire program 
+<a name="l2"><span class="ln">2    </span></a>- The program reads 1KB (or less) from the given file, saving it to an array on the stack 
+<a name="l3"><span class="ln">3    </span></a>- If the file doesn't exist, cannot be open, or read error occurs - return error code and exit 
+<a name="l4"><span class="ln">4    </span></a>- The array base address is passed to the function &quot;validate&quot; 
+<a name="l5"><span class="ln">5    </span></a> 
+<a name="l6"><span class="ln">6    </span></a>Part 2: Function validate 
+<a name="l7"><span class="ln">7    </span></a>- This is the heart of the code, that consists the actual logic. 
+<a name="l8"><span class="ln">8    </span></a>- The algorithm will be as follows: 
+<a name="l9"><span class="ln">9    </span></a>    - Initiate an int counter to zero (save it to bsp-8) 
+<a name="l10"><span class="ln">10   </span></a>    - Read the first byte (byte 0) from the file (save it to bsp-4) 
+<a name="l11"><span class="ln">11   </span></a>    - Read the next byte (byte 1), save it to bsp-9 
+<a name="l12"><span class="ln">12   </span></a>    - The code defines a key for the algorithm - save it to the stack on bsp-10 
+<a name="l13"><span class="ln">13   </span></a>    - Use byte[0] as coutner argumnt of the for loop - tells us how many iterations needed 
+<a name="l14"><span class="ln">14   </span></a>    - Inside the loop, XOR the current byte (starting from byte[2] at first iteration) 
+<a name="l15"><span class="ln">15   </span></a>     with the result of XOR from last iteration (for first iteration XOR with key) 
+<a name="l16"><span class="ln">16   </span></a>    - Increment Counter 
+<a name="l17"><span class="ln">17   </span></a>    - After exiting loop, compare the last xor result to byte[1] of the file (bsp-9) 
+<a name="l18"><span class="ln">18   </span></a>     and return True if they match and False otherwise.</span></pre>
+</body>
+</html>

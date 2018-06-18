@@ -1,0 +1,36 @@
+<html>
+<head>
+<title>q1c.txt</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #606366; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(169,183,198); }
+</style>
+</head>
+<BODY BGCOLOR="#2b2b2b">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+q1c.txt</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<a name="l1"><span class="ln">1    </span></a><span class="s0">- The intuition for the scoring function is using the known distribution of letters in english text. 
+<a name="l2"><span class="ln">2    </span></a>- Then, measure the difference between the distribution of the so called decrypted text and 
+<a name="l3"><span class="ln">3    </span></a>the this known distribution. 
+<a name="l4"><span class="ln">4    </span></a>- We will assume the english letters frequency is a discrete distribution as detailed in 
+<a name="l5"><span class="ln">5    </span></a>Wikipedia (https://en.wikipedia.org/wiki/Letter_frequency) 
+<a name="l6"><span class="ln">6    </span></a>- We will compute the decrypted text distribution simply by counting how many times a letter 
+<a name="l7"><span class="ln">7    </span></a> appears in the decrypted text and normalize with dividing by the text lengh. 
+<a name="l8"><span class="ln">8    </span></a>- In order to measure the difference between the two distributions we will use chi-square distribution 
+<a name="l9"><span class="ln">9    </span></a>(without actually performing the chi-square test, just using the statistic's value. 
+<a name="l10"><span class="ln">10   </span></a> reference can be found here https://en.wikipedia.org/wiki/Chi-squared_test) 
+<a name="l11"><span class="ln">11   </span></a>- Identical distribution will get value 0 and the value will grow as the distributions differ. 
+<a name="l12"><span class="ln">12   </span></a>- So we will setup our score function as -1 * chi-square value, representing the difference between 
+<a name="l13"><span class="ln">13   </span></a>the theoretical distibution and the empirical one. This way the maximum value in bounded to 0 in case of 
+<a name="l14"><span class="ln">14   </span></a> identical distributions. 
+<a name="l15"><span class="ln">15   </span></a>- Another optimization would be to add a penalty for every non-printable char in our candidate decrypted text. 
+<a name="l16"><span class="ln">16   </span></a>Using a penalty of -0.3 for each such char (probably want to value of penalty to be an hyperparameter that 
+<a name="l17"><span class="ln">17   </span></a> can be sadjusted) 
+<a name="l18"><span class="ln">18   </span></a></span></pre>
+</body>
+</html>

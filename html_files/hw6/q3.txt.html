@@ -1,0 +1,37 @@
+<html>
+<head>
+<title>q3.txt</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #606366; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(169,183,198); }
+</style>
+</head>
+<BODY BGCOLOR="#2b2b2b">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+q3.txt</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<a name="l1"><span class="ln">1    </span></a><span class="s0">- In this question our goal is to override the value of the &quot;auth&quot; variable 
+<a name="l2"><span class="ln">2    </span></a>and then continue the normal flow of the program (as long as we can) 
+<a name="l3"><span class="ln">3    </span></a>- We will need the write a &quot;shellcode&quot; containing only jumps 
+<a name="l4"><span class="ln">4    </span></a> to code from libc and using the stack for variables (data) only, 
+<a name="l5"><span class="ln">5    </span></a>  as we cannot execute code on it 
+<a name="l6"><span class="ln">6    </span></a>- First we obtain, using gdb, the address of the global auth variable (0x0804a054) 
+<a name="l7"><span class="ln">7    </span></a> and the original address to return from check_password function (0x080488c6) 
+<a name="l8"><span class="ln">8    </span></a>- We would like to perform something like &quot;mov [&amp;auth], 1&quot; 
+<a name="l9"><span class="ln">9    </span></a>- So, we need to find a piece of code with two registers of the form &quot;mov [{0}], {1}&quot;. 
+<a name="l10"><span class="ln">10   </span></a>possible option is &quot;mov [edx], eax&quot;. 
+<a name="l11"><span class="ln">11   </span></a>- Now we understand that we need to ensure that edx register 
+<a name="l12"><span class="ln">12   </span></a> will contain the address of &quot;auth&quot; variable and eax will contain 1 
+<a name="l13"><span class="ln">13   </span></a>- For the first part we can use &quot;pop edx&quot; and make sure that 
+<a name="l14"><span class="ln">14   </span></a> right after the address of this command on the stack we will put the address of the &quot;auth&quot; variable 
+<a name="l15"><span class="ln">15   </span></a>- For the second part, we can perform &quot;xor eax, eax&quot; then perform &quot;inc eax&quot; one after the other. 
+<a name="l16"><span class="ln">16   </span></a>- Finally our shellcode overflow part consists of the following: 
+<a name="l17"><span class="ln">17   </span></a>(left to right means low to high addresses on the stack) 
+<a name="l18"><span class="ln">18   </span></a>&amp;pop edx, &amp;auth, &amp;xor eax eax, &amp;inc eax, &amp;mov[edx] eax, &amp;original_RET. 
+<a name="l19"><span class="ln">19   </span></a>So we will override the value of &quot;auth&quot; variable and right after jump to continue the original flow</span></pre>
+</body>
+</html>

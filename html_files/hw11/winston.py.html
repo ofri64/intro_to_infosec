@@ -1,0 +1,96 @@
+<html>
+<head>
+<title>winston.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #606366; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(204,120,50); font-weight: bold; }
+.s1 { color: rgb(169,183,198); }
+.s2 { color: rgb(128,128,128); }
+.s3 { color: rgb(165,194,97); }
+.s4 { color: rgb(204,120,50); }
+.s5 { color: rgb(104,151,187); }
+.s6 { color: rgb(98,151,85); font-style: italic; }
+</style>
+</head>
+<BODY BGCOLOR="#2b2b2b">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+winston.py</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<a name="l1"><span class="ln">1    </span></a><span class="s0">from </span><span class="s1">scapy.all </span><span class="s0">import </span><span class="s1">* 
+<a name="l2"><span class="ln">2    </span></a></span><span class="s0">import </span><span class="s1">socket 
+<a name="l3"><span class="ln">3    </span></a></span><span class="s0">import </span><span class="s1">base64 
+<a name="l4"><span class="ln">4    </span></a> 
+<a name="l5"><span class="ln">5    </span></a></span><span class="s2"># the Alpahbet for base64 encoding</span><span class="s1"> 
+<a name="l6"><span class="ln">6    </span></a>ALPHABET = </span><span class="s3">'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'</span><span class="s1"> 
+<a name="l7"><span class="ln">7    </span></a> 
+<a name="l8"><span class="ln">8    </span></a></span><span class="s2"># dictionary for translating each base64 character to 6 bits string</span><span class="s1"> 
+<a name="l9"><span class="ln">9    </span></a>B64_CHAR_BIT_ENCODING = dict([(ALPHABET[i]</span><span class="s4">, </span><span class="s3">'{0:06b}'</span><span class="s1">.format(i))</span><span class="s0">for </span><span class="s1">i </span><span class="s0">in </span><span class="s1">range(</span><span class="s5">64</span><span class="s1">)]) 
+<a name="l10"><span class="ln">10   </span></a> 
+<a name="l11"><span class="ln">11   </span></a>MESSAGE = </span><span class="s3">'I love you'</span><span class="s1"> 
+<a name="l12"><span class="ln">12   </span></a> 
+<a name="l13"><span class="ln">13   </span></a></span><span class="s0">def </span><span class="s1">send_message(ip</span><span class="s4">, </span><span class="s1">port): 
+<a name="l14"><span class="ln">14   </span></a>    </span><span class="s2"># TODO: Reimplement me! (question 2d)</span><span class="s1"> 
+<a name="l15"><span class="ln">15   </span></a>    message_encdoed_bits = encode_message_to_bits_string(MESSAGE)  
+<a name="l16"><span class="ln">16   </span></a>    message_encdoed_bits_len = len(message_encdoed_bits) </span><span class="s2"># how many bits in the message</span><span class="s1"> 
+<a name="l17"><span class="ln">17   </span></a>    total_triplets = message_encdoed_bits_len / </span><span class="s5">3 </span><span class="s2"># always divided by 3!</span><span class="s1"> 
+<a name="l18"><span class="ln">18   </span></a>    triplets = [message_encdoed_bits[i-</span><span class="s5">3</span><span class="s1">:i] </span><span class="s0">for </span><span class="s1">i </span><span class="s0">in </span><span class="s1">range(</span><span class="s5">3</span><span class="s4">, </span><span class="s1">message_encdoed_bits_len+</span><span class="s5">3</span><span class="s4">, </span><span class="s5">3</span><span class="s1">)] 
+<a name="l19"><span class="ln">19   </span></a> 
+<a name="l20"><span class="ln">20   </span></a>    </span><span class="s2"># send a separate tcp packet for each triplet</span><span class="s1"> 
+<a name="l21"><span class="ln">21   </span></a>    </span><span class="s0">for </span><span class="s1">i </span><span class="s0">in </span><span class="s1">range(total_triplets): 
+<a name="l22"><span class="ln">22   </span></a>        triplet = triplets[i] 
+<a name="l23"><span class="ln">23   </span></a>        reserved_value = int(triplet</span><span class="s4">,</span><span class="s5">2</span><span class="s1">) </span><span class="s2"># encode the triplet as the reserved bits</span><span class="s1"> 
+<a name="l24"><span class="ln">24   </span></a>        packet = IP(dst=ip) / TCP(dport=port</span><span class="s4">,</span><span class="s1">sport=</span><span class="s5">65000</span><span class="s4">, </span><span class="s1"> 
+<a name="l25"><span class="ln">25   </span></a>            flags=</span><span class="s3">'A'</span><span class="s4">,</span><span class="s1">reserved=reserved_value</span><span class="s4">, </span><span class="s1">seq=i</span><span class="s4">, </span><span class="s1">ack=total_triplets) </span><span class="s2"># seq indicates current message index</span><span class="s1"> 
+<a name="l26"><span class="ln">26   </span></a>        send(packet) 
+<a name="l27"><span class="ln">27   </span></a> 
+<a name="l28"><span class="ln">28   </span></a> 
+<a name="l29"><span class="ln">29   </span></a></span><span class="s0">def </span><span class="s1">encode_message_to_bits_string(message): 
+<a name="l30"><span class="ln">30   </span></a>    </span><span class="s6">''' 
+<a name="l31"><span class="ln">31   </span></a>    Return a string representing the bits of the base64 encoding of the message 
+<a name="l32"><span class="ln">32   </span></a>    Beacuse the bits represent base64 chars the nubmer of bits will always divide by 6 (and thus also by 3) 
+<a name="l33"><span class="ln">33   </span></a>    '''</span><span class="s1"> 
+<a name="l34"><span class="ln">34   </span></a>    message_bits = </span><span class="s3">&quot;&quot;</span><span class="s1"> 
+<a name="l35"><span class="ln">35   </span></a>    b64_encoded_message = base64.b64encode(message) </span><span class="s2"># first encdode to base64</span><span class="s1"> 
+<a name="l36"><span class="ln">36   </span></a>    </span><span class="s0">for </span><span class="s1">b64_char </span><span class="s0">in </span><span class="s1">b64_encoded_message: </span><span class="s2"># then encode each base64 encoded character to 6 bits string</span><span class="s1"> 
+<a name="l37"><span class="ln">37   </span></a>        </span><span class="s0">if </span><span class="s1">b64_char != </span><span class="s3">'='</span><span class="s1">: </span><span class="s2"># padding will be considered during decoding</span><span class="s1"> 
+<a name="l38"><span class="ln">38   </span></a>            message_bits += B64_CHAR_BIT_ENCODING[b64_char] 
+<a name="l39"><span class="ln">39   </span></a>    </span><span class="s0">return </span><span class="s1">message_bits 
+<a name="l40"><span class="ln">40   </span></a> 
+<a name="l41"><span class="ln">41   </span></a></span><span class="s0">def </span><span class="s1">decode_message_bits_to_string(message_bits): 
+<a name="l42"><span class="ln">42   </span></a>    </span><span class="s6">''' 
+<a name="l43"><span class="ln">43   </span></a>    Accepts as input a string representing the bits of the base64 encoding of the message 
+<a name="l44"><span class="ln">44   </span></a>    and returns the original message 
+<a name="l45"><span class="ln">45   </span></a>    '''</span><span class="s1"> 
+<a name="l46"><span class="ln">46   </span></a>    base64_message = </span><span class="s3">&quot;&quot;</span><span class="s1"> 
+<a name="l47"><span class="ln">47   </span></a>    </span><span class="s0">for </span><span class="s1">i </span><span class="s0">in </span><span class="s1">range(</span><span class="s5">6</span><span class="s4">, </span><span class="s1">len(message_bits)+</span><span class="s5">6</span><span class="s4">, </span><span class="s5">6</span><span class="s1">): </span><span class="s2"># iterate over sequences of 6 bits</span><span class="s1"> 
+<a name="l48"><span class="ln">48   </span></a>        six_bits = message_bits[i-</span><span class="s5">6</span><span class="s1">:i] 
+<a name="l49"><span class="ln">49   </span></a>        b64_char = B64_CHAR_BIT_DECODING[six_bits] </span><span class="s2"># translate 6 bits back to base64 encoded char using our dictionary</span><span class="s1"> 
+<a name="l50"><span class="ln">50   </span></a>        base64_message += b64_char 
+<a name="l51"><span class="ln">51   </span></a> 
+<a name="l52"><span class="ln">52   </span></a>    </span><span class="s2"># now we have a base64 encoded message - but still need to handle padding</span><span class="s1"> 
+<a name="l53"><span class="ln">53   </span></a>    base64_message_len = len(base64_message) 
+<a name="l54"><span class="ln">54   </span></a> 
+<a name="l55"><span class="ln">55   </span></a>    reminder = base64_message_len % </span><span class="s5">4 </span><span class="s2"># if there is no need for padding this will be 0, else we need padding</span><span class="s1"> 
+<a name="l56"><span class="ln">56   </span></a>    </span><span class="s0">if </span><span class="s1">reminder &gt; </span><span class="s5">0</span><span class="s1">:  
+<a name="l57"><span class="ln">57   </span></a>        base64_padded_message_len = (base64_message_len - reminder + </span><span class="s5">4</span><span class="s1">) 
+<a name="l58"><span class="ln">58   </span></a>        padding_bytes_needed = base64_padded_message_len - base64_message_len 
+<a name="l59"><span class="ln">59   </span></a>        base64_message += </span><span class="s3">'=' </span><span class="s1">* padding_bytes_needed </span><span class="s2"># add '=' times the number of bytes we need to padd </span><span class="s1"> 
+<a name="l60"><span class="ln">60   </span></a> 
+<a name="l61"><span class="ln">61   </span></a>    </span><span class="s2"># now we have a valid base64 encoded messagge, including padding - now we just need to decode it</span><span class="s1"> 
+<a name="l62"><span class="ln">62   </span></a>    message = base64.b64decode(base64_message) 
+<a name="l63"><span class="ln">63   </span></a>    </span><span class="s0">return </span><span class="s1">message 
+<a name="l64"><span class="ln">64   </span></a> 
+<a name="l65"><span class="ln">65   </span></a> 
+<a name="l66"><span class="ln">66   </span></a></span><span class="s0">def </span><span class="s1">main(): 
+<a name="l67"><span class="ln">67   </span></a>    send_message(</span><span class="s3">'127.0.0.1'</span><span class="s4">, </span><span class="s5">1984</span><span class="s1">) 
+<a name="l68"><span class="ln">68   </span></a> 
+<a name="l69"><span class="ln">69   </span></a> 
+<a name="l70"><span class="ln">70   </span></a></span><span class="s0">if </span><span class="s1">__name__ == </span><span class="s3">'__main__'</span><span class="s1">: 
+<a name="l71"><span class="ln">71   </span></a>    main() 
+<a name="l72"><span class="ln">72   </span></a></span></pre>
+</body>
+</html>

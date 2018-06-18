@@ -1,0 +1,47 @@
+<html>
+<head>
+<title>q2b.txt</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #606366; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(169,183,198); }
+</style>
+</head>
+<BODY BGCOLOR="#2b2b2b">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+q2b.txt</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<a name="l1"><span class="ln">1    </span></a><span class="s0">Solution to this question is built upon these steps: 
+<a name="l2"><span class="ln">2    </span></a> 
+<a name="l3"><span class="ln">3    </span></a>1) Writing an assembly program to open shell code: 
+<a name="l4"><span class="ln">4    </span></a>    - As written in forum we could not use .ASCII with an ending char we want to replace 
+<a name="l5"><span class="ln">5    </span></a>    beacuse after compilation the string will be written to the text segment of the program, 
+<a name="l6"><span class="ln">6    </span></a>    which is read only and trying to change it will cause a segmentation fault. 
+<a name="l7"><span class="ln">7    </span></a>    - This is the reason why our c program with the shellcode pathced assembly uses the &quot;.STRING&quot; instead 
+<a name="l8"><span class="ln">8    </span></a>    of &quot;.ASCII&quot; - please see &quot;bash_shell_test.c&quot; and &quot;bash_shell_test&quot; executable which open a shell, 
+<a name="l9"><span class="ln">9    </span></a>    with user permissions. 
+<a name="l10"><span class="ln">10   </span></a>    - The real assembly shell code program can be found in &quot;shellcode.asm&quot; and does include the use 
+<a name="l11"><span class="ln">11   </span></a>    of &quot;.ASCII&quot; to create a string and a subtitution of the last char &quot;in memory&quot; in order to avoid 
+<a name="l12"><span class="ln">12   </span></a>    0x00 bytes in our shellcode. Preformed exactly as shown in recitation 
+<a name="l13"><span class="ln">13   </span></a>    - The shell code used in the python q2b script, after the assembler operation, 
+<a name="l14"><span class="ln">14   </span></a>    can be found in &quot;shellcode_machine.txt&quot; 
+<a name="l15"><span class="ln">15   </span></a> 
+<a name="l16"><span class="ln">16   </span></a>2) Using the shell code as an input to the program: 
+<a name="l17"><span class="ln">17   </span></a>    - First step was performing analysis of the core dump file using gdb. 
+<a name="l18"><span class="ln">18   </span></a>    - Segmentation fault occurred at address 0x0804007a, which is exactly the value of EIP register 
+<a name="l19"><span class="ln">19   </span></a>    - Analyzing further we see that the address (on stack) that contains this value is 0xbfffe0ac, 
+<a name="l20"><span class="ln">20   </span></a>    so this is where RET value is stored on stack. 
+<a name="l21"><span class="ln">21   </span></a>    - Next, we see that our shell code (AAAAAAA...) starts exactly on address 0xbfffe069. 
+<a name="l22"><span class="ln">22   </span></a>    so this is where we would like to jump at the end of the function. 
+<a name="l23"><span class="ln">23   </span></a>    - Calculating, (altough already done in section a) the difference between the addresses is 67 bytes. 
+<a name="l24"><span class="ln">24   </span></a>    so our shell code has to be 67 bytes long. 
+<a name="l25"><span class="ln">25   </span></a>    - After the shell code we need to add the address we would like to jump to, in little endian, 
+<a name="l26"><span class="ln">26   </span></a>    so we will add to the shell code the value 69e0ffbf 
+<a name="l27"><span class="ln">27   </span></a>    - In order to make our shellcode (before the return address) exactly 67 bytes we will add 
+<a name="l28"><span class="ln">28   </span></a>    the amount of &quot;NOPs&quot; padding, as needed. 
+<a name="l29"><span class="ln">29   </span></a></span></pre>
+</body>
+</html>

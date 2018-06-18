@@ -1,3 +1,5 @@
 - The solution for this section is quite simple
-- We will sniff all the traffic going throught the network
+
+- We will sniff all the traffic going through the network
+
 - If a packet contains raw data with the word 'LOVE' we will mark it (add to set)

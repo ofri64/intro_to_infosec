@@ -1,11 +1,22 @@
-- Again, we are looking for a logical vulneraiblity in the implementation
-- Clearly we are not going to break RSA, So the authentication part using RSA digital signatures is not something we want to tamper.
+- Again, we are looking for a logical vulnerability in the implementation
+- Clearly we are not going to break RSA,
+ So the authentication part using RSA digital signatures is not something we want to tamper.
 - We have a valid version of a command and signed hash matching it
-- Looking at the code we understand that in order to pass the RSA authentication test we need that the decoded json will have the right value in the "command" and "signature" fields so our json payload must contains these fields.
-- But we are not limited with other fields in the json object, we can add other fields and as long as their names do not collide with "command" and "signature" we will pass the RSA verification test.
+- Looking at the code we understand that in order to pass the
+RSA authentication test we need that the decoded json
+ will have the right value in the "command" and "signature" fields
+  so our json payload must contains these fields.
+- But we are not limited with other fields in the json object,
+we can add other fields and as long as their names do not collide with "command" and "signature"
+we will pass the RSA verification test.
 - The vulnerability here is with Bob's check using regular expressions and not using the decoded json object.
-- All we have to do is to make sure that a string looking like "command": "echo hacked" will be a part of the file content and it also has to appear before the real "command" field as regex search finds the first occurrence.
-- Another constraint we have is that our file still needs to be a valid json object so decoding before the RSA part won't fail.
-- This leads us to consturct a payload that looks something like this:
+- All we have to do is to make sure that a string looking like
+"command": "echo hacked" will be a part of the file content and
+it also has to appear before the real "command" field as regex search finds the first occurrence.
+- Another constraint we have is that our file still needs to be a valid json object so
+decoding before the RSA part won't fail.
+- This leads us to construct a payload that looks something like this:
 {<some string as key>: {"command": "echo hacked"} + <original payload>
-which is a valid json object (nested one), it passes the RSA verification test and the re.search finds the first occurrence of the type "command": 
+which is a valid json object (nested one),
+it passes the RSA verification test and the re.search
+finds the first occurrence of the type "command":

@@ -1,0 +1,64 @@
+<html>
+<head>
+<title>q2.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #606366; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(204,120,50); font-weight: bold; }
+.s1 { color: rgb(169,183,198); }
+.s2 { color: rgb(165,194,97); }
+.s3 { color: rgb(204,120,50); }
+.s4 { color: rgb(104,151,187); }
+.s5 { color: rgb(128,128,128); }
+</style>
+</head>
+<BODY BGCOLOR="#2b2b2b">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+q2.py</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<a name="l1"><span class="ln">1    </span></a><span class="s0">import </span><span class="s1">assemble 
+<a name="l2"><span class="ln">2    </span></a> 
+<a name="l3"><span class="ln">3    </span></a>patch1_path = </span><span class="s2">&quot;patch1.asm&quot;</span><span class="s1"> 
+<a name="l4"><span class="ln">4    </span></a>patch2_path = </span><span class="s2">&quot;patch2.asm&quot;</span><span class="s1"> 
+<a name="l5"><span class="ln">5    </span></a> 
+<a name="l6"><span class="ln">6    </span></a></span><span class="s0">def </span><span class="s1">patch_program(path): 
+<a name="l7"><span class="ln">7    </span></a>    </span><span class="s0">with </span><span class="s1">open(path</span><span class="s3">, </span><span class="s2">'rb'</span><span class="s1">) </span><span class="s0">as </span><span class="s1">reader: 
+<a name="l8"><span class="ln">8    </span></a>        data = reader.read() 
+<a name="l9"><span class="ln">9    </span></a> 
+<a name="l10"><span class="ln">10   </span></a>    small_dead_zone_begin_offset = </span><span class="s4">0x633</span><span class="s1"> 
+<a name="l11"><span class="ln">11   </span></a>    small_dead_zone_end_offset = </span><span class="s4">0x63A</span><span class="s1"> 
+<a name="l12"><span class="ln">12   </span></a>    large_dead_zone_begin_offset = </span><span class="s4">0x5CD</span><span class="s1"> 
+<a name="l13"><span class="ln">13   </span></a>    large_dead_zone_end_offset = </span><span class="s4">0x631</span><span class="s1"> 
+<a name="l14"><span class="ln">14   </span></a> 
+<a name="l15"><span class="ln">15   </span></a>    patch1_bin = assemble.assemble_file(patch1_path) 
+<a name="l16"><span class="ln">16   </span></a>    patch1_len = len(patch1_bin) 
+<a name="l17"><span class="ln">17   </span></a>    patch2_bin = assemble.assemble_file(patch2_path) 
+<a name="l18"><span class="ln">18   </span></a>    patch2_len = len(patch2_bin) 
+<a name="l19"><span class="ln">19   </span></a> 
+<a name="l20"><span class="ln">20   </span></a>    </span><span class="s5"># patch small dead zone</span><span class="s1"> 
+<a name="l21"><span class="ln">21   </span></a>    data = data[:small_dead_zone_begin_offset] + str(patch1_bin) + data[small_dead_zone_begin_offset + patch1_len:] 
+<a name="l22"><span class="ln">22   </span></a>    </span><span class="s5"># patch large dead zone</span><span class="s1"> 
+<a name="l23"><span class="ln">23   </span></a>    data = data[:large_dead_zone_begin_offset] + str(patch2_bin) + data[large_dead_zone_begin_offset + patch2_len:] 
+<a name="l24"><span class="ln">24   </span></a> 
+<a name="l25"><span class="ln">25   </span></a>    </span><span class="s0">with </span><span class="s1">open(path + </span><span class="s2">'.patched'</span><span class="s3">, </span><span class="s2">'wb'</span><span class="s1">) </span><span class="s0">as </span><span class="s1">writer: 
+<a name="l26"><span class="ln">26   </span></a>        writer.write(data) 
+<a name="l27"><span class="ln">27   </span></a> 
+<a name="l28"><span class="ln">28   </span></a> 
+<a name="l29"><span class="ln">29   </span></a></span><span class="s0">def </span><span class="s1">main(argv): 
+<a name="l30"><span class="ln">30   </span></a>    </span><span class="s0">if </span><span class="s1">len(argv) != </span><span class="s4">2</span><span class="s1">: 
+<a name="l31"><span class="ln">31   </span></a>        </span><span class="s0">print</span><span class="s1">(</span><span class="s2">'USAGE: python {} &lt;readfile-program&gt;'</span><span class="s1">.format(argv[</span><span class="s4">0</span><span class="s1">])) 
+<a name="l32"><span class="ln">32   </span></a>        </span><span class="s0">return </span><span class="s1">-</span><span class="s4">1</span><span class="s1"> 
+<a name="l33"><span class="ln">33   </span></a>    path = argv[</span><span class="s4">1</span><span class="s1">] 
+<a name="l34"><span class="ln">34   </span></a>    patch_program(path) 
+<a name="l35"><span class="ln">35   </span></a>    </span><span class="s0">print</span><span class="s1">(</span><span class="s2">'done'</span><span class="s1">) 
+<a name="l36"><span class="ln">36   </span></a> 
+<a name="l37"><span class="ln">37   </span></a> 
+<a name="l38"><span class="ln">38   </span></a></span><span class="s0">if </span><span class="s1">__name__ == </span><span class="s2">'__main__'</span><span class="s1">: 
+<a name="l39"><span class="ln">39   </span></a>    </span><span class="s0">import </span><span class="s1">sys 
+<a name="l40"><span class="ln">40   </span></a>    sys.exit(main(sys.argv)) 
+<a name="l41"><span class="ln">41   </span></a></span></pre>
+</body>
+</html>

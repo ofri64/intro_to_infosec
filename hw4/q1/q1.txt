@@ -1,17 +1,30 @@
 1) Vulnerbility within the sudo.c source code:
 	- The source code uses the library function "strcat".
 	- This function concatenates destination string to a given source string.
-	- The function assumes that the "source" buffer is large enough to contain the source + destination strings together.
-	- Thus, concatenating a destination string that is larger than expected can overflow the source buffer.
+	- The function assumes that the "source" buffer is large enough to contain
+	the source + destination strings together.
+	- Thus, concatenating a destination string that is larger than expected can
+	overflow the source buffer.
 2) Examining the sudo executable using IDA and GDB:
 	- First we need to disassemble the executalbe using IDA.
 	- Specifically we are interested in examining the "check_password" function.
-	- We can understand that the password buffer resides on the stack on addresses EBP-0x20 until EBP-0x0c, the hash buffer resides on addresses EBP-0x60 until EBP-0x20 (after, lower memory values compared to the password buffer).
-	And, most important, the "auth" integer variable takes 4 bytes EBP-0x0c until EBP-0x08 (rigth after the password buffer. how luckily! :) )
-	- Before calling the "strcat" function, the source buffer (password) contains the string "thisisasalt\0" (this is a salt including NULL end of string char at the end)
+	- We can understand that the password buffer resides on the stack
+	 on addresses EBP-0x20 until EBP-0x0c, the hash buffer resides on addresses
+	 EBP-0x60 until EBP-0x20 (after, lower memory values compared to the password buffer).
+	And, most important, the "auth" integer variable takes 4 bytes EBP-0x0c until EBP-0x08
+	(right after the password buffer. how luckily! :) )
+	- Before calling the "strcat" function, the source buffer (password) contains the string
+	"thisisasalt\0" (this is a salt including NULL end of string char at the end)
 3) Exploting the vulnerbility:
-	- Exmining the source code, we understand that if we could assign the value "1" to "auth" variable - then we could pass the password check regardless if it is the true password or not
-	- Having said that, we can conclude that all we have to do is to overflow the password buffer with our program argument so we will assign the value "1" to the memory location of the "auth" variable on the stack.
-	- Using simple calculation, we can understand that we need "password" with total length of 9+4=13 bytes. the value of the first 9 doesn't matter, it is just used to fill the buffer until the end (len(thisisasalt) = 11, the terminating char is ommited druing strcmp. we nedd 20-11=9).
+	- Exmining the source code, we understand that if we could assign
+	 the value "1" to "auth" variable - then we could pass the password check
+	 regardless if it is the true password or not
+	- Having said that, we can conclude that all we have to do is to overflow
+	the password buffer with our program argument so we will assign the value "1" to the memory
+	location of the "auth" variable on the stack.
+	- Using simple calculation, we can understand that we need "password" with total length
+	of 9+4=13 bytes. the value of the first 9 doesn't matter, it is just used to fill the buffer
+	until the end (len(thisisasalt) = 11, the terminating char is ommited druing strcmp. we nedd 20-11=9).
 	- the last 4 bytes should be eqaul to 0x01.
-	- All that's left is to write this as a password (I used AAAAABBBB\0x01 for exaple) inside the python script, passing it to the sudo program.
+	- All that's left is to write this as a password (I used AAAAABBBB\0x01 for exaple)
+	 inside the python script, passing it to the sudo program.

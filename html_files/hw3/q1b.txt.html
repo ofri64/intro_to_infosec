@@ -1,0 +1,28 @@
+<html>
+<head>
+<title>q1b.txt</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #606366; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(169,183,198); }
+</style>
+</head>
+<BODY BGCOLOR="#2b2b2b">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+q1b.txt</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<a name="l1"><span class="ln">1    </span></a><span class="s0">Understanding the logic from previous section, we can easily manipulate the msg files 
+<a name="l2"><span class="ln">2    </span></a>to pass the validation test. 
+<a name="l3"><span class="ln">3    </span></a>In this section we can change the msg file as follows: 
+<a name="l4"><span class="ln">4    </span></a> 
+<a name="l5"><span class="ln">5    </span></a>- Change byte[0] to 0 
+<a name="l6"><span class="ln">6    </span></a>- Change byte[1] to key value (In our case 0xe8) 
+<a name="l7"><span class="ln">7    </span></a>- Leave the rest of the msg unchanged. 
+<a name="l8"><span class="ln">8    </span></a> 
+<a name="l9"><span class="ln">9    </span></a>Meaning we will make zero XOR operations, and compare our initial key to byte[1], 
+<a name="l10"><span class="ln">10   </span></a>which will be equal following directly from our manipulation. Thus, we pass the validation test :)</span></pre>
+</body>
+</html>

@@ -1,0 +1,31 @@
+<html>
+<head>
+<title>q2.txt</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #606366; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(169,183,198); }
+</style>
+</head>
+<BODY BGCOLOR="#2b2b2b">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+q2.txt</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<a name="l1"><span class="ln">1    </span></a><span class="s0">- In this question we will use ptrace to override the function &quot;check_if_virus&quot; 
+<a name="l2"><span class="ln">2    </span></a>to return false indicators on all inputs 
+<a name="l3"><span class="ln">3    </span></a>(and our malware among them) 
+<a name="l4"><span class="ln">4    </span></a>- In this section we will just override the plt code. 
+<a name="l5"><span class="ln">5    </span></a>i.e, the dynamic linking won't happen at all, instead our logic will get executed. 
+<a name="l6"><span class="ln">6    </span></a>- The address we want to override with our code is the address of check_if_virus@plt 
+<a name="l7"><span class="ln">7    </span></a> (written explicitly in the address.py file) 
+<a name="l8"><span class="ln">8    </span></a>- We will use PTRACE_POKE to change the content of this specific memory word 
+<a name="l9"><span class="ln">9    </span></a> (the command works with an entire word, i.e writing 4 bytes at once) 
+<a name="l10"><span class="ln">10   </span></a>- We will change the data in the check_if_virus@plt address to &quot;0xc390c031&quot; 
+<a name="l11"><span class="ln">11   </span></a>which is the opcode for the assembly code: &quot;xor eax, eax; nop; ret&quot; in little endian 
+<a name="l12"><span class="ln">12   </span></a>(adding nop to complete to exactly 1 memory word) 
+<a name="l13"><span class="ln">13   </span></a>- This way the call will always return 0, thus detecting every file as clean, including our malware.</span></pre>
+</body>
+</html>

@@ -1,0 +1,28 @@
+<html>
+<head>
+<title>q1.txt</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #606366; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(169,183,198); }
+</style>
+</head>
+<BODY BGCOLOR="#2b2b2b">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+q1.txt</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<a name="l1"><span class="ln">1    </span></a><span class="s0">- In this question we are just sniffing HTTP unencrypted traffic to capture login credentials 
+<a name="l2"><span class="ln">2    </span></a>- First we want to filter only the http traffic to the server. 
+<a name="l3"><span class="ln">3    </span></a> We will use destination port 80 (for http) and destination ip of 
+<a name="l4"><span class="ln">4    </span></a> infosec.cs.tau.ac.il server (as seen using wireshark) 
+<a name="l5"><span class="ln">5    </span></a>- Now we have to parse only the http part out of the protocols stack, 
+<a name="l6"><span class="ln">6    </span></a> and specifically parse out the credentials 
+<a name="l7"><span class="ln">7    </span></a>- We will convert our packet to string, look for &quot;POST&quot; 
+<a name="l8"><span class="ln">8    </span></a>method inside the string and the infosec website url, 
+<a name="l9"><span class="ln">9    </span></a>then we will use use regular expressions to find the HTML form fields - 
+<a name="l10"><span class="ln">10   </span></a>i.e the username and password fields values.</span></pre>
+</body>
+</html>

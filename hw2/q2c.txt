@@ -1,10 +1,14 @@
-The exploit we take advantage of in this section is the fact that we know what we want the original message to be - it should be 1.
-The RSA verification algorithm assumes an original message, m, was signed using a private key d, by performing c = m^d (mod n)
-So in order to verify the authenticity of the message the method performs c' = c^e (mod n) - using the public key e attribute and n the public modulo value.
+The exploit we take advantage of in this section is the fact that we know
+what we want the original message to be - it should be 1.
+The RSA verification algorithm assumes an original message, m, was signed using a
+private key d, by performing c = m^d (mod n)
+So in order to verify the authenticity of the message the method performs c' = c^e (mod n)
+ - using the public key e attribute and n the public modulo value.
 Than comparing the result c' to the message sent, verifying they are indeed equal.
 In our case we want to forge the message to be of value 1 (CODE_APPROVAL).
 So all we have to do is to look for a value, 'c', which holds that c^e (mod n) == 1.
 A trivial solution is to set c = 1.
 
-To sum it up - our response includes status attribute with value 1 (CODE_APPROVAL) and signature attribute with value 1.
+To sum it up - our response includes status attribute with value 1 (CODE_APPROVAL)
+and signature attribute with value 1.
 So it holds that 1^e (mod n) = 1 mod(n) = 1 == response.status.

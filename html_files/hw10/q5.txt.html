@@ -1,0 +1,55 @@
+<html>
+<head>
+<title>q5.txt</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #606366; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(169,183,198); }
+</style>
+</head>
+<BODY BGCOLOR="#2b2b2b">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+q5.txt</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<a name="l1"><span class="ln">1    </span></a><span class="s0">- In this question we need to implement CSRF attack 
+<a name="l2"><span class="ln">2    </span></a> 
+<a name="l3"><span class="ln">3    </span></a>- We will exploit the fact that the form / 
+<a name="l4"><span class="ln">4    </span></a>messaging mechanism doesn't include session unique token 
+<a name="l5"><span class="ln">5    </span></a> (like we seen in lecture) so we can forge a post request 
+<a name="l6"><span class="ln">6    </span></a> of a logged user using his current session cookies 
+<a name="l7"><span class="ln">7    </span></a> 
+<a name="l8"><span class="ln">8    </span></a>- This exploit is caused by the behaviour of the browser that 
+<a name="l9"><span class="ln">9    </span></a>appends a session cookie to every request 
+<a name="l10"><span class="ln">10   </span></a> (this is http/browsers mechanism to keep state between request. http protocol is stateless!) 
+<a name="l11"><span class="ln">11   </span></a> 
+<a name="l12"><span class="ln">12   </span></a>- While a user in logged on to the site we can send a 
+<a name="l13"><span class="ln">13   </span></a>post request to the server in order to post a message. 
+<a name="l14"><span class="ln">14   </span></a> 
+<a name="l15"><span class="ln">15   </span></a>- We will do it from another html page, 
+<a name="l16"><span class="ln">16   </span></a> in a different domain that is controlled by us, 
+<a name="l17"><span class="ln">17   </span></a> using the ajax module - 
+<a name="l18"><span class="ln">18   </span></a> all we need to care about is that some user will be logged on 
+<a name="l19"><span class="ln">19   </span></a> (so the browser will add his cookie) 
+<a name="l20"><span class="ln">20   </span></a> 
+<a name="l21"><span class="ln">21   </span></a>- Thus, we can embed in our html the following script: 
+<a name="l22"><span class="ln">22   </span></a>    $.ajax( 
+<a name="l23"><span class="ln">23   </span></a>    { 
+<a name="l24"><span class="ln">24   </span></a>        url: 'http://localhost:8000/post', 
+<a name="l25"><span class="ln">25   </span></a>        type: 'POST', 
+<a name="l26"><span class="ln">26   </span></a>        data: {channel: &quot;#announcements&quot;, message : &quot;Give Edward a Raise!&quot;} , 
+<a name="l27"><span class="ln">27   </span></a>        xhrFields: {withCredentials: true}, 
+<a name="l28"><span class="ln">28   </span></a>        crossDomain: true 
+<a name="l29"><span class="ln">29   </span></a>      } 
+<a name="l30"><span class="ln">30   </span></a>    ); 
+<a name="l31"><span class="ln">31   </span></a> 
+<a name="l32"><span class="ln">32   </span></a>- Explaining: 
+<a name="l33"><span class="ln">33   </span></a>    - send POST request to our server (/post page for message posting) 
+<a name="l34"><span class="ln">34   </span></a>    - data is the data we want to send in our POST request (form values) 
+<a name="l35"><span class="ln">35   </span></a>    - xhrFields - used to tell the browser to add session cookies if there are 
+<a name="l36"><span class="ln">36   </span></a>    - cross domain - we are sending request to another domain, to the chat application server 
+<a name="l37"><span class="ln">37   </span></a></span></pre>
+</body>
+</html>

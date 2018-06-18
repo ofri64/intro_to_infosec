@@ -1,23 +1,60 @@
-- This senction includes few seperated phases
+- This section includes few separated phases
+
 - Encoding the message data as a multiple of bits triplets:
+
 	- This is necessary because we have only 3 reserved bits in the tcp header
-	- In order to ensure the length of the encoding of the message to bits string will be a multiple of 3 I leveraged base64 encoding
-	- First encode the message to base64 encdoing. each char in base64 encoding is represented in 6 bits. So we can encdode base64 chars to bits string and the number of bits will always be a multiple of 6, so it will also be a multiple of 3 as we need.
-	- When we encode base64 chars to bit strings we will ignore padding chars (the '=' char) - this will be handled later during decoding
+
+	- In order to ensure the length of the encoding of the message to bits
+	string will be a multiple of 3 I leveraged base64 encoding
+
+	- First encode the message to base64 encoding.
+	each char in base64 encoding is represented in 6 bits.
+	So we can encode base64 chars to bits string and the number of bits will
+	 always be a multiple of 6, so it will also be a multiple of 3 as we need.
+
+	- When we encode base64 chars to bit strings we will ignore padding chars (the '=' char) -
+	 this will be handled later during decoding
+
 - Decoding a stream of bits triplets to the original message:
 	- Here we will have to perform the reverse logic
+
 	- We will translate every 6 bits to a base64 char
+
 	- Then we will check the total length of our base64 string (number of chars)
-	- If the length is not a multiple of 4 - it means the original base64 string included padding. This is because in base64 every 3 bytes are translated to 4 base64 letters.
-	- So if the length is not a multiple of 4 - we will need to add matching number of padding signs ('=')
-	- After we have a valid base64 encoded string (including padding) we can just decode it back
+
+	- If the length is not a multiple of 4 -
+	 it means the original base64 string included padding.
+	 This is because in base64 every 3 bytes are translated to 4 base64 letters.
+
+	- So if the length is not a multiple of 4 -
+	we will need to add matching number of padding signs ('=')
+
+	- After we have a valid base64 encoded string (including padding)
+	 we can just decode it back
+
 	- See full explanation in code documentation
-- Sending tcp packets with encoded message in the resereved bits:
-	- After we encdoed our message into triplets of bits winstion will craft a tcp packet for each triplet
-	- As instructed - the ack number will always be the total number of triplets, and the seq value will indicate the index of the current packet
-	- Of course the resereved bits will include the value of the current triplet
+
+- Sending tcp packets with encoded message in the reserved bits:
+
+	- After we encoded our message into triplets of bits,
+	 winston will craft a tcp packet for each triplet
+
+	- As instructed - the ack number will always be the total number of triplets,
+	 and the seq value will indicate the index of the current packet
+
+	- Of course the reserved bits will include the value of the current triplet
+
 - Receiving tcp packets:
-	- Julia will have to sniff the network (our ack and seq numbers doesn't implement tcp natural mechanism, we won't be able to maintain a connection)
+
+	- Julia will have to sniff the network
+	(our ack and seq numbers doesn't implement tcp natural mechanism,
+	 we won't be able to maintain a connection)
+
 	- Filter only packets from source port 65,000, that contains tcp headers
-	- After the first packet was received we know how many packets to look for (the ack value) so we can update our stopping criterion for the packet sniffing - when we recieved a packet with seq number indicating it is the last packet
-	- Then, Julia will decode all the bits triplets she extracted from the reserved bits and reveal Winston's message
+
+	- After the first packet was received we know how many packets to look for
+	(the ack value) so we can update our stopping criterion for the packet sniffing -
+	 when we received a packet with seq number indicating it is the last packet
+
+	- Then, Julia will decode all the bits triplets
+	she extracted from the reserved bits and reveal Winston's message

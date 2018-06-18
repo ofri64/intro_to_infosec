@@ -1,0 +1,104 @@
+<html>
+<head>
+<title>q1a.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #606366; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(204,120,50); font-weight: bold; }
+.s1 { color: rgb(169,183,198); }
+.s2 { color: rgb(165,194,97); }
+.s3 { color: rgb(104,151,187); }
+.s4 { color: rgb(204,120,50); }
+.s5 { color: rgb(98,151,85); font-style: italic; }
+.s6 { color: rgb(128,128,128); }
+</style>
+</head>
+<BODY BGCOLOR="#2b2b2b">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+q1a.py</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<a name="l1"><span class="ln">1    </span></a><span class="s0">from </span><span class="s1">scapy.all </span><span class="s0">import </span><span class="s1">* 
+<a name="l2"><span class="ln">2    </span></a> 
+<a name="l3"><span class="ln">3    </span></a> 
+<a name="l4"><span class="ln">4    </span></a>OPEN = </span><span class="s2">'open'</span><span class="s1"> 
+<a name="l5"><span class="ln">5    </span></a>CLOSED = </span><span class="s2">'closed'</span><span class="s1"> 
+<a name="l6"><span class="ln">6    </span></a>FILTERED = </span><span class="s2">'filtered'</span><span class="s1"> 
+<a name="l7"><span class="ln">7    </span></a> 
+<a name="l8"><span class="ln">8    </span></a>RST_ACK = </span><span class="s3">0x14</span><span class="s1"> 
+<a name="l9"><span class="ln">9    </span></a>SYN_ACK = </span><span class="s3">0x12</span><span class="s1"> 
+<a name="l10"><span class="ln">10   </span></a> 
+<a name="l11"><span class="ln">11   </span></a> 
+<a name="l12"><span class="ln">12   </span></a> 
+<a name="l13"><span class="ln">13   </span></a></span><span class="s0">def </span><span class="s1">generate_syn_packets(ip</span><span class="s4">, </span><span class="s1">ports): 
+<a name="l14"><span class="ln">14   </span></a>    </span><span class="s5">&quot;&quot;&quot;Returns a list of TCP SYN packets, to perform a SYN scan on the given 
+<a name="l15"><span class="ln">15   </span></a>       TCP ports.&quot;&quot;&quot;</span><span class="s1"> 
+<a name="l16"><span class="ln">16   </span></a>    </span><span class="s6"># TODO: Implement me</span><span class="s1"> 
+<a name="l17"><span class="ln">17   </span></a>    packets_lst = [] 
+<a name="l18"><span class="ln">18   </span></a>    </span><span class="s0">for </span><span class="s1">port </span><span class="s0">in </span><span class="s1">ports: 
+<a name="l19"><span class="ln">19   </span></a>        </span><span class="s6"># for each port, craft a tcp SYN packet and append to the packets list</span><span class="s1"> 
+<a name="l20"><span class="ln">20   </span></a>        packet = IP(dst=ip) / TCP(dport=port</span><span class="s4">, </span><span class="s1">flags=</span><span class="s2">'S'</span><span class="s1">) 
+<a name="l21"><span class="ln">21   </span></a>        packets_lst.append(packet) 
+<a name="l22"><span class="ln">22   </span></a>    </span><span class="s0">return </span><span class="s1">packets_lst 
+<a name="l23"><span class="ln">23   </span></a> 
+<a name="l24"><span class="ln">24   </span></a> 
+<a name="l25"><span class="ln">25   </span></a></span><span class="s0">def </span><span class="s1">analyze_scan(ip</span><span class="s4">, </span><span class="s1">ports</span><span class="s4">, </span><span class="s1">answered</span><span class="s4">, </span><span class="s1">unanswered): 
+<a name="l26"><span class="ln">26   </span></a>    </span><span class="s5">&quot;&quot;&quot;Analyze the results from `sr` of SYN packets. 
+<a name="l27"><span class="ln">27   </span></a>     
+<a name="l28"><span class="ln">28   </span></a>    This function returns a dictionary from port number, to 
+<a name="l29"><span class="ln">29   </span></a>    'open' / 'closed' / 'filtered', based on the answered and unanswered packets 
+<a name="l30"><span class="ln">30   </span></a>    return from `sr`. 
+<a name="l31"><span class="ln">31   </span></a>    &quot;&quot;&quot;</span><span class="s1"> 
+<a name="l32"><span class="ln">32   </span></a>    results = dict() 
+<a name="l33"><span class="ln">33   </span></a>    </span><span class="s6"># TODO: Implement me</span><span class="s1"> 
+<a name="l34"><span class="ln">34   </span></a>    </span><span class="s0">for </span><span class="s1">packet </span><span class="s0">in </span><span class="s1">unanswered: 
+<a name="l35"><span class="ln">35   </span></a>        </span><span class="s6"># if unanswered then the port is filtered </span><span class="s1"> 
+<a name="l36"><span class="ln">36   </span></a>        tcp_layer = packet.getlayer(TCP) 
+<a name="l37"><span class="ln">37   </span></a>        port = tcp_layer.dport 
+<a name="l38"><span class="ln">38   </span></a>        results[port] = FILTERED 
+<a name="l39"><span class="ln">39   </span></a> 
+<a name="l40"><span class="ln">40   </span></a>    </span><span class="s0">for </span><span class="s1">sent_packet</span><span class="s4">, </span><span class="s1">response_packet </span><span class="s0">in </span><span class="s1">answered: 
+<a name="l41"><span class="ln">41   </span></a>        </span><span class="s6"># if packet was answered it depends on the flags in the response</span><span class="s1"> 
+<a name="l42"><span class="ln">42   </span></a>        tcp_layer = response_packet.getlayer(TCP) 
+<a name="l43"><span class="ln">43   </span></a>        </span><span class="s0">if </span><span class="s1">tcp_layer: 
+<a name="l44"><span class="ln">44   </span></a>            port = tcp_layer.sport </span><span class="s6"># source port of response is dest port of packet sent</span><span class="s1"> 
+<a name="l45"><span class="ln">45   </span></a>            flags = tcp_layer.flags 
+<a name="l46"><span class="ln">46   </span></a>            </span><span class="s0">if </span><span class="s1">flags == RST_ACK: </span><span class="s6"># RST - host is not listening on this port</span><span class="s1"> 
+<a name="l47"><span class="ln">47   </span></a>                results[port] = CLOSED 
+<a name="l48"><span class="ln">48   </span></a>            </span><span class="s0">if </span><span class="s1">flags == SYN_ACK: </span><span class="s6"># SYN + ACK - host do listen on this port, port is open</span><span class="s1"> 
+<a name="l49"><span class="ln">49   </span></a>                results[port] = OPEN 
+<a name="l50"><span class="ln">50   </span></a> 
+<a name="l51"><span class="ln">51   </span></a>    </span><span class="s0">return </span><span class="s1">results 
+<a name="l52"><span class="ln">52   </span></a>     
+<a name="l53"><span class="ln">53   </span></a> 
+<a name="l54"><span class="ln">54   </span></a></span><span class="s0">def </span><span class="s1">stealth_syn_scan(ip</span><span class="s4">, </span><span class="s1">ports</span><span class="s4">, </span><span class="s1">timeout): 
+<a name="l55"><span class="ln">55   </span></a>    </span><span class="s6"># WARNING: DO NOT MODIFY THIS FUNCTION</span><span class="s1"> 
+<a name="l56"><span class="ln">56   </span></a>    packets = generate_syn_packets(ip</span><span class="s4">, </span><span class="s1">ports) 
+<a name="l57"><span class="ln">57   </span></a>    answered</span><span class="s4">, </span><span class="s1">unanswered = sr(packets</span><span class="s4">, </span><span class="s1">timeout=timeout) 
+<a name="l58"><span class="ln">58   </span></a>    </span><span class="s0">return </span><span class="s1">analyze_scan(ip</span><span class="s4">, </span><span class="s1">ports</span><span class="s4">, </span><span class="s1">answered</span><span class="s4">, </span><span class="s1">unanswered) 
+<a name="l59"><span class="ln">59   </span></a> 
+<a name="l60"><span class="ln">60   </span></a> 
+<a name="l61"><span class="ln">61   </span></a></span><span class="s0">def </span><span class="s1">main(argv): 
+<a name="l62"><span class="ln">62   </span></a>    </span><span class="s6"># WARNING: DO NOT MODIFY THIS FUNCTION</span><span class="s1"> 
+<a name="l63"><span class="ln">63   </span></a>    </span><span class="s0">if not </span><span class="s3">3 </span><span class="s1">&lt;= len(argv) &lt;= </span><span class="s3">4</span><span class="s1">: 
+<a name="l64"><span class="ln">64   </span></a>        </span><span class="s0">print</span><span class="s1">(</span><span class="s2">'USAGE: %s &lt;ip&gt; &lt;ports&gt; [timeout]' </span><span class="s1">% argv[</span><span class="s3">0</span><span class="s1">]) 
+<a name="l65"><span class="ln">65   </span></a>        </span><span class="s0">return </span><span class="s3">1</span><span class="s1"> 
+<a name="l66"><span class="ln">66   </span></a>    ip    = argv[</span><span class="s3">1</span><span class="s1">] 
+<a name="l67"><span class="ln">67   </span></a>    ports = [int(port) </span><span class="s0">for </span><span class="s1">port </span><span class="s0">in </span><span class="s1">argv[</span><span class="s3">2</span><span class="s1">].split(</span><span class="s2">','</span><span class="s1">)] 
+<a name="l68"><span class="ln">68   </span></a>    </span><span class="s0">if </span><span class="s1">len(argv) == </span><span class="s3">4</span><span class="s1">: 
+<a name="l69"><span class="ln">69   </span></a>        timeout = int(argv[</span><span class="s3">3</span><span class="s1">]) 
+<a name="l70"><span class="ln">70   </span></a>    </span><span class="s0">else</span><span class="s1">: 
+<a name="l71"><span class="ln">71   </span></a>        timeout = </span><span class="s3">5</span><span class="s1"> 
+<a name="l72"><span class="ln">72   </span></a>    results = stealth_syn_scan(ip</span><span class="s4">, </span><span class="s1">ports</span><span class="s4">, </span><span class="s1">timeout) 
+<a name="l73"><span class="ln">73   </span></a>    </span><span class="s0">for </span><span class="s1">port</span><span class="s4">, </span><span class="s1">result </span><span class="s0">in </span><span class="s1">results.items(): 
+<a name="l74"><span class="ln">74   </span></a>        </span><span class="s0">print</span><span class="s1">(</span><span class="s2">'port %d is %s' </span><span class="s1">% (port</span><span class="s4">, </span><span class="s1">result)) 
+<a name="l75"><span class="ln">75   </span></a> 
+<a name="l76"><span class="ln">76   </span></a> 
+<a name="l77"><span class="ln">77   </span></a></span><span class="s0">if </span><span class="s1">__name__ == </span><span class="s2">'__main__'</span><span class="s1">: 
+<a name="l78"><span class="ln">78   </span></a>    </span><span class="s0">import </span><span class="s1">sys 
+<a name="l79"><span class="ln">79   </span></a>    sys.exit(main(sys.argv)) 
+<a name="l80"><span class="ln">80   </span></a></span></pre>
+</body>
+</html>

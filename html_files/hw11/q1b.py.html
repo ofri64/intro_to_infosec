@@ -1,0 +1,154 @@
+<html>
+<head>
+<title>q1b.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #606366; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(204,120,50); font-weight: bold; }
+.s1 { color: rgb(169,183,198); }
+.s2 { color: rgb(104,151,187); }
+.s3 { color: rgb(128,128,128); }
+.s4 { color: rgb(98,151,85); font-style: italic; }
+.s5 { color: rgb(204,120,50); }
+.s6 { color: rgb(165,194,97); }
+</style>
+</head>
+<BODY BGCOLOR="#2b2b2b">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+q1b.py</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<a name="l1"><span class="ln">1    </span></a><span class="s0">import </span><span class="s1">time 
+<a name="l2"><span class="ln">2    </span></a></span><span class="s0">from </span><span class="s1">scapy.all </span><span class="s0">import </span><span class="s1">* 
+<a name="l3"><span class="ln">3    </span></a> 
+<a name="l4"><span class="ln">4    </span></a> 
+<a name="l5"><span class="ln">5    </span></a>WINDOW       = </span><span class="s2">60</span><span class="s1"> 
+<a name="l6"><span class="ln">6    </span></a>MAX_ATTEMPTS = </span><span class="s2">15</span><span class="s1"> 
+<a name="l7"><span class="ln">7    </span></a> 
+<a name="l8"><span class="ln">8    </span></a> 
+<a name="l9"><span class="ln">9    </span></a></span><span class="s3"># Initialize your data structures here</span><span class="s1"> 
+<a name="l10"><span class="ln">10   </span></a></span><span class="s3"># TODO: Initialize your data structures</span><span class="s1"> 
+<a name="l11"><span class="ln">11   </span></a> 
+<a name="l12"><span class="ln">12   </span></a></span><span class="s0">class </span><span class="s1">SynNode(): 
+<a name="l13"><span class="ln">13   </span></a>    </span><span class="s4">''' 
+<a name="l14"><span class="ln">14   </span></a>    A node of a linked list representing a SYN request sent in a specific timestamp 
+<a name="l15"><span class="ln">15   </span></a>    '''</span><span class="s1"> 
+<a name="l16"><span class="ln">16   </span></a>    </span><span class="s0">def </span><span class="s1">__init__(self</span><span class="s5">, </span><span class="s1">timestamp): 
+<a name="l17"><span class="ln">17   </span></a>        self.timestamp = timestamp 
+<a name="l18"><span class="ln">18   </span></a>        self.next = None 
+<a name="l19"><span class="ln">19   </span></a> 
+<a name="l20"><span class="ln">20   </span></a>    </span><span class="s0">def </span><span class="s1">check_old_node(self</span><span class="s5">, </span><span class="s1">other_timestamp</span><span class="s5">, </span><span class="s1">window=WINDOW): 
+<a name="l21"><span class="ln">21   </span></a>        </span><span class="s4">''' 
+<a name="l22"><span class="ln">22   </span></a>        Check if a specific node is &quot;too old&quot; meaning it's timestamp is not inside 
+<a name="l23"><span class="ln">23   </span></a>        the given window infered by the timestamp given 
+<a name="l24"><span class="ln">24   </span></a>        parameters: 
+<a name="l25"><span class="ln">25   </span></a>        other_timestamp - a datetime.datetime object 
+<a name="l26"><span class="ln">26   </span></a>        window = window size in seconds unit 
+<a name="l27"><span class="ln">27   </span></a>        '''</span><span class="s1"> 
+<a name="l28"><span class="ln">28   </span></a>        diff_seconds = other_timestamp - self.timestamp </span><span class="s3"># subtructing two dateime object result in timedelta object</span><span class="s1"> 
+<a name="l29"><span class="ln">29   </span></a>        </span><span class="s0">return </span><span class="s1">diff_seconds &gt; window </span><span class="s3"># check whether delta total seconds is greater than window</span><span class="s1"> 
+<a name="l30"><span class="ln">30   </span></a> 
+<a name="l31"><span class="ln">31   </span></a></span><span class="s0">class </span><span class="s1">LinkedList(): 
+<a name="l32"><span class="ln">32   </span></a>    </span><span class="s4">''' 
+<a name="l33"><span class="ln">33   </span></a>    A linked list of Syn nodes. 
+<a name="l34"><span class="ln">34   </span></a>    holds pointers to the head and tail of the list and a counter for numer of nodes in the list 
+<a name="l35"><span class="ln">35   </span></a>    '''</span><span class="s1"> 
+<a name="l36"><span class="ln">36   </span></a>    </span><span class="s0">def </span><span class="s1">__init__(self</span><span class="s5">, </span><span class="s1">head=None</span><span class="s5">, </span><span class="s1">tail=None): 
+<a name="l37"><span class="ln">37   </span></a>        self.head = head 
+<a name="l38"><span class="ln">38   </span></a>        self.tail = tail 
+<a name="l39"><span class="ln">39   </span></a>        self.total_requests_window = </span><span class="s2">0</span><span class="s1"> 
+<a name="l40"><span class="ln">40   </span></a> 
+<a name="l41"><span class="ln">41   </span></a>    </span><span class="s0">def </span><span class="s1">remove_old_requests(self</span><span class="s5">, </span><span class="s1">timestamp): 
+<a name="l42"><span class="ln">42   </span></a>        </span><span class="s4">''' 
+<a name="l43"><span class="ln">43   </span></a>        Iterate over the nodes in the list and check if a node is outside the current timeframe window 
+<a name="l44"><span class="ln">44   </span></a>        the nodes are sorted in ascending order so when we reach a node that is inside the window  
+<a name="l45"><span class="ln">45   </span></a>        we can stop the iterator. 
+<a name="l46"><span class="ln">46   </span></a>        '''</span><span class="s1"> 
+<a name="l47"><span class="ln">47   </span></a>        </span><span class="s0">if not </span><span class="s1">self.head: 
+<a name="l48"><span class="ln">48   </span></a>            </span><span class="s0">return</span><span class="s1"> 
+<a name="l49"><span class="ln">49   </span></a>        current_node = self.head 
+<a name="l50"><span class="ln">50   </span></a>        </span><span class="s0">while </span><span class="s1">current_node </span><span class="s0">is not </span><span class="s1">None </span><span class="s0">and </span><span class="s1">current_node.check_old_node(timestamp): 
+<a name="l51"><span class="ln">51   </span></a>            next_node = current_node.next 
+<a name="l52"><span class="ln">52   </span></a>            self.head = next_node </span><span class="s3"># effectively remove current node from list</span><span class="s1"> 
+<a name="l53"><span class="ln">53   </span></a>            current_node = next_node 
+<a name="l54"><span class="ln">54   </span></a>            self.total_requests_window -= </span><span class="s2">1 </span><span class="s3"># must not forget to decrease total nodes counter by one</span><span class="s1"> 
+<a name="l55"><span class="ln">55   </span></a> 
+<a name="l56"><span class="ln">56   </span></a>    </span><span class="s0">def </span><span class="s1">add_request_log(self</span><span class="s5">, </span><span class="s1">timestamp): 
+<a name="l57"><span class="ln">57   </span></a>        </span><span class="s4">''' 
+<a name="l58"><span class="ln">58   </span></a>        Create a new SynNode and add it to the end of our list 
+<a name="l59"><span class="ln">59   </span></a>        '''</span><span class="s1"> 
+<a name="l60"><span class="ln">60   </span></a>        node = SynNode(timestamp) 
+<a name="l61"><span class="ln">61   </span></a>        </span><span class="s0">if not </span><span class="s1">self.head: </span><span class="s3"># if it is the first node in our list</span><span class="s1"> 
+<a name="l62"><span class="ln">62   </span></a>            self.head = node 
+<a name="l63"><span class="ln">63   </span></a>            self.tail = node 
+<a name="l64"><span class="ln">64   </span></a>            self.total_requests_window += </span><span class="s2">1</span><span class="s1"> 
+<a name="l65"><span class="ln">65   </span></a>        </span><span class="s0">else</span><span class="s1">: </span><span class="s3"># just update tail</span><span class="s1"> 
+<a name="l66"><span class="ln">66   </span></a>            self.tail.next = node 
+<a name="l67"><span class="ln">67   </span></a>            self.tail = node 
+<a name="l68"><span class="ln">68   </span></a>            self.total_requests_window += </span><span class="s2">1</span><span class="s1"> 
+<a name="l69"><span class="ln">69   </span></a> 
+<a name="l70"><span class="ln">70   </span></a>ip_syn_lists = {} </span><span class="s3"># dictionary for every ip key - value will be timestamps list</span><span class="s1"> 
+<a name="l71"><span class="ln">71   </span></a> 
+<a name="l72"><span class="ln">72   </span></a>blocked = set()  </span><span class="s3"># We keep blocked IPs in this set</span><span class="s1"> 
+<a name="l73"><span class="ln">73   </span></a> 
+<a name="l74"><span class="ln">74   </span></a> 
+<a name="l75"><span class="ln">75   </span></a></span><span class="s0">def </span><span class="s1">on_packet(packet): 
+<a name="l76"><span class="ln">76   </span></a>    </span><span class="s4">&quot;&quot;&quot;This function will be called for each packet. 
+<a name="l77"><span class="ln">77   </span></a>    Use this function to analyze how many packets were sent from the sender 
+<a name="l78"><span class="ln">78   </span></a>    during the last window, and if needed, call the 'block(ip)' function to 
+<a name="l79"><span class="ln">79   </span></a>    block the sender.&quot;&quot;&quot;</span><span class="s1"> 
+<a name="l80"><span class="ln">80   </span></a>    </span><span class="s3"># TODO: Implement me</span><span class="s1"> 
+<a name="l81"><span class="ln">81   </span></a>    </span><span class="s3"># WARNING: You must call block(ip) to do the blocking.</span><span class="s1"> 
+<a name="l82"><span class="ln">82   </span></a>    tcp = packet.getlayer(TCP) </span><span class="s3"># ignore icmp and so on</span><span class="s1"> 
+<a name="l83"><span class="ln">83   </span></a>    </span><span class="s0">if not </span><span class="s1">tcp: 
+<a name="l84"><span class="ln">84   </span></a>        </span><span class="s0">return</span><span class="s1"> 
+<a name="l85"><span class="ln">85   </span></a>    tcp_flags = tcp.flags 
+<a name="l86"><span class="ln">86   </span></a>    </span><span class="s0">if not </span><span class="s1">tcp_flags == </span><span class="s2">2</span><span class="s1">: </span><span class="s3"># It is not a tcp SYN packet - ignore</span><span class="s1"> 
+<a name="l87"><span class="ln">87   </span></a>        </span><span class="s0">return</span><span class="s1"> 
+<a name="l88"><span class="ln">88   </span></a>    src_ip = packet[IP].src 
+<a name="l89"><span class="ln">89   </span></a> 
+<a name="l90"><span class="ln">90   </span></a>    </span><span class="s3"># now use our linked list data structure to check how many requests were sent by this ip</span><span class="s1"> 
+<a name="l91"><span class="ln">91   </span></a>    </span><span class="s3"># current_timestamp will be our 'point in time' for checking the logic</span><span class="s1"> 
+<a name="l92"><span class="ln">92   </span></a> 
+<a name="l93"><span class="ln">93   </span></a>    </span><span class="s0">if </span><span class="s1">src_ip </span><span class="s0">not in </span><span class="s1">ip_syn_lists: 
+<a name="l94"><span class="ln">94   </span></a>        ip_syn_lists[src_ip] = LinkedList() </span><span class="s3"># creaete new list if the it is the first SYN request from this ip</span><span class="s1"> 
+<a name="l95"><span class="ln">95   </span></a> 
+<a name="l96"><span class="ln">96   </span></a>    ip_lst = ip_syn_lists[src_ip] 
+<a name="l97"><span class="ln">97   </span></a>    current_timestamp = int(time.time()) 
+<a name="l98"><span class="ln">98   </span></a>    ip_lst.remove_old_requests(current_timestamp) </span><span class="s3"># first we remove old requests</span><span class="s1"> 
+<a name="l99"><span class="ln">99   </span></a>    ip_lst.add_request_log(current_timestamp) </span><span class="s3"># then add current SYN request to list</span><span class="s1"> 
+<a name="l100"><span class="ln">100  </span></a> 
+<a name="l101"><span class="ln">101  </span></a> 
+<a name="l102"><span class="ln">102  </span></a>    </span><span class="s0">if </span><span class="s1">is_blocked(src_ip): 
+<a name="l103"><span class="ln">103  </span></a>        </span><span class="s0">return </span><span class="s3"># no need to add an iptable rule if this ip is already blocked</span><span class="s1"> 
+<a name="l104"><span class="ln">104  </span></a> 
+<a name="l105"><span class="ln">105  </span></a>    </span><span class="s0">if </span><span class="s1">ip_lst.total_requests_window &gt; MAX_ATTEMPTS: </span><span class="s3"># if the list is too long block the ip </span><span class="s1"> 
+<a name="l106"><span class="ln">106  </span></a>            block(src_ip) </span><span class="s3"># add a rule to block this ip</span><span class="s1"> 
+<a name="l107"><span class="ln">107  </span></a> 
+<a name="l108"><span class="ln">108  </span></a></span><span class="s0">def </span><span class="s1">generate_block_command(ip): 
+<a name="l109"><span class="ln">109  </span></a>    </span><span class="s4">&quot;&quot;&quot;Generate a command that when executed in the shell, blocks this IP. 
+<a name="l110"><span class="ln">110  </span></a>    The blocking will be based on `iptables` and must drop all incoming traffic 
+<a name="l111"><span class="ln">111  </span></a>    from the specified IP.&quot;&quot;&quot;</span><span class="s1"> 
+<a name="l112"><span class="ln">112  </span></a>    </span><span class="s3"># TODO: Implement me</span><span class="s1"> 
+<a name="l113"><span class="ln">113  </span></a>    </span><span class="s0">return </span><span class="s6">'iptables -A INPUT -p tcp -s {0} -j DROP'</span><span class="s1">.format(ip) 
+<a name="l114"><span class="ln">114  </span></a> 
+<a name="l115"><span class="ln">115  </span></a> 
+<a name="l116"><span class="ln">116  </span></a></span><span class="s0">def </span><span class="s1">block(ip): 
+<a name="l117"><span class="ln">117  </span></a>    os.system(generate_block_command(ip)) 
+<a name="l118"><span class="ln">118  </span></a>    blocked.add(ip) 
+<a name="l119"><span class="ln">119  </span></a> 
+<a name="l120"><span class="ln">120  </span></a> 
+<a name="l121"><span class="ln">121  </span></a></span><span class="s0">def </span><span class="s1">is_blocked(ip): 
+<a name="l122"><span class="ln">122  </span></a>    </span><span class="s0">return </span><span class="s1">ip </span><span class="s0">in </span><span class="s1">blocked 
+<a name="l123"><span class="ln">123  </span></a> 
+<a name="l124"><span class="ln">124  </span></a> 
+<a name="l125"><span class="ln">125  </span></a></span><span class="s0">def </span><span class="s1">main(): 
+<a name="l126"><span class="ln">126  </span></a>    sniff(prn=on_packet) 
+<a name="l127"><span class="ln">127  </span></a> 
+<a name="l128"><span class="ln">128  </span></a> 
+<a name="l129"><span class="ln">129  </span></a></span><span class="s0">if </span><span class="s1">__name__ == </span><span class="s6">'__main__'</span><span class="s1">: 
+<a name="l130"><span class="ln">130  </span></a>    main()</span></pre>
+</body>
+</html>

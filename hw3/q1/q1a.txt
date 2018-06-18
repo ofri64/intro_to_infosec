@@ -11,6 +11,8 @@ Part 2: Function validate
 	- Read the next byte (byte 1), save it to bsp-9
 	- The code defines a key for the algorithm - save it to the stack on bsp-10
 	- Use byte[0] as coutner argumnt of the for loop - tells us how many iterations needed
-	- Inside the loop, XOR the current byte (starting from byte[2] at first iteration) with the result of XOR from last iteration (for first iteration XOR with key)
+	- Inside the loop, XOR the current byte (starting from byte[2] at first iteration)
+	 with the result of XOR from last iteration (for first iteration XOR with key)
 	- Increment Counter
-	- After exiting loop, compare the last xor result to byte[1] of the file (bsp-9) and return True if they match and False otherwise.
+	- After exiting loop, compare the last xor result to byte[1] of the file (bsp-9)
+	 and return True if they match and False otherwise.

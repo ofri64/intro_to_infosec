@@ -1,0 +1,28 @@
+<html>
+<head>
+<title>q3.txt</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #606366; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(169,183,198); }
+</style>
+</head>
+<BODY BGCOLOR="#2b2b2b">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+q3.txt</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<a name="l1"><span class="ln">1    </span></a><span class="s0">- The logical vulnerability in this implementation is the combination of sting slicing and comparison. 
+<a name="l2"><span class="ln">2    </span></a>- The code compares between the data given by the user and the actual username/password string  
+<a name="l3"><span class="ln">3    </span></a>- It is a fun fact to know that comparing two empty strings will always evaluate to &quot;True&quot;, 
+<a name="l4"><span class="ln">4    </span></a> because they are the same, both are exactly the same string, the empty string. 
+<a name="l5"><span class="ln">5    </span></a>- Knowing that, all we had to do is to write nothing between the 
+<a name="l6"><span class="ln">6    </span></a> &quot;:&quot; delimiter in our so called authentication details. 
+<a name="l7"><span class="ln">7    </span></a>- Resulting in the code &quot;::&lt;the command we want&gt;&quot; 
+<a name="l8"><span class="ln">8    </span></a>- This way the code will always compare empty string in the 
+<a name="l9"><span class="ln">9    </span></a>username and password authentication parts, resulting in these checks evaluating to true, 
+<a name="l10"><span class="ln">10   </span></a> allowing us to run the command we want even without the right username and password combination.</span></pre>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<html>
+<head>
+<title>q3.txt</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #606366; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(169,183,198); }
+</style>
+</head>
+<BODY BGCOLOR="#2b2b2b">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+q3.txt</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<a name="l1"><span class="ln">1    </span></a><span class="s0">- In this question we will use ARP poisoning 
+<a name="l2"><span class="ln">2    </span></a> 
+<a name="l3"><span class="ln">3    </span></a>- Again we want to impersonate to another computer, 
+<a name="l4"><span class="ln">4    </span></a> 
+<a name="l5"><span class="ln">5    </span></a>this time we will impersonate to the gateway router 
+<a name="l6"><span class="ln">6    </span></a>- In the first section we need to filter only packets that 
+<a name="l7"><span class="ln">7    </span></a> will be routed to the gateway router from other host on the network 
+<a name="l8"><span class="ln">8    </span></a> (not our host) 
+<a name="l9"><span class="ln">9    </span></a> 
+<a name="l10"><span class="ln">10   </span></a>- We know that every ip packet destined to a host outside of our local network, 
+<a name="l11"><span class="ln">11   </span></a>will be routed to the gateway router. So we need to check if 
+<a name="l12"><span class="ln">12   </span></a>the packet's destination ip is inside our local network 
+<a name="l13"><span class="ln">13   </span></a> (address &amp; subnet_mask == subnet_address) 
+<a name="l14"><span class="ln">14   </span></a>if not so, in fact, 
+<a name="l15"><span class="ln">15   </span></a> it will be routed to the gateway router and from there to the global internet. 
+<a name="l16"><span class="ln">16   </span></a>Don't forget to exclude packet that their source ip matches our own 
+<a name="l17"><span class="ln">17   </span></a>(we don't want to poison our own ARP table cause then we want be able 
+<a name="l18"><span class="ln">18   </span></a>to connect outside of our internal network) 
+<a name="l19"><span class="ln">19   </span></a> 
+<a name="l20"><span class="ln">20   </span></a>- In the second section we need to actually create the poisoning ARP response - 
+<a name="l21"><span class="ln">21   </span></a>use scapy to craft an ARP response saying: the MAC address that matches the 
+<a name="l22"><span class="ln">22   </span></a>ip address of the gateway router is &lt;our own MAC address&gt; and send it only to the 
+<a name="l23"><span class="ln">23   </span></a>ip address of the host that send the specific packet we just intercepted 
+<a name="l24"><span class="ln">24   </span></a> 
+<a name="l25"><span class="ln">25   </span></a>- In the third section we can identify stolen/poisoned packets from packet 
+<a name="l26"><span class="ln">26   </span></a>originally destined to us using the following logic: 
+<a name="l27"><span class="ln">27   </span></a>packets that were originally destined to us will have our MAC address 
+<a name="l28"><span class="ln">28   </span></a> and also our ip address 
+<a name="l29"><span class="ln">29   </span></a>packets that have our MAC address but other ip address - 
+<a name="l30"><span class="ln">30   </span></a>were sent to us only because the host who sent them 
+<a name="l31"><span class="ln">31   </span></a> thought that our MAC address is the MAC address of the gateway router</span></pre>
+</body>
+</html>

@@ -1,9 +1,31 @@
 - In this question we will use ARP poisoning
-- Again we want to impersonate to another computre, this time we will impersonate to the gateway router
-- In the first section we need to filter only packets that will be routed to the gateway router from other host on the network (not our host)
-- We know that every ip packet destined to a host outside of our local network, will be routed to the gateway router. So we need to check if the packet's destination ip is inside our local network (address & subnet_mask == subnet_address) if not so, in fact, itwill be routed to the gateway router and from there to the global internet.
-Don't forget to exclude packet that their source ip matches our own (we don't want to poison our own ARP table cause then we want be able to connect outside of our internal network)
-- In the second section we need to actually create the poisoning ARP response - use scapy to craft an ARP response saying: the MAC address that matches the ip address of the gateway router is <our own MAC address> and send it only to the ip address of the host that send the specific packet we just intercepted
-- In the third section we can identify stolen/poisoned packets from packet originally destained to us using the following logic:
-packets that were originally destained to us will have our MAC address and also our ip address
-packets that have our MAC address but other ip address - were sent to us only beacuse the host who sent them thought that our MAC address is the MAC address of the gateway router
+
+- Again we want to impersonate to another computer,
+
+this time we will impersonate to the gateway router
+- In the first section we need to filter only packets that
+ will be routed to the gateway router from other host on the network
+ (not our host)
+
+- We know that every ip packet destined to a host outside of our local network,
+will be routed to the gateway router. So we need to check if
+the packet's destination ip is inside our local network
+ (address & subnet_mask == subnet_address)
+if not so, in fact,
+ it will be routed to the gateway router and from there to the global internet.
+Don't forget to exclude packet that their source ip matches our own
+(we don't want to poison our own ARP table cause then we want be able
+to connect outside of our internal network)
+
+- In the second section we need to actually create the poisoning ARP response -
+use scapy to craft an ARP response saying: the MAC address that matches the
+ip address of the gateway router is <our own MAC address> and send it only to the
+ip address of the host that send the specific packet we just intercepted
+
+- In the third section we can identify stolen/poisoned packets from packet
+originally destined to us using the following logic:
+packets that were originally destined to us will have our MAC address
+ and also our ip address
+packets that have our MAC address but other ip address -
+were sent to us only because the host who sent them
+ thought that our MAC address is the MAC address of the gateway router

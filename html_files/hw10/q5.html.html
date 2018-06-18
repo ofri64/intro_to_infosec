@@ -1,0 +1,54 @@
+<html>
+<head>
+<title>q5.html</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #606366; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(232,191,106); }
+.s1 { color: rgb(169,183,198); }
+.s2 { color: rgb(186,186,186); }
+.s3 { color: rgb(165,194,97); }
+</style>
+</head>
+<BODY BGCOLOR="#2b2b2b">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+q5.html</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<a name="l1"><span class="ln">1    </span></a><span class="s0">&lt;html&gt;</span><span class="s1"> 
+<a name="l2"><span class="ln">2    </span></a> 
+<a name="l3"><span class="ln">3    </span></a></span><span class="s0">&lt;head&gt;</span><span class="s1"> 
+<a name="l4"><span class="ln">4    </span></a>  </span><span class="s0">&lt;meta </span><span class="s2">http-equiv=</span><span class="s3">&quot;content-type&quot; </span><span class="s2">content=</span><span class="s3">&quot;text/html; charset=UTF-8&quot;</span><span class="s0">&gt;</span><span class="s1"> 
+<a name="l5"><span class="ln">5    </span></a>  </span><span class="s0">&lt;script </span><span class="s2">type=</span><span class="s3">&quot;text/javascript&quot; </span><span class="s2">src=</span><span class="s3">&quot;https://code.jquery.com/jquery-3.2.1.min.js&quot;</span><span class="s0">&gt;&lt;/script&gt;</span><span class="s1"> 
+<a name="l6"><span class="ln">6    </span></a>  </span><span class="s0">&lt;title&gt;</span><span class="s1">CSRF Demo @ NSK</span><span class="s0">&lt;/title&gt;</span><span class="s1"> 
+<a name="l7"><span class="ln">7    </span></a>  </span><span class="s0">&lt;script </span><span class="s2">type=</span><span class="s3">&quot;text/javascript&quot;</span><span class="s0">&gt;</span><span class="s1"> 
+<a name="l8"><span class="ln">8    </span></a>    // Your code goes here 
+<a name="l9"><span class="ln">9    </span></a> 
+<a name="l10"><span class="ln">10   </span></a>    // Hints: 
+<a name="l11"><span class="ln">11   </span></a>    // 1. Use the function `$.ajax` to send a request: 
+<a name="l12"><span class="ln">12   </span></a>    //    http://api.jquery.com/jquery.ajax/ 
+<a name="l13"><span class="ln">13   </span></a>    // 2. If cookies are not included, try looking at the `xhrFields` parameter 
+<a name="l14"><span class="ln">14   </span></a>    $.ajax( 
+<a name="l15"><span class="ln">15   </span></a>    { 
+<a name="l16"><span class="ln">16   </span></a>        url: 'http://localhost:8000/post', 
+<a name="l17"><span class="ln">17   </span></a>        type: 'POST', 
+<a name="l18"><span class="ln">18   </span></a>        data: {channel: &quot;#announcements&quot;, message : &quot;Give Edward a Raise!&quot;} , 
+<a name="l19"><span class="ln">19   </span></a>        xhrFields: {withCredentials: true}, 
+<a name="l20"><span class="ln">20   </span></a>        crossDomain: true 
+<a name="l21"><span class="ln">21   </span></a>      } 
+<a name="l22"><span class="ln">22   </span></a>    ); 
+<a name="l23"><span class="ln">23   </span></a>  </span><span class="s0">&lt;/script&gt;</span><span class="s1"> 
+<a name="l24"><span class="ln">24   </span></a>  </span><span class="s0">&lt;style </span><span class="s2">type=</span><span class="s3">&quot;text/css&quot;</span><span class="s0">&gt;</span><span class="s1">body { margin: 0px; } 
+<a name="l25"><span class="ln">25   </span></a>  </span><span class="s0">&lt;/style&gt;</span><span class="s1"> 
+<a name="l26"><span class="ln">26   </span></a></span><span class="s0">&lt;/head&gt;</span><span class="s1"> 
+<a name="l27"><span class="ln">27   </span></a></span><span class="s0">&lt;body&gt;</span><span class="s1"> 
+<a name="l28"><span class="ln">28   </span></a></span><span class="s0">&lt;p&gt;</span><span class="s1"> 
+<a name="l29"><span class="ln">29   </span></a>You've been CRSFed! check out the messages on the #announcements channel! 
+<a name="l30"><span class="ln">30   </span></a></span><span class="s0">&lt;/p&gt;</span><span class="s1"> 
+<a name="l31"><span class="ln">31   </span></a></span><span class="s0">&lt;/body&gt;</span><span class="s1"> 
+<a name="l32"><span class="ln">32   </span></a> 
+<a name="l33"><span class="ln">33   </span></a></span><span class="s0">&lt;/html&gt;</span></pre>
+</body>
+</html>

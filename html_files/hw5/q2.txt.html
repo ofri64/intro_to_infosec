@@ -1,0 +1,55 @@
+<html>
+<head>
+<title>q2.txt</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #606366; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(169,183,198); }
+</style>
+</head>
+<BODY BGCOLOR="#2b2b2b">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+q2.txt</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<a name="l1"><span class="ln">1    </span></a><span class="s0">First phase - extracting the addresses of all the libc functions we need to use: 
+<a name="l2"><span class="ln">2    </span></a> 
+<a name="l3"><span class="ln">3    </span></a>socket@plt: 0x08048730 
+<a name="l4"><span class="ln">4    </span></a>htons@plt: 0x08048640 
+<a name="l5"><span class="ln">5    </span></a>inet_addr@plt: 0x08048740 
+<a name="l6"><span class="ln">6    </span></a>connect@plt: 0x08048750 
+<a name="l7"><span class="ln">7    </span></a>dup2@plt: 0x08048600 
+<a name="l8"><span class="ln">8    </span></a>execv@plt: 0x08048600 
+<a name="l9"><span class="ln">9    </span></a> 
+<a name="l10"><span class="ln">10   </span></a>Second phase - descovering address to return and beginning of message buffer: 
+<a name="l11"><span class="ln">11   </span></a>- As explained in q1 and as done last week we use gdb + IDA 
+<a name="l12"><span class="ln">12   </span></a>to verify how many bytes we need in order to override RET value 
+<a name="l13"><span class="ln">13   </span></a>- The analysis showed that bytes 1041-1044 will override RET value. 
+<a name="l14"><span class="ln">14   </span></a> In other words the message itself should be 1044 bytes long, 1040 bytes of shellcode 
+<a name="l15"><span class="ln">15   </span></a> (including NOPs as much as needed) + 4 last bytes of address to return 
+<a name="l16"><span class="ln">16   </span></a>- Using all the needed NOPs at the beginning causes us problems 
+<a name="l17"><span class="ln">17   </span></a>with the stack location during the shellcode execution 
+<a name="l18"><span class="ln">18   </span></a>- So, we won't add all our NOPs in the beginning of the message 
+<a name="l19"><span class="ln">19   </span></a>but add a small NOPs slide at the beginning and the rest of the nops will be at the end of the shellcode itself 
+<a name="l20"><span class="ln">20   </span></a>- The begging of the message buffer is at address 0xbfffddbc 
+<a name="l21"><span class="ln">21   </span></a>- We will use 100 Nops as slide at the beginning and will jump somewhere in the middle of it 
+<a name="l22"><span class="ln">22   </span></a>- In this case I chose to jump 32 bytes after the beginning of the buffer, to the address 0xbfffdddc 
+<a name="l23"><span class="ln">23   </span></a> 
+<a name="l24"><span class="ln">24   </span></a>Third phase - write a c code to perfroms the reverse shell logic 
+<a name="l25"><span class="ln">25   </span></a>- Perform in c code the socket creation, connection to c&amp;c server, 
+<a name="l26"><span class="ln">26   </span></a> input and output redirection using dup2 and finally calling execv 
+<a name="l27"><span class="ln">27   </span></a>- Compiling the code and debbuging it using GDB 
+<a name="l28"><span class="ln">28   </span></a> 
+<a name="l29"><span class="ln">29   </span></a>Last phase - Write the assembly shellcode 
+<a name="l30"><span class="ln">30   </span></a>- The is almost identical to the c code disassembled program with few minor changes: 
+<a name="l31"><span class="ln">31   </span></a>    1) Function calls addresses are different - 
+<a name="l32"><span class="ln">32   </span></a>    need to replace the calls to the addresses we found in phase 1 
+<a name="l33"><span class="ln">33   </span></a>    2) Our needed strings (&quot;/bin/sh&quot; and &quot;127.0.0.1&quot;) 
+<a name="l34"><span class="ln">34   </span></a>    are not part of the &quot;data&quot; segment of the process. 
+<a name="l35"><span class="ln">35   </span></a>    We need to generate them using the same trick we did last week - 
+<a name="l36"><span class="ln">36   </span></a>    using a function call that will push to the 
+<a name="l37"><span class="ln">37   </span></a>    stack &quot;RET&quot; value for the call - which is exactly the pointer to the desired memory address.</span></pre>
+</body>
+</html>

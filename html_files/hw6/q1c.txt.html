@@ -1,0 +1,31 @@
+<html>
+<head>
+<title>q1c.txt</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #606366; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(169,183,198); }
+</style>
+</head>
+<BODY BGCOLOR="#2b2b2b">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+q1c.txt</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<a name="l1"><span class="ln">1    </span></a><span class="s0">- We will only emphasis the differences in the this section compared to the previous one 
+<a name="l2"><span class="ln">2    </span></a>- Now we don't want the program to exit with segmentation fault after we exit the shell. 
+<a name="l3"><span class="ln">3    </span></a>We would like it to exit &quot;cleanly&quot; with a desired exit code 
+<a name="l4"><span class="ln">4    </span></a>- Thus now, instead of arbitrary 4 bytes right after the address of libc_system 
+<a name="l5"><span class="ln">5    </span></a> we will want to insert the address of the exit call. 
+<a name="l6"><span class="ln">6    </span></a>- This way we ensure that right after the shell ends, 
+<a name="l7"><span class="ln">7    </span></a>we will jump to the exit function 
+<a name="l8"><span class="ln">8    </span></a>(because it's address is inserted as the libc_system RET value, allegedly) 
+<a name="l9"><span class="ln">9    </span></a>- Finally, understanding that &quot;exit&quot; is also a valid function call, 
+<a name="l10"><span class="ln">10   </span></a> it expects to find it's arguments exactly 4 bytes above ebp value. 
+<a name="l11"><span class="ln">11   </span></a> To ensure that the exit code of the program will be exactly what we wish, 
+<a name="l12"><span class="ln">12   </span></a> we will add the desired exit code right after the &quot;/bin/sh&quot; address, 
+<a name="l13"><span class="ln">13   </span></a> placing it as the argument for the exit call.</span></pre>
+</body>
+</html>

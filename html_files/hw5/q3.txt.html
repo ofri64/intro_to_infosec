@@ -1,0 +1,54 @@
+<html>
+<head>
+<title>q3.txt</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #606366; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(169,183,198); }
+</style>
+</head>
+<BODY BGCOLOR="#2b2b2b">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+q3.txt</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<a name="l1"><span class="ln">1    </span></a><span class="s0">Phase 1 - encode the original shellcode: 
+<a name="l2"><span class="ln">2    </span></a>- nothing much to explain about this part, pretty straight forward. 
+<a name="l3"><span class="ln">3    </span></a>- we iterate over the bytes of our shell code, 
+<a name="l4"><span class="ln">4    </span></a> performing xor with 0xff for every non ascii byte 
+<a name="l5"><span class="ln">5    </span></a>(transformed byte will always be an ascii char) 
+<a name="l6"><span class="ln">6    </span></a>- save also the indices of the bytes we decoded 
+<a name="l7"><span class="ln">7    </span></a> 
+<a name="l8"><span class="ln">8    </span></a>Phase 2 - implementing decoder logic containing only ascii bytes: 
+<a name="l9"><span class="ln">9    </span></a>- for this section we assume the address of our shellcode is given in eax 
+<a name="l10"><span class="ln">10   </span></a>- we want to xor with 0xff again for every original byte that was xor'ed 
+<a name="l11"><span class="ln">11   </span></a>(matching index from indices array) 
+<a name="l12"><span class="ln">12   </span></a>- remembering that 0xff is -1 in two's complement representation, 
+<a name="l13"><span class="ln">13   </span></a>all we need is to decrement 1 from 0 
+<a name="l14"><span class="ln">14   </span></a>we perform that using push 0, pop ebx and dec ebx. no we can xor with ebx (or bl) 
+<a name="l15"><span class="ln">15   </span></a>- we will increment the address in eax to match the current index to decrypt than xor with bl. 
+<a name="l16"><span class="ln">16   </span></a>for example, for sequence of indices 1,5,12 we will increment eax 1 time, 
+<a name="l17"><span class="ln">17   </span></a> then another 4 times, then another 7 times. 
+<a name="l18"><span class="ln">18   </span></a> 
+<a name="l19"><span class="ln">19   </span></a>Phase 3 - initiate eax to point to our shellcode starting address 
+<a name="l20"><span class="ln">20   </span></a>- as written in the instruction, we understand that the byte 
+<a name="l21"><span class="ln">21   </span></a>difference between the address in esp register and 
+<a name="l22"><span class="ln">22   </span></a>our shellcode logic is constant, depending only on our shellcode length. 
+<a name="l23"><span class="ln">23   </span></a>- our shellcode will being at the address (esp - len(shellcode) - 4). 
+<a name="l24"><span class="ln">24   </span></a>This is true since all the nops slide is at the beginning of our payload so 
+<a name="l25"><span class="ln">25   </span></a>our shellcode logic is right before RET address. 
+<a name="l26"><span class="ln">26   </span></a>- to achive that we perform push esp, pop eax, then dec eax for ( len(shellcode) + 4) times. 
+<a name="l27"><span class="ln">27   </span></a> 
+<a name="l28"><span class="ln">28   </span></a>Phase 4 - add nops, address to return and build payload 
+<a name="l29"><span class="ln">29   </span></a>- after we got our entire shellcode logic - 
+<a name="l30"><span class="ln">30   </span></a>eax pointer initiation, decoder, encoded shellcode, 
+<a name="l31"><span class="ln">31   </span></a>all that's left is to add nops slide, add return address to the middle of nops slide 
+<a name="l32"><span class="ln">32   </span></a>and build the payload to send to the server 
+<a name="l33"><span class="ln">33   </span></a>- we cannot use &quot;NOP&quot; (\x90) since it is not ascii. 
+<a name="l34"><span class="ln">34   </span></a>- instead we can use \x4e which means dec esi. 
+<a name="l35"><span class="ln">35   </span></a> we don't care about the value in this specific register so we can add as much instructions of this kind 
+<a name="l36"><span class="ln">36   </span></a>- building the payload is done identically to previous questions</span></pre>
+</body>
+</html>

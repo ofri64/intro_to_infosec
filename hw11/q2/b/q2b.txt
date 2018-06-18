@@ -1,6 +1,16 @@
 - We will use the same exchange mechanism as before but now with encryption
-- for aes encryption we will need our message size to be a multiple of 16 so we will add padding
-- using the pkcs7 padding shceme we will always add padding - between 1 and 16 bytes (16 if our message length is already a multiple of 16)
-- the pkcs7 addes as padding the value of the number of padding bytes add (i.e the options are 0x01 to 0x0f)
-- After adding padding winston will encrypt it's message using aes with the secret key he and julia knows
-- Julia will recive the message as before, decrypt it, and remove the padding (explained in the code documentation).
+
+- for aes encryption we will need our message size to be
+a multiple of 16 so we will add padding
+
+- using the pkcs7 padding scheme we will always add padding -
+between 1 and 16 bytes (16 if our message length is already a multiple of 16)
+
+- the pkcs7 adds as padding the value of the number of padding bytes add
+ (i.e the options are 0x01 to 0x0f)
+
+- After adding padding winston will encrypt it's message
+using aes with the secret key he and julia knows
+
+- Julia will receive the message as before,
+decrypt it, and remove the padding (explained in the code documentation).

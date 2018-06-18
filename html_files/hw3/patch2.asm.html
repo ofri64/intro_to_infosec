@@ -1,0 +1,40 @@
+<html>
+<head>
+<title>patch2.asm</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #606366; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(169,183,198); }
+</style>
+</head>
+<BODY BGCOLOR="#2b2b2b">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+patch2.asm</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<a name="l1"><span class="ln">1    </span></a><span class="s0">MOV EBX, 0x08048631 
+<a name="l2"><span class="ln">2    </span></a>JMP EBX 
+<a name="l3"><span class="ln">3    </span></a>mov ax, [eax] 
+<a name="l4"><span class="ln">4    </span></a>movzx eax, al 
+<a name="l5"><span class="ln">5    </span></a>cmp eax, 0x23 
+<a name="l6"><span class="ln">6    </span></a>jne small_dead_zone_end 
+<a name="l7"><span class="ln">7    </span></a>lea eax, [ebp-0x40c] 
+<a name="l8"><span class="ln">8    </span></a>mov ax, [eax+1] 
+<a name="l9"><span class="ln">9    </span></a>movzx eax, al 
+<a name="l10"><span class="ln">10   </span></a>cmp eax, 0x21 
+<a name="l11"><span class="ln">11   </span></a>jne small_dead_zone_end 
+<a name="l12"><span class="ln">12   </span></a>lea eax, [ebp-0x40c] 
+<a name="l13"><span class="ln">13   </span></a>add eax, 2 
+<a name="l14"><span class="ln">14   </span></a>mov ebx, 0x08048460 
+<a name="l15"><span class="ln">15   </span></a>push eax 
+<a name="l16"><span class="ln">16   </span></a>call ebx 
+<a name="l17"><span class="ln">17   </span></a>pop eax 
+<a name="l18"><span class="ln">18   </span></a>MOV EBX, 0x08048631 
+<a name="l19"><span class="ln">19   </span></a>JMP EBX 
+<a name="l20"><span class="ln">20   </span></a>small_dead_zone_end: 
+<a name="l21"><span class="ln">21   </span></a>MOV EBX, 0x0804863A 
+<a name="l22"><span class="ln">22   </span></a>JMP EBX</span></pre>
+</body>
+</html>

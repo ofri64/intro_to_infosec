@@ -1,0 +1,174 @@
+<html>
+<head>
+<title>q1.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #606366; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(204,120,50); font-weight: bold; }
+.s1 { color: rgb(169,183,198); }
+.s2 { color: rgb(204,120,50); }
+.s3 { color: rgb(104,151,187); }
+.s4 { color: rgb(98,151,85); font-style: italic; }
+.s5 { color: rgb(128,128,128); }
+.s6 { color: rgb(165,194,97); }
+</style>
+</head>
+<BODY BGCOLOR="#2b2b2b">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+q1.py</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<a name="l1"><span class="ln">1    </span></a><span class="s0">import </span><span class="s1">itertools 
+<a name="l2"><span class="ln">2    </span></a></span><span class="s0">import </span><span class="s1">math 
+<a name="l3"><span class="ln">3    </span></a></span><span class="s0">import </span><span class="s1">string 
+<a name="l4"><span class="ln">4    </span></a> 
+<a name="l5"><span class="ln">5    </span></a> 
+<a name="l6"><span class="ln">6    </span></a></span><span class="s0">class </span><span class="s1">RepeatedKeyCipher(object): 
+<a name="l7"><span class="ln">7    </span></a> 
+<a name="l8"><span class="ln">8    </span></a>    </span><span class="s0">def </span><span class="s1">__init__(self</span><span class="s2">, </span><span class="s1">key=[</span><span class="s3">0</span><span class="s2">, </span><span class="s3">0</span><span class="s2">, </span><span class="s3">0</span><span class="s2">, </span><span class="s3">0</span><span class="s2">, </span><span class="s3">0</span><span class="s1">]): 
+<a name="l9"><span class="ln">9    </span></a>        </span><span class="s4">&quot;&quot;&quot;Initializes the object with a list of integers between 0 and 255.&quot;&quot;&quot;</span><span class="s1"> 
+<a name="l10"><span class="ln">10   </span></a>        </span><span class="s0">assert </span><span class="s1">all(</span><span class="s3">0 </span><span class="s1">&lt;= k &lt;= </span><span class="s3">255 </span><span class="s0">and </span><span class="s1">isinstance(k</span><span class="s2">, </span><span class="s1">(int</span><span class="s2">, </span><span class="s1">long)) </span><span class="s0">for </span><span class="s1">k </span><span class="s0">in </span><span class="s1">key) 
+<a name="l11"><span class="ln">11   </span></a>        self.key = key 
+<a name="l12"><span class="ln">12   </span></a> 
+<a name="l13"><span class="ln">13   </span></a>    </span><span class="s0">def </span><span class="s1">encrypt(self</span><span class="s2">, </span><span class="s1">plaintext): 
+<a name="l14"><span class="ln">14   </span></a>        </span><span class="s4">&quot;&quot;&quot;Encrypts a given plaintext string and returns the ciphertext.&quot;&quot;&quot;</span><span class="s1"> 
+<a name="l15"><span class="ln">15   </span></a>        </span><span class="s5"># Return a string, NOT an array of integers.</span><span class="s1"> 
+<a name="l16"><span class="ln">16   </span></a>        key_len = len(self.key) 
+<a name="l17"><span class="ln">17   </span></a>        cipher_text = </span><span class="s6">&quot;&quot;</span><span class="s1"> 
+<a name="l18"><span class="ln">18   </span></a>        </span><span class="s0">for </span><span class="s1">i </span><span class="s0">in </span><span class="s1">range(len(plaintext)): 
+<a name="l19"><span class="ln">19   </span></a>            key_byte = self.key[i % key_len] 
+<a name="l20"><span class="ln">20   </span></a>            plain_text_byte = ord(plaintext[i]) 
+<a name="l21"><span class="ln">21   </span></a>            cipher_text_byte = key_byte ^ plain_text_byte 
+<a name="l22"><span class="ln">22   </span></a>            cipher_text += chr(cipher_text_byte) 
+<a name="l23"><span class="ln">23   </span></a>        </span><span class="s0">return </span><span class="s1">cipher_text 
+<a name="l24"><span class="ln">24   </span></a> 
+<a name="l25"><span class="ln">25   </span></a>    </span><span class="s0">def </span><span class="s1">decrypt(self</span><span class="s2">, </span><span class="s1">ciphertext): 
+<a name="l26"><span class="ln">26   </span></a>        </span><span class="s4">&quot;&quot;&quot;Decrypts a given ciphertext string and returns the plaintext.&quot;&quot;&quot;</span><span class="s1"> 
+<a name="l27"><span class="ln">27   </span></a>        </span><span class="s5"># Return a string, NOT an array of integers.</span><span class="s1"> 
+<a name="l28"><span class="ln">28   </span></a>        </span><span class="s0">return </span><span class="s1">self.encrypt(ciphertext) 
+<a name="l29"><span class="ln">29   </span></a> 
+<a name="l30"><span class="ln">30   </span></a> 
+<a name="l31"><span class="ln">31   </span></a></span><span class="s0">class </span><span class="s1">BreakerAssistant(object): 
+<a name="l32"><span class="ln">32   </span></a>    NON_PRINTABLE_PENALTY = </span><span class="s3">2</span><span class="s1"> 
+<a name="l33"><span class="ln">33   </span></a>    UNLIKELY_PRINTABLE_PENALTY = </span><span class="s3">0.5</span><span class="s1"> 
+<a name="l34"><span class="ln">34   </span></a> 
+<a name="l35"><span class="ln">35   </span></a>    </span><span class="s0">def </span><span class="s1">__init__(self): 
+<a name="l36"><span class="ln">36   </span></a>        </span><span class="s4">&quot;&quot;&quot;Initializes BreakerAssistant object, Used to define object attribute for plaintext score&quot;&quot;&quot;</span><span class="s1"> 
+<a name="l37"><span class="ln">37   </span></a>        self.english_letters_frequency = { 
+<a name="l38"><span class="ln">38   </span></a>            </span><span class="s6">'a'</span><span class="s1">: </span><span class="s3">0.08167</span><span class="s2">, </span><span class="s6">'b'</span><span class="s1">: </span><span class="s3">0.01492</span><span class="s2">, </span><span class="s6">'c'</span><span class="s1">: </span><span class="s3">0.02782</span><span class="s2">, </span><span class="s6">'d'</span><span class="s1">: </span><span class="s3">0.04253</span><span class="s2">, </span><span class="s6">'e'</span><span class="s1">: </span><span class="s3">0.12702</span><span class="s2">, </span><span class="s6">'f'</span><span class="s1">: </span><span class="s3">0.02228</span><span class="s2">, </span><span class="s6">'g'</span><span class="s1">: </span><span class="s3">0.02015</span><span class="s2">,</span><span class="s1"> 
+<a name="l39"><span class="ln">39   </span></a>            </span><span class="s6">'h'</span><span class="s1">: </span><span class="s3">0.06094</span><span class="s2">, </span><span class="s6">'i'</span><span class="s1">: </span><span class="s3">0.06966</span><span class="s2">, </span><span class="s6">'j'</span><span class="s1">: </span><span class="s3">0.00153</span><span class="s2">, </span><span class="s6">'k'</span><span class="s1">: </span><span class="s3">0.00772</span><span class="s2">, </span><span class="s6">'l'</span><span class="s1">: </span><span class="s3">0.04025</span><span class="s2">, </span><span class="s6">'m'</span><span class="s1">: </span><span class="s3">0.02406</span><span class="s2">, </span><span class="s6">'n'</span><span class="s1">: </span><span class="s3">0.06749</span><span class="s2">,</span><span class="s1"> 
+<a name="l40"><span class="ln">40   </span></a>            </span><span class="s6">'o'</span><span class="s1">: </span><span class="s3">0.07507</span><span class="s2">, </span><span class="s6">'p'</span><span class="s1">: </span><span class="s3">0.01929</span><span class="s2">, </span><span class="s6">'q'</span><span class="s1">: </span><span class="s3">0.00095</span><span class="s2">, </span><span class="s6">'r'</span><span class="s1">: </span><span class="s3">0.05987</span><span class="s2">, </span><span class="s6">'s'</span><span class="s1">: </span><span class="s3">0.06327</span><span class="s2">, </span><span class="s6">'t'</span><span class="s1">: </span><span class="s3">0.09056</span><span class="s2">, </span><span class="s6">'u'</span><span class="s1">: </span><span class="s3">0.02758</span><span class="s2">,</span><span class="s1"> 
+<a name="l41"><span class="ln">41   </span></a>            </span><span class="s6">'v'</span><span class="s1">: </span><span class="s3">0.00978</span><span class="s2">, </span><span class="s6">'w'</span><span class="s1">: </span><span class="s3">0.0236</span><span class="s2">, </span><span class="s6">'x'</span><span class="s1">: </span><span class="s3">0.0015</span><span class="s2">, </span><span class="s6">'y'</span><span class="s1">: </span><span class="s3">0.01974</span><span class="s2">, </span><span class="s6">'z'</span><span class="s1">: </span><span class="s3">0.00074</span><span class="s1">} 
+<a name="l42"><span class="ln">42   </span></a>        self.unlikely_printable_chars = [</span><span class="s6">'['</span><span class="s2">, </span><span class="s6">']'</span><span class="s2">, </span><span class="s6">'^'</span><span class="s2">, </span><span class="s6">'~'</span><span class="s2">, </span><span class="s6">'{'</span><span class="s2">, </span><span class="s6">'}'</span><span class="s2">, </span><span class="s6">'|'</span><span class="s2">, </span><span class="s6">'_'</span><span class="s2">, </span><span class="s6">'#'</span><span class="s2">, </span><span class="s6">'&lt;'</span><span class="s2">, </span><span class="s6">'&gt;'</span><span class="s1">] 
+<a name="l43"><span class="ln">43   </span></a> 
+<a name="l44"><span class="ln">44   </span></a>    </span><span class="s0">def </span><span class="s1">_text_letters_proportion(self</span><span class="s2">, </span><span class="s1">plain_text): 
+<a name="l45"><span class="ln">45   </span></a>        </span><span class="s4">&quot;&quot;&quot;Computed the distribution of english letters in a given text&quot;&quot;&quot;</span><span class="s1"> 
+<a name="l46"><span class="ln">46   </span></a>        english_letters = [chr(i) </span><span class="s0">for </span><span class="s1">i </span><span class="s0">in </span><span class="s1">range(</span><span class="s3">97</span><span class="s2">,</span><span class="s3">123</span><span class="s1">)] 
+<a name="l47"><span class="ln">47   </span></a>        text_frequency = {letter: </span><span class="s3">0 </span><span class="s0">for </span><span class="s1">letter </span><span class="s0">in </span><span class="s1">english_letters} 
+<a name="l48"><span class="ln">48   </span></a>        text_len = len(plain_text) 
+<a name="l49"><span class="ln">49   </span></a>        </span><span class="s0">for </span><span class="s1">char </span><span class="s0">in </span><span class="s1">plain_text: 
+<a name="l50"><span class="ln">50   </span></a>            char_lowercase = char.lower() 
+<a name="l51"><span class="ln">51   </span></a>            </span><span class="s0">if </span><span class="s1">char.lower() </span><span class="s0">in </span><span class="s1">text_frequency: 
+<a name="l52"><span class="ln">52   </span></a>                text_frequency[char_lowercase] += </span><span class="s3">1</span><span class="s1"> 
+<a name="l53"><span class="ln">53   </span></a>        text_frequency = {i[</span><span class="s3">0</span><span class="s1">]: float(i[</span><span class="s3">1</span><span class="s1">])/text_len </span><span class="s0">for </span><span class="s1">i </span><span class="s0">in </span><span class="s1">text_frequency.items()} 
+<a name="l54"><span class="ln">54   </span></a>        </span><span class="s0">return </span><span class="s1">text_frequency 
+<a name="l55"><span class="ln">55   </span></a> 
+<a name="l56"><span class="ln">56   </span></a> 
+<a name="l57"><span class="ln">57   </span></a>    </span><span class="s0">def </span><span class="s1">_chi_square_statistical(self</span><span class="s2">, </span><span class="s1">plain_text): 
+<a name="l58"><span class="ln">58   </span></a>        </span><span class="s4">&quot;&quot;&quot;Compute the chi-square statistical value. for more details see q1c.txt&quot;&quot;&quot;</span><span class="s1"> 
+<a name="l59"><span class="ln">59   </span></a>        english_freq = self.english_letters_frequency 
+<a name="l60"><span class="ln">60   </span></a>        text_freq = self._text_letters_proportion(plain_text) 
+<a name="l61"><span class="ln">61   </span></a>        </span><span class="s5"># Compute chi square value - compare text distribution to expected one</span><span class="s1"> 
+<a name="l62"><span class="ln">62   </span></a>        chi_square = </span><span class="s3">0</span><span class="s1"> 
+<a name="l63"><span class="ln">63   </span></a>        </span><span class="s0">for </span><span class="s1">letter </span><span class="s0">in </span><span class="s1">english_freq.keys(): 
+<a name="l64"><span class="ln">64   </span></a>            letter_freq = english_freq[letter] 
+<a name="l65"><span class="ln">65   </span></a>            text_letter_freq = text_freq[letter] 
+<a name="l66"><span class="ln">66   </span></a>            freq_diff = letter_freq - text_letter_freq 
+<a name="l67"><span class="ln">67   </span></a>            chi_square += math.pow(freq_diff</span><span class="s2">, </span><span class="s3">2</span><span class="s1">) / letter_freq 
+<a name="l68"><span class="ln">68   </span></a>        </span><span class="s0">return </span><span class="s1">chi_square 
+<a name="l69"><span class="ln">69   </span></a> 
+<a name="l70"><span class="ln">70   </span></a>    </span><span class="s0">def </span><span class="s1">plaintext_score(self</span><span class="s2">, </span><span class="s1">plaintext): 
+<a name="l71"><span class="ln">71   </span></a>        </span><span class="s4">&quot;&quot;&quot;Scores a candidate plaintext string, higher means more likely.&quot;&quot;&quot;</span><span class="s1"> 
+<a name="l72"><span class="ln">72   </span></a>        </span><span class="s5"># Return a number (int / long / float).</span><span class="s1"> 
+<a name="l73"><span class="ln">73   </span></a>        </span><span class="s5"># Please don't return complex numbers, that would be just annoying.</span><span class="s1"> 
+<a name="l74"><span class="ln">74   </span></a>        penaly = </span><span class="s3">0 </span><span class="s5"># Add penalty for non printable characters</span><span class="s1"> 
+<a name="l75"><span class="ln">75   </span></a>        penalty = </span><span class="s3">0</span><span class="s1"> 
+<a name="l76"><span class="ln">76   </span></a>        </span><span class="s0">for </span><span class="s1">char </span><span class="s0">in </span><span class="s1">plaintext: 
+<a name="l77"><span class="ln">77   </span></a>            </span><span class="s0">if </span><span class="s1">char </span><span class="s0">not in </span><span class="s1">string.printable: 
+<a name="l78"><span class="ln">78   </span></a>                penalty += BreakerAssistant.NON_PRINTABLE_PENALTY 
+<a name="l79"><span class="ln">79   </span></a>            </span><span class="s0">if </span><span class="s1">char </span><span class="s0">in </span><span class="s1">self.unlikely_printable_chars: 
+<a name="l80"><span class="ln">80   </span></a>                penalty += BreakerAssistant.UNLIKELY_PRINTABLE_PENALTY 
+<a name="l81"><span class="ln">81   </span></a>        </span><span class="s0">return </span><span class="s1">-self._chi_square_statistical(plaintext) - penalty 
+<a name="l82"><span class="ln">82   </span></a> 
+<a name="l83"><span class="ln">83   </span></a>    </span><span class="s0">def </span><span class="s1">brute_force(self</span><span class="s2">, </span><span class="s1">cipher_text</span><span class="s2">, </span><span class="s1">key_length): 
+<a name="l84"><span class="ln">84   </span></a>        </span><span class="s4">&quot;&quot;&quot;Breaks a Repeated Key Cipher by brute-forcing all keys.&quot;&quot;&quot;</span><span class="s1"> 
+<a name="l85"><span class="ln">85   </span></a>        </span><span class="s5"># Return a string.</span><span class="s1"> 
+<a name="l86"><span class="ln">86   </span></a>        max_score = -</span><span class="s3">100000</span><span class="s1"> 
+<a name="l87"><span class="ln">87   </span></a>        plain_text = </span><span class="s6">&quot;&quot;</span><span class="s1"> 
+<a name="l88"><span class="ln">88   </span></a>        cipher = RepeatedKeyCipher() 
+<a name="l89"><span class="ln">89   </span></a> 
+<a name="l90"><span class="ln">90   </span></a>        </span><span class="s5"># enumerate over all possible keys using itertools</span><span class="s1"> 
+<a name="l91"><span class="ln">91   </span></a>        </span><span class="s0">for </span><span class="s1">key </span><span class="s0">in </span><span class="s1">itertools.product(range(</span><span class="s3">256</span><span class="s1">)</span><span class="s2">, </span><span class="s1">repeat=key_length): 
+<a name="l92"><span class="ln">92   </span></a>            cipher.key = key 
+<a name="l93"><span class="ln">93   </span></a>            dec_text = cipher.decrypt(cipher_text) 
+<a name="l94"><span class="ln">94   </span></a>            dec_score = self.plaintext_score(dec_text) 
+<a name="l95"><span class="ln">95   </span></a>            </span><span class="s0">if </span><span class="s1">dec_score &gt; max_score: 
+<a name="l96"><span class="ln">96   </span></a>                max_score = dec_score 
+<a name="l97"><span class="ln">97   </span></a>                plain_text = dec_text 
+<a name="l98"><span class="ln">98   </span></a>        </span><span class="s0">return </span><span class="s1">plain_text.lower() 
+<a name="l99"><span class="ln">99   </span></a> 
+<a name="l100"><span class="ln">100  </span></a>    </span><span class="s0">def </span><span class="s1">_divide_cipher_by_key_byte(self</span><span class="s2">, </span><span class="s1">cipher_text</span><span class="s2">, </span><span class="s1">key_length): 
+<a name="l101"><span class="ln">101  </span></a>        </span><span class="s4">&quot;&quot;&quot;Divide the text to n=key_length texts encrypted with the same byte. 
+<a name="l102"><span class="ln">102  </span></a>        Enables us to perform statistical analysis for each byte separately&quot;&quot;&quot;</span><span class="s1"> 
+<a name="l103"><span class="ln">103  </span></a>        key_byte_texts = [</span><span class="s6">&quot;&quot; </span><span class="s0">for </span><span class="s1">i </span><span class="s0">in </span><span class="s1">range(key_length)] 
+<a name="l104"><span class="ln">104  </span></a>        </span><span class="s0">for </span><span class="s1">i </span><span class="s0">in </span><span class="s1">range(len(cipher_text)): 
+<a name="l105"><span class="ln">105  </span></a>            key_byte_texts[i % key_length] += cipher_text[i] 
+<a name="l106"><span class="ln">106  </span></a>        </span><span class="s0">return </span><span class="s1">key_byte_texts 
+<a name="l107"><span class="ln">107  </span></a> 
+<a name="l108"><span class="ln">108  </span></a>    </span><span class="s0">def </span><span class="s1">_concatenate_key_byte_decrypted(self</span><span class="s2">, </span><span class="s1">decrypted_key_byte_text</span><span class="s2">, </span><span class="s1">cipher_length</span><span class="s2">, </span><span class="s1">key_length): 
+<a name="l109"><span class="ln">109  </span></a>        </span><span class="s4">&quot;&quot;&quot;Concatenate the encrypted texts by key byte together the create the decrypted text&quot;&quot;&quot;</span><span class="s1"> 
+<a name="l110"><span class="ln">110  </span></a>        decrypted_text = </span><span class="s6">&quot;&quot;</span><span class="s1"> 
+<a name="l111"><span class="ln">111  </span></a>        num_round = </span><span class="s3">0</span><span class="s1"> 
+<a name="l112"><span class="ln">112  </span></a>        byte = </span><span class="s3">0</span><span class="s1"> 
+<a name="l113"><span class="ln">113  </span></a>        </span><span class="s0">for </span><span class="s1">i </span><span class="s0">in </span><span class="s1">range(cipher_length): 
+<a name="l114"><span class="ln">114  </span></a>            decrypted_text += decrypted_key_byte_text[byte][num_round] 
+<a name="l115"><span class="ln">115  </span></a>            byte = (byte + </span><span class="s3">1</span><span class="s1">) % key_length 
+<a name="l116"><span class="ln">116  </span></a>            </span><span class="s0">if </span><span class="s1">byte == </span><span class="s3">0</span><span class="s1">: 
+<a name="l117"><span class="ln">117  </span></a>                num_round += </span><span class="s3">1</span><span class="s1"> 
+<a name="l118"><span class="ln">118  </span></a>        </span><span class="s0">return </span><span class="s1">decrypted_text 
+<a name="l119"><span class="ln">119  </span></a> 
+<a name="l120"><span class="ln">120  </span></a>    </span><span class="s0">def </span><span class="s1">smarter_break(self</span><span class="s2">, </span><span class="s1">cipher_text</span><span class="s2">, </span><span class="s1">key_length): 
+<a name="l121"><span class="ln">121  </span></a>        </span><span class="s4">&quot;&quot;&quot;Breaks a Repeated Key Cipher any way you like.&quot;&quot;&quot;</span><span class="s1"> 
+<a name="l122"><span class="ln">122  </span></a>        </span><span class="s5"># Return a string.</span><span class="s1"> 
+<a name="l123"><span class="ln">123  </span></a>        cipher_key_byte_texts = self._divide_cipher_by_key_byte(cipher_text</span><span class="s2">, </span><span class="s1">key_length) 
+<a name="l124"><span class="ln">124  </span></a>        decrypted_key_byte_text = [] 
+<a name="l125"><span class="ln">125  </span></a> 
+<a name="l126"><span class="ln">126  </span></a>        </span><span class="s5"># Perform &quot;brute force&quot; with the corresponding text for each byte in the key</span><span class="s1"> 
+<a name="l127"><span class="ln">127  </span></a>        </span><span class="s0">for </span><span class="s1">text </span><span class="s0">in </span><span class="s1">cipher_key_byte_texts: 
+<a name="l128"><span class="ln">128  </span></a>            decrypted_key_byte_text.append(self.brute_force(text</span><span class="s2">, </span><span class="s1">key_length=</span><span class="s3">1</span><span class="s1">)) 
+<a name="l129"><span class="ln">129  </span></a> 
+<a name="l130"><span class="ln">130  </span></a>        </span><span class="s5"># Concatenate all the encrypted texts together</span><span class="s1"> 
+<a name="l131"><span class="ln">131  </span></a>        decrypted_text = self._concatenate_key_byte_decrypted(decrypted_key_byte_text</span><span class="s2">, </span><span class="s1">len(cipher_text)</span><span class="s2">, </span><span class="s1">key_length) 
+<a name="l132"><span class="ln">132  </span></a>        </span><span class="s0">return </span><span class="s1">decrypted_text 
+<a name="l133"><span class="ln">133  </span></a> 
+<a name="l134"><span class="ln">134  </span></a> 
+<a name="l135"><span class="ln">135  </span></a></span><span class="s5"># m = &quot;hey there how are you man? so good to see you! I am so glad that you are here.&quot; \</span><span class="s1"> 
+<a name="l136"><span class="ln">136  </span></a></span><span class="s5">#     &quot; Its been a long time, without you my friend, and I'll tell you all about it when I see you again.&quot; \</span><span class="s1"> 
+<a name="l137"><span class="ln">137  </span></a></span><span class="s5">#     &quot;We've come a long way from where we began... This song is from the Fast and Furious 7, I think, soundtrack. &quot;</span><span class="s1"> 
+<a name="l138"><span class="ln">138  </span></a></span><span class="s5"># rp = RepeatedKeyCipher(key=[20, 11, 55, 244, 65, 155, 23, 44, 0, 1])</span><span class="s1"> 
+<a name="l139"><span class="ln">139  </span></a></span><span class="s5"># enc = rp.encrypt(m)</span><span class="s1"> 
+<a name="l140"><span class="ln">140  </span></a></span><span class="s5"># print enc</span><span class="s1"> 
+<a name="l141"><span class="ln">141  </span></a></span><span class="s5"># b = BreakerAssistant()</span><span class="s1"> 
+<a name="l142"><span class="ln">142  </span></a></span><span class="s5"># dec = b.smarter_break(enc, key_length=10)</span><span class="s1"> 
+<a name="l143"><span class="ln">143  </span></a></span><span class="s5"># print dec</span><span class="s1"> 
+<a name="l144"><span class="ln">144  </span></a></span><span class="s5"># print len(m)</span><span class="s1"> 
+<a name="l145"><span class="ln">145  </span></a> 
+<a name="l146"><span class="ln">146  </span></a></span><span class="s5"># text = '1A\xfe~\xf6'</span><span class="s1"> 
+<a name="l147"><span class="ln">147  </span></a></span><span class="s5"># text_real = &quot;Hello&quot;</span><span class="s1"> 
+<a name="l148"><span class="ln">148  </span></a></span><span class="s5"># b = BreakerAssistant()</span><span class="s1"> 
+<a name="l149"><span class="ln">149  </span></a></span><span class="s5"># print b.plaintext_score(text)</span><span class="s1"> 
+<a name="l150"><span class="ln">150  </span></a></span><span class="s5"># print b.plaintext_score(text_real)</span></pre>
+</body>
+</html>

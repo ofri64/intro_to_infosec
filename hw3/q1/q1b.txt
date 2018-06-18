@@ -1,8 +1,10 @@
-Understanding the logic from previous section, we can easly manipulate the msg files to pass the validation test.
+Understanding the logic from previous section, we can easily manipulate the msg files
+to pass the validation test.
 In this section we can change the msg file as follows:
 
 - Change byte[0] to 0
 - Change byte[1] to key value (In our case 0xe8)
 - Leave the rest of the msg unchanged.
 
-Meaning we will make zero XOR operations, and compare our initial key to byte[1], which will be equal following directly from our manipulation. Thus, we pass the validation test :)
+Meaning we will make zero XOR operations, and compare our initial key to byte[1],
+which will be equal following directly from our manipulation. Thus, we pass the validation test :)

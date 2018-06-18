@@ -8,21 +8,30 @@ dup2@plt: 0x08048600
 execv@plt: 0x08048600
 
 Second phase - descovering address to return and beginning of message buffer:
-- As explained in q1 and as done last week we use gdb + IDA to verify how many bytes we need in order to override RET value
-- The analysis showed that bytes 1041-1044 will override RET value. In other words the message itself should be 1044 bytes long, 1040 bytes of shellcode (including NOPs as much as needed) + 4 last bytes of address to return
-- Using all the needed NOPs at the begining causes us problems with the stack location during the shellcode execution
-- So, we won't add all our NOPs in the begining of the message but add a small NOPs slide at the beginning and the rest of the nops will be at the end of the shellcode itself
+- As explained in q1 and as done last week we use gdb + IDA
+to verify how many bytes we need in order to override RET value
+- The analysis showed that bytes 1041-1044 will override RET value.
+ In other words the message itself should be 1044 bytes long, 1040 bytes of shellcode
+ (including NOPs as much as needed) + 4 last bytes of address to return
+- Using all the needed NOPs at the beginning causes us problems
+with the stack location during the shellcode execution
+- So, we won't add all our NOPs in the beginning of the message
+but add a small NOPs slide at the beginning and the rest of the nops will be at the end of the shellcode itself
 - The begging of the message buffer is at address 0xbfffddbc
 - We will use 100 Nops as slide at the beginning and will jump somewhere in the middle of it
 - In this case I chose to jump 32 bytes after the beginning of the buffer, to the address 0xbfffdddc
 
 Third phase - write a c code to perfroms the reverse shell logic
-- Perform in c code the socket creation, connection to c&c server, input and output redirection using dup2 and finally calling execv
+- Perform in c code the socket creation, connection to c&c server,
+ input and output redirection using dup2 and finally calling execv
 - Compiling the code and debbuging it using GDB
 
 Last phase - Write the assembly shellcode
 - The is almost identical to the c code disassembled program with few minor changes:
-	1) Function calls addresses are different - need to replace the calls to the addresses we found in phase 1
-	2) Our needed strings ("/bin/sh" and "127.0.0.1") are not part of the "data" segment of the process.
-	We need to generate them using the same trick we did last week - using a function call that will push to the
+	1) Function calls addresses are different -
+	need to replace the calls to the addresses we found in phase 1
+	2) Our needed strings ("/bin/sh" and "127.0.0.1")
+	are not part of the "data" segment of the process.
+	We need to generate them using the same trick we did last week -
+	using a function call that will push to the
 	stack "RET" value for the call - which is exactly the pointer to the desired memory address.

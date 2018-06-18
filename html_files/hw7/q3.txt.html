@@ -1,0 +1,36 @@
+<html>
+<head>
+<title>q3.txt</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #606366; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(169,183,198); }
+</style>
+</head>
+<BODY BGCOLOR="#2b2b2b">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+q3.txt</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<a name="l1"><span class="ln">1    </span></a><span class="s0">- Again, We will use ptrace to override the function &quot;check_if_virus&quot; to return false indicators on all inputs 
+<a name="l2"><span class="ln">2    </span></a>(and our malware among them) 
+<a name="l3"><span class="ln">3    </span></a>- This time we will not use our own custom function, 
+<a name="l4"><span class="ln">4    </span></a>we will replace the address written in the GOT table to an address of a the function 
+<a name="l5"><span class="ln">5    </span></a> we want to replace for &quot;check_if_virus&quot; 
+<a name="l6"><span class="ln">6    </span></a>- We will look again at the code section for check_if_virus@plt 
+<a name="l7"><span class="ln">7    </span></a>(in the disassembled code) 
+<a name="l8"><span class="ln">8    </span></a>- This code section starts with a jump to an address on the GOT - 
+<a name="l9"><span class="ln">9    </span></a>exactly at the right offset for the check_if_virus function. 
+<a name="l10"><span class="ln">10   </span></a>- In our case the address of the right offset on the GOT is 0x804a01c. 
+<a name="l11"><span class="ln">11   </span></a>- So we would like to subtitue the address written there 
+<a name="l12"><span class="ln">12   </span></a>with the address of our replacement function 
+<a name="l13"><span class="ln">13   </span></a> (In the regular scenario, after the dynamic linking is performed it will contain the real address 
+<a name="l14"><span class="ln">14   </span></a> of the &quot;check_if_virus function&quot;, making sure the linking will occur only once) 
+<a name="l15"><span class="ln">15   </span></a>- A good function to choose as a replacement function is: 
+<a name="l16"><span class="ln">16   </span></a> &quot;is_directory&quot; since it will return 0 for every regular file. 
+<a name="l17"><span class="ln">17   </span></a>- The &quot;is_directory&quot; function is linked to the binary statically so 
+<a name="l18"><span class="ln">18   </span></a>can just find its address in the disassembled code (written explicitly in the addresses.py file)</span></pre>
+</body>
+</html>

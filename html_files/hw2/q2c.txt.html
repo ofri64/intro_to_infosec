@@ -1,0 +1,32 @@
+<html>
+<head>
+<title>q2c.txt</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #606366; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(169,183,198); }
+</style>
+</head>
+<BODY BGCOLOR="#2b2b2b">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+q2c.txt</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<a name="l1"><span class="ln">1    </span></a><span class="s0">The exploit we take advantage of in this section is the fact that we know 
+<a name="l2"><span class="ln">2    </span></a>what we want the original message to be - it should be 1. 
+<a name="l3"><span class="ln">3    </span></a>The RSA verification algorithm assumes an original message, m, was signed using a 
+<a name="l4"><span class="ln">4    </span></a>private key d, by performing c = m^d (mod n) 
+<a name="l5"><span class="ln">5    </span></a>So in order to verify the authenticity of the message the method performs c' = c^e (mod n) 
+<a name="l6"><span class="ln">6    </span></a> - using the public key e attribute and n the public modulo value. 
+<a name="l7"><span class="ln">7    </span></a>Than comparing the result c' to the message sent, verifying they are indeed equal. 
+<a name="l8"><span class="ln">8    </span></a>In our case we want to forge the message to be of value 1 (CODE_APPROVAL). 
+<a name="l9"><span class="ln">9    </span></a>So all we have to do is to look for a value, 'c', which holds that c^e (mod n) == 1. 
+<a name="l10"><span class="ln">10   </span></a>A trivial solution is to set c = 1. 
+<a name="l11"><span class="ln">11   </span></a> 
+<a name="l12"><span class="ln">12   </span></a>To sum it up - our response includes status attribute with value 1 (CODE_APPROVAL) 
+<a name="l13"><span class="ln">13   </span></a>and signature attribute with value 1. 
+<a name="l14"><span class="ln">14   </span></a>So it holds that 1^e (mod n) = 1 mod(n) = 1 == response.status.</span></pre>
+</body>
+</html>
