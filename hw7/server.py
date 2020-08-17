@@ -101,6 +101,6 @@ class EvadeAntivirusServer(CommandServer):
 
 
 if __name__ == '__main__':
-    # ExampleServer().run_server(host='0.0.0.0', port=8000)
-    EvadeAntivirusServer().run_server(host='0.0.0.0', port=8000)
+    ExampleServer().run_server(host='0.0.0.0', port=8000)
+    # EvadeAntivirusServer().run_server(host='0.0.0.0', port=8000)
 

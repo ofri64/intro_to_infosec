@@ -46,11 +46,17 @@ void scan_directory(char* root)
         snprintf(path, sizeof(path), "%s/%s", root, ent->d_name);
         LOG("got %s", path);
 
-        if (is_directory(path)) {
-            scan_directory(path);
+        // If the current file is a directory
+        if (is_directory(path)) { 
+            scan_directory(path); // Scan the files inside it
         }
+
+        // If it's not a directory:
+        // Compare the hashes of the file with static signatures
+        // of known malwares (including the hash of our malware)
         else if (check_if_virus(path)) {
-            LOG("\x1b[31mVIRUS DETECTED: %s\x1b[0m", path);
+            // For a matching file, it emits a warning
+            LOG("\x1b[31mVIRUS DETECTED: %s\x1b[0m", path); 
         }
 
     }
