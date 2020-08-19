@@ -18,14 +18,11 @@ def parse_packet(packet):
     packet_str = str(packet)
     # filter only POST requests - sending the credentials to the server
     if packet_str.find(WEBSITE) and packet_str.find("POST"):
-        match = re.search('username=.*&password=.*', packet_str)
+        match = re.search('username=(.*)&password=(.*)', packet_str)
         if match:
-            data = match.group(0)
-            data_lst = data.split('&')
-            username_str, password_str = data_lst[0], data_lst[1]
-            username = username_str.split("=")[1]
-            password = password_str.split("=")[1]
-            return (username, password)
+            username = match.group(1)
+            password = match.group(2)
+            return username, password
     return None
 
 
