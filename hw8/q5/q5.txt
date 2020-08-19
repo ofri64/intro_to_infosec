@@ -33,6 +33,6 @@ it will execute our changed command
 
 
 To sum things up -
-we leveraged an optional TOCTTOU vulnerability.
+we leveraged a optional TOCTTOU vulnerability.
 authentication part happens with valid command and signature,
 but execution part happens with our custom command (not matching the signature)
